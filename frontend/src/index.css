@@ -1,0 +1,248 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-background text-white antialiased;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-background;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-border rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-neutral;
+}
+
+/* ============================================
+   GLASS EFFECTS - Layered glassmorphism
+   ============================================ */
+
+.glass {
+  @apply backdrop-blur-xl border border-white/5;
+  background: linear-gradient(
+    135deg,
+    rgba(18, 18, 26, 0.8) 0%,
+    rgba(18, 18, 26, 0.6) 100%
+  );
+}
+
+.glass-subtle {
+  @apply backdrop-blur-md border border-white/5;
+  background: rgba(18, 18, 26, 0.4);
+}
+
+.glass-strong {
+  @apply backdrop-blur-2xl border border-white/10;
+  background: linear-gradient(
+    135deg,
+    rgba(18, 18, 26, 0.95) 0%,
+    rgba(18, 18, 26, 0.85) 100%
+  );
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* ============================================
+   GLOW EFFECTS - Color-coded shadows
+   ============================================ */
+
+.glow-profit {
+  box-shadow:
+    0 0 20px rgba(0, 255, 136, 0.15),
+    0 0 40px rgba(0, 255, 136, 0.1),
+    inset 0 1px 0 rgba(0, 255, 136, 0.1);
+}
+
+.glow-loss {
+  box-shadow:
+    0 0 20px rgba(255, 68, 102, 0.15),
+    0 0 40px rgba(255, 68, 102, 0.1),
+    inset 0 1px 0 rgba(255, 68, 102, 0.1);
+}
+
+.glow-accent {
+  box-shadow:
+    0 0 20px rgba(99, 102, 241, 0.2),
+    0 0 40px rgba(99, 102, 241, 0.1);
+}
+
+.glow-highlight {
+  box-shadow:
+    0 0 20px rgba(34, 211, 238, 0.2),
+    0 0 40px rgba(34, 211, 238, 0.1);
+}
+
+/* Text glow for emphasis */
+.text-glow-profit {
+  text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+}
+
+.text-glow-loss {
+  text-shadow: 0 0 10px rgba(255, 68, 102, 0.5);
+}
+
+.text-glow-accent {
+  text-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+}
+
+/* ============================================
+   BACKGROUND EFFECTS
+   ============================================ */
+
+.bg-gradient-radial {
+  background: radial-gradient(
+    ellipse at top,
+    rgba(99, 102, 241, 0.15) 0%,
+    transparent 50%
+  );
+}
+
+.bg-gradient-radial-subtle {
+  background: radial-gradient(
+    ellipse at top,
+    rgba(99, 102, 241, 0.08) 0%,
+    transparent 40%
+  );
+}
+
+/* Animated gradient border */
+.border-glow {
+  position: relative;
+}
+
+.border-glow::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(99, 102, 241, 0.5) 0%,
+    rgba(34, 211, 238, 0.3) 50%,
+    rgba(99, 102, 241, 0.5) 100%
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 2s ease-in-out infinite;
+}
+
+@keyframes glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(99, 102, 241, 0.4);
+  }
+}
+
+.animate-glow {
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* ============================================
+   TYPOGRAPHY
+   ============================================ */
+
+.font-mono-numbers {
+  font-family: 'JetBrains Mono', monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Large display numbers */
+.text-display {
+  @apply font-mono-numbers font-bold tracking-tight;
+  letter-spacing: -0.02em;
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+/* Smooth transitions */
+.transition-smooth {
+  @apply transition-all duration-300 ease-out;
+}
+
+/* Hide scrollbar but keep functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Rank badge styles */
+.rank-badge {
+  @apply w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold;
+}
+
+.rank-badge-1 {
+  @apply bg-gradient-to-br from-accent to-highlight text-white;
+  box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+}
+
+.rank-badge-2 {
+  @apply bg-gradient-to-br from-neutral/50 to-neutral/30 text-white;
+}
+
+.rank-badge-3 {
+  @apply bg-gradient-to-br from-amber-600/50 to-amber-800/30 text-amber-200;
+}

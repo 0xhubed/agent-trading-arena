@@ -1,0 +1,164 @@
+# Agent Arena Agentic Competition Config
+#
+# This configuration tests the improved agentic traders against:
+# 1. Index Fund (passive benchmark)
+# 2. GPT Momentum (pure reasoning reference - best non-agentic performer)
+#
+# Agentic traders use systematic tool-based analysis with:
+# - Trade validation (prevents churning)
+# - Reflection (learns from patterns)
+# - Multi-timeframe analysis (confirms trends)
+# - Portfolio risk analysis (proper sizing)
+#
+name: "Agentic Competition"
+
+symbols:
+  - BTCUSDT
+  - ETHUSDT
+  - SOLUSDT
+  - DOGEUSDT
+  - BNBUSDT
+
+interval_seconds: 300  # 5 minutes between ticks
+duration_seconds: null  # Run indefinitely
+agent_timeout_seconds: 180  # 3 minutes timeout (more time for tool calls)
+
+# Historical candles for multi-timeframe analysis
+candles:
+  enabled: true
+  intervals: ["15m", "1h", "4h"]
+  limit: 100
+
+# Fee configuration
+fees:
+  taker_fee: 0.0004      # 0.04% for market orders
+  maker_fee: 0.0002      # 0.02% for limit orders
+  liquidation_fee: 0.005  # 0.5% liquidation penalty
+
+# Trading constraints
+constraints:
+  max_leverage: 10
+  max_position_pct: 0.25  # Max 25% of equity per position
+  starting_capital: 10000
+
+agents:
+  # ============================================
+  # BENCHMARKS (unchanged)
+  # ============================================
+
+  # Passive index fund - buy and hold benchmark
+  - id: index_fund
+    name: "The Index Fund"
+    class: agent_arena.agents.index_fund.IndexFundAgent
+    config:
+      allocation_per_symbol: 2000
+      leverage: 1
+
+  # GPT-5.1 pure reasoning - best non-agentic performer
+  # Kept as reference to compare pure reasoning vs tool-augmented
+  - id: gpt_momentum
+    name: "GPT Momentum (Pure)"
+    class: agent_arena.agents.gpt_trader.GPTTrader
+    config:
+      model: gpt-5.1
+      character: "Aggressive trend follower. Rides momentum, uses higher leverage. Quick to enter and exit positions."
+
+  # ============================================
+  # AGENTIC TRADERS (new tool-augmented versions)
+  # ============================================
+
+  # GPT-5.1 with tools - tests if tools improve the best performer
+  - id: agentic_gpt
+    name: "GPT Momentum (Agentic)"
+    class: agent_arena.agents.agentic_gpt.AgenticGPTTrader
+    config:
+      model: gpt-5.1
+      max_iterations: 3
+      character: |
+        Aggressive trend follower with discipline.
+
+        MANDATORY RULES:
+        1. ALWAYS call validate_trade before any open/close action
+        2. ALWAYS call reflect_on_performance at start to learn from patterns
+        3. Use multi_timeframe_analysis to confirm trend alignment
+        4. Ride trends - don't close winners early
+        5. Scale into strength when all timeframes align
+
+        Your edge: momentum following with systematic validation.
+
+  # Claude analyst upgraded to agentic - fixes ETH tunnel vision
+  - id: agentic_claude
+    name: "The Analyst (Agentic)"
+    class: agent_arena.agents.agentic_claude.AgenticClaudeTrader
+    config:
+      model: claude-sonnet-4-5-20250929
+      max_iterations: 3
+      character: |
+        Cautious analyst who validates every trade with tools.
+
+        MANDATORY RULES:
+        1. Call reflect_on_performance FIRST to check for symbol bias
+        2. Call validate_trade before any trade action
+        3. Call portfolio_risk_analysis to ensure diversification
+        4. Only trade high-conviction setups with 3+ confirming signals
+
+        AVOID: Over-trading any single symbol (like ETH)
+
+  # Disciplined trader - fixes langchain churning problem
+  - id: agentic_disciplined
+    name: "The Disciplined Trader"
+    class: agent_arena.agents.agentic_claude.AgenticClaudeTrader
+    config:
+      model: claude-sonnet-4-5-20250929
+      max_iterations: 4
+      character: |
+        Balanced trader with STRICT execution rules.
+
+        CRITICAL RULES:
+        1. ALWAYS call validate_trade FIRST - if it returns REJECT, you MUST hold
+        2. ALWAYS call reflect_on_performance to check for churning patterns
+        3. Minimum 5-tick hold period between trades on same symbol
+        4. Maximum 2 trades per tick across all symbols
+        5. If recent loss rate > 50%, reduce size by half
+
+        You were previously churning. This MUST stop.
+
+  # Technical specialist - fixes ta_trader paralysis
+  - id: agentic_ta
+    name: "The Technician (Agentic)"
+    class: agent_arena.agents.agentic_claude.AgenticClaudeTrader
+    config:
+      model: claude-haiku-4-5-20251001  # Cheaper for systematic analysis
+      max_iterations: 3
+      character: |
+        Technical analysis specialist. EVERY decision requires:
+
+        WORKFLOW:
+        1. Call technical_analysis with ALL indicators
+        2. Call multi_timeframe_analysis for trend confirmation
+        3. Call portfolio_risk_analysis for position sizing
+        4. Call validate_trade before executing
+
+        Only trade when 3+ indicators align across 2+ timeframes.
+        More relaxed thresholds than pure rule-based:
+        - RSI 35-65 = neutral (vs strict 30-70)
+        - Partial signals OK if trend is strong
+
+  # Together reasoner - fixes counter-trend trading
+  - id: agentic_together
+    name: "The Reasoner (Agentic)"
+    class: agent_arena.agents.agentic_together.AgenticTogetherTrader
+    config:
+      model: deepseek-v3
+      max_iterations: 3
+      character: |
+        Methodical reasoner who respects trends.
+
+        CRITICAL RULES:
+        1. NEVER short when 24h change > +2%
+        2. NEVER long when 24h change < -2%
+        3. Call validate_trade to check trend alignment
+        4. Funding rate is SECONDARY to price direction
+
+        Your previous mistake: shorting uptrends for funding.
+        Funding rate edge (~0.01%/8hr) does NOT offset directional losses.

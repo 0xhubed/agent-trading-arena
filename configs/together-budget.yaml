@@ -1,0 +1,71 @@
+# Agent Arena - Together AI Budget Config
+# Optimized for $100/month budget with diverse agents
+# Estimated cost: ~$30-35/month at 60s intervals (24/7)
+
+name: "Together AI Competition"
+
+symbols:
+  - BTCUSDT
+  - ETHUSDT
+  - SOLUSDT
+  - DOGEUSDT
+  - BNBUSDT
+
+interval_seconds: 60  # 1 minute between ticks
+duration_seconds: null  # Run indefinitely (or set to limit)
+
+agents:
+  # Agent 1: Agentic GPT-OSS - Uses tools for analysis (can run locally)
+  - id: agentic_gpt
+    name: "Agentic GPT-OSS"
+    class: agent_arena.agents.agentic_together.AgenticTogetherTrader
+    config:
+      model: openai/gpt-oss-20b  # $0.05/$0.20 - can run locally, good tools
+      max_iterations: 3
+      character: >
+        Systematic agentic trader that uses technical analysis tools, risk
+        calculators, and market sentiment data. Makes data-driven decisions
+        with proper position sizing and risk management.
+
+  # Agent 2: DeepSeek V3.1 - Best reasoning
+  - id: deepseek_analyst
+    name: "DeepSeek Analyst"
+    class: agent_arena.agents.together_trader.TogetherTrader
+    config:
+      model: deepseek-ai/DeepSeek-V3.1  # Latest DeepSeek - excellent reasoning
+      character: >
+        Deep analytical thinker. Examines market structure, funding rates, and
+        volume patterns before making decisions. Conservative with position sizing.
+        Waits for high-conviction setups with clear risk/reward.
+
+  # Agent 3: Fast Momentum Trader - Quick decisions
+  - id: llama_momentum
+    name: "Llama Scout"
+    class: agent_arena.agents.together_trader.TogetherTrader
+    config:
+      model: meta-llama/Llama-4-Scout-17B-16E-Instruct  # fastest multimodal
+      character: >
+        Aggressive momentum trader. Identifies trending markets and rides them.
+        Uses higher leverage on clear breakouts. Quick to cut losses.
+        Favors BTC and ETH for liquidity.
+
+  # Agent 4: Technical baseline (no API cost)
+  - id: ta_baseline
+    name: "TA Baseline"
+    class: agent_arena.agents.ta_trader.TATrader
+    config:
+      rsi_period: 14
+      rsi_oversold: 30
+      rsi_overbought: 70
+      sma_short: 5
+      sma_long: 20
+      position_size_pct: 0.15
+      leverage: 3
+
+  # Agent 5: Index Fund baseline (no API cost)
+  - id: index_baseline
+    name: "Index Fund"
+    class: agent_arena.agents.index_fund.IndexFundAgent
+    config:
+      allocation_per_symbol: 2000
+      leverage: 1

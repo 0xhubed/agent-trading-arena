@@ -1,0 +1,195 @@
+# Learning Agent Competition - Diverse Agent Pool
+#
+# This config provides diverse agents for the Learning Agent to observe and learn from.
+# The Learning Agent uses:
+#   - RAG: Find similar historical situations and their outcomes
+#   - Pattern Matching: Discover what works in different regimes
+#   - Meta-Learning: Learn which agents perform best in which conditions
+#
+# Agent Diversity Matrix:
+# ┌─────────────────┬────────────┬─────────────┬──────────────┐
+# │ Agent           │ Model      │ Style       │ Risk Level   │
+# ├─────────────────┼────────────┼─────────────┼──────────────┤
+# │ GPT Momentum    │ GPT-4o     │ Trend       │ Aggressive   │
+# │ DeepSeek Value  │ DeepSeek   │ Contrarian  │ Moderate     │
+# │ Claude Systematic│ Sonnet    │ Tool-based  │ Systematic   │
+# │ TA Systematic   │ None       │ Technical   │ Rules-based  │
+# │ Index Fund      │ None       │ Passive     │ Benchmark    │
+# ├─────────────────┼────────────┼─────────────┼──────────────┤
+# │ RAG Learner     │ Sonnet     │ Historical  │ Learns       │
+# │ Meta Learner    │ Sonnet     │ Follow best │ Learns       │
+# └─────────────────┴────────────┴─────────────┴──────────────┘
+
+name: "Learning Agent - Diverse Pool"
+description: "Learning agent observing diverse trading strategies across different models"
+
+# Trading configuration
+symbols: [BTCUSDT, ETHUSDT, SOLUSDT]
+interval_seconds: 1800  # 30 minutes - optimized for cost while maintaining learning quality
+duration_seconds: null  # Run indefinitely
+agent_timeout_seconds: 180
+
+# Storage - PostgreSQL with pgvector for learning
+storage:
+  backend: postgres
+
+# Fee configuration
+fees:
+  taker_fee: 0.0004
+  maker_fee: 0.0002
+  liquidation_fee: 0.005
+
+# Trading constraints
+constraints:
+  max_leverage: 10
+  max_position_pct: 0.25
+  starting_capital: 10000
+
+# Historical candles for analysis
+candles:
+  enabled: true
+  intervals: ["15m", "1h", "4h"]
+  limit: 100
+
+agents:
+  # ============================================
+  # DIVERSE AGENT POOL (for learning from)
+  # ============================================
+
+  # GPT-4o Momentum - Aggressive trend follower
+  # Strength: Quick to catch trends, rides momentum
+  # Weakness: Can get caught in reversals
+  - id: gpt_momentum
+    name: "GPT Momentum"
+    class: agent_arena.agents.gpt_trader.GPTTrader
+    config:
+      model: gpt-4o
+      character: |
+        Aggressive momentum trader. You believe trends persist.
+
+        STRATEGY:
+        - Enter quickly when momentum builds
+        - Use higher leverage (5-8x) on strong setups
+        - Ride winners, cut losers fast
+        - 24h change > 3% = strong signal
+        - Don't fight the trend
+
+        Style: Aggressive, quick decisions, trend-following
+
+  # DeepSeek Value - Contrarian/mean-reversion
+  # Strength: Catches reversals, buys fear
+  # Weakness: Can catch falling knives
+  - id: deepseek_value
+    name: "DeepSeek Contrarian"
+    class: agent_arena.agents.together_trader.TogetherTrader
+    config:
+      model: deepseek-ai/DeepSeek-V3
+      character: |
+        Contrarian value trader. You buy when others panic.
+
+        STRATEGY:
+        - Look for oversold conditions (RSI < 35)
+        - Negative funding = longs getting liquidated = opportunity
+        - 24h change < -5% could be capitulation
+        - Scale in gradually, don't catch falling knives
+        - Take profit at mean reversion (RSI 50-60)
+
+        Style: Patient, contrarian, value-focused
+
+  # Agentic Claude - Tool-augmented analysis
+  # Strength: Systematic, uses multiple data sources
+  # Weakness: Can over-analyze, slower
+  - id: agentic_claude
+    name: "Claude Systematic"
+    class: agent_arena.agents.agentic_claude.AgenticClaudeTrader
+    config:
+      model: claude-sonnet-4-20250514
+      max_iterations: 3
+      character: |
+        Systematic trader using tools for validation.
+
+        WORKFLOW:
+        1. Analyze technicals across timeframes
+        2. Check portfolio risk before trading
+        3. Validate trade setup before executing
+
+        Only trade when multiple indicators align.
+
+  # TA Bot - Pure rule-based (no LLM)
+  # Strength: Consistent, no emotional bias
+  # Weakness: Rigid, can't adapt to unusual conditions
+  - id: ta_systematic
+    name: "TA Systematic"
+    class: agent_arena.agents.ta_trader.TATrader
+    config:
+      rsi_oversold: 30
+      rsi_overbought: 70
+      sma_short: 20
+      sma_long: 50
+
+  # Index Fund - Passive benchmark
+  # Strength: Low fees, no bad decisions
+  # Weakness: No alpha, just beta
+  - id: index_fund
+    name: "Index Fund"
+    class: agent_arena.agents.index_fund.IndexFundAgent
+    config:
+      rebalance_threshold: 0.1
+      target_allocation:
+        BTCUSDT: 0.5
+        ETHUSDT: 0.3
+        SOLUSDT: 0.2
+
+  # ============================================
+  # LEARNING AGENTS (observe and learn)
+  # ============================================
+
+  # RAG-Focused Learning Agent
+  # Heavy emphasis on "what happened in similar situations?"
+  # Believes history repeats - finds analogous market conditions
+  - id: rag_learner
+    name: "RAG Learner"
+    class: agent_arena.agents.learning_trader.LearningTraderAgent
+    config:
+      model: claude-sonnet-4-20250514
+      rag_weight: 0.6        # 60% weight on similar situations
+      pattern_weight: 0.25   # 25% weight on learned patterns
+      meta_weight: 0.15      # 15% weight on agent performance
+      max_iterations: 4
+      temperature: 0.5
+      character: |
+        History-focused learner. You believe the past predicts the future.
+
+        PRIMARY STRATEGY:
+        1. ALWAYS find similar historical situations first
+        2. Weight decisions heavily on what worked before
+        3. If 3+ similar situations were profitable with same action → high confidence
+        4. If similar situations had mixed results → stay cautious
+
+        You trust historical evidence over current analysis.
+        "Those who cannot remember the past are condemned to repeat it."
+
+  # Meta-Focused Learning Agent
+  # Heavy emphasis on "who's winning right now?"
+  # Follows the best performer in current regime
+  - id: meta_learner
+    name: "Meta Learner"
+    class: agent_arena.agents.learning_trader.LearningTraderAgent
+    config:
+      model: claude-sonnet-4-20250514
+      rag_weight: 0.15       # 15% weight on similar situations
+      pattern_weight: 0.25   # 25% weight on learned patterns
+      meta_weight: 0.6       # 60% weight on agent performance
+      max_iterations: 4
+      temperature: 0.5
+      character: |
+        Performance-chaser. You follow whoever is winning NOW.
+
+        PRIMARY STRATEGY:
+        1. ALWAYS check which agent performs best in this regime
+        2. Mirror the top performer's recent decisions
+        3. If GPT Momentum is winning in uptrends → be aggressive like GPT
+        4. If DeepSeek is winning in ranging markets → be contrarian like DeepSeek
+
+        You adapt your style to match the current winner.
+        "If you can't beat them, join them."
