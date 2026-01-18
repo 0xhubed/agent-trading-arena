@@ -61,11 +61,11 @@ class TradingSkillsTool(BaseTool):
     args_schema: Type[BaseModel] = SkillQueryInput
 
     # Configuration
-    skills_dir: Path = Path(".claude/skills")
+    skills_dir: Path = Path("skills")
     _skills_cache: dict = {}
     _cache_time: float = 0
 
-    def __init__(self, skills_dir: str | Path = ".claude/skills", **kwargs: Any):
+    def __init__(self, skills_dir: str | Path = "skills", **kwargs: Any):
         super().__init__(**kwargs)
         self.skills_dir = Path(skills_dir)
 

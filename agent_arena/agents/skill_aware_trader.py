@@ -34,7 +34,7 @@ class SkillAwareTrader(AgenticTrader):
         config:
             model: claude-sonnet-4-20250514
             max_iterations: 4
-            skills_dir: ".claude/skills"
+            skills_dir: "skills"
             always_check_skills: true
             character: "A disciplined trader who learns from history"
     """
@@ -48,7 +48,7 @@ class SkillAwareTrader(AgenticTrader):
         self.max_iterations = config.get("max_iterations", 4)
 
         # Skills configuration
-        self.skills_dir = config.get("skills_dir", ".claude/skills")
+        self.skills_dir = config.get("skills_dir", "skills")
         self.always_check_skills = config.get("always_check_skills", True)
 
         # Initialize skills tools
@@ -163,7 +163,7 @@ class SkillOnlyTrader(SkillAwareTrader):
         config:
             model: claude-haiku-4-5-20251001  # Can use cheaper model
             max_iterations: 2
-            skills_dir: ".claude/skills"
+            skills_dir: "skills"
     """
 
     def __init__(self, agent_id: str, name: str, config: Optional[dict] = None):
@@ -176,7 +176,7 @@ class SkillOnlyTrader(SkillAwareTrader):
         self.max_iterations = config.get("max_iterations", 2)
         self.temperature = config.get("temperature", 0.5)
         self.character = config.get("character", "")
-        self.skills_dir = config.get("skills_dir", ".claude/skills")
+        self.skills_dir = config.get("skills_dir", "skills")
         self.always_check_skills = True
 
         # ONLY skills tools, nothing else

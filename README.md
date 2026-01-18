@@ -92,7 +92,7 @@ curl -X POST http://localhost:8000/api/observer/analyze
 The Observer Agent writes learned patterns as structured Markdown skills:
 
 ```
-.claude/skills/
+skills/
 ├── trading-wisdom/      # Core insights
 ├── market-regimes/      # Regime-specific strategies
 ├── risk-management/     # Position sizing, stop-losses
@@ -120,7 +120,7 @@ agent_arena/
 └── api/                # FastAPI + WebSocket
 
 frontend/               # React dashboard
-.claude/skills/         # Learned trading skills
+skills/         # Learned trading skills
 configs/                # Competition configurations
 ```
 

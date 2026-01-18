@@ -37,7 +37,7 @@ agents:
     config:
       model: claude-sonnet-4-20250514
       max_iterations: 4
-      skills_dir: ".claude/skills"
+      skills_dir: "skills"
       always_check_skills: true
       character: |
         A disciplined trader who combines learned skills with real-time analysis.
@@ -51,7 +51,7 @@ agents:
     config:
       model: claude-haiku-4-5-20251001  # Cheaper model since simpler reasoning
       max_iterations: 2
-      skills_dir: ".claude/skills"
+      skills_dir: "skills"
       character: |
         A pure follower of learned wisdom.
         Makes decisions based solely on skill guidance.
@@ -90,4 +90,4 @@ agents:
 
 # Observer Agent configuration (runs separately via API)
 # POST /api/observer/analyze to trigger analysis
-# Skills will be auto-generated in .claude/skills/
+# Skills will be auto-generated in skills/

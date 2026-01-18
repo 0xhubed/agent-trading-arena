@@ -46,7 +46,7 @@ class SkillAwareTogetherTrader(AgenticTrader):
             model: gpt-oss-20b          # or gpt-oss-120b for better quality
             base_url: https://api.together.xyz/v1  # or local endpoint
             max_iterations: 4
-            skills_dir: ".claude/skills"
+            skills_dir: "skills"
             always_check_skills: true
     """
 
@@ -65,7 +65,7 @@ class SkillAwareTogetherTrader(AgenticTrader):
         self.max_iterations = config.get("max_iterations", 4)
 
         # Skills configuration
-        self.skills_dir = config.get("skills_dir", ".claude/skills")
+        self.skills_dir = config.get("skills_dir", "skills")
         self.always_check_skills = config.get("always_check_skills", True)
 
         # Initialize skills tools
@@ -182,7 +182,7 @@ class SkillOnlyTogetherTrader(BaseAgent):
             model: gpt-oss-20b
             base_url: https://api.together.xyz/v1  # or local endpoint
             max_iterations: 2
-            skills_dir: ".claude/skills"
+            skills_dir: "skills"
     """
 
     def __init__(self, agent_id: str, name: str, config: Optional[dict] = None):
@@ -200,7 +200,7 @@ class SkillOnlyTogetherTrader(BaseAgent):
         self.max_iterations = config.get("max_iterations", 2)
         self.temperature = config.get("temperature", 0.5)
         self.character = config.get("character", "")
-        self.skills_dir = config.get("skills_dir", ".claude/skills")
+        self.skills_dir = config.get("skills_dir", "skills")
         self.always_check_skills = True
 
         # ONLY skills tools, nothing else

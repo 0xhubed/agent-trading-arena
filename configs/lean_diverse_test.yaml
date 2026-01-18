@@ -66,7 +66,7 @@ agents:
     config:
       model: claude-sonnet-4-5-20250929
       max_iterations: 4
-      skills_dir: ".claude/skills"
+      skills_dir: "skills"
       always_check_skills: true
       character: |
         A disciplined trader who combines learned skills with real-time analysis.
@@ -80,7 +80,7 @@ agents:
     config:
       model: claude-haiku-4-5-20251001
       max_iterations: 2
-      skills_dir: ".claude/skills"
+      skills_dir: "skills"
       character: |
         A pure follower of learned wisdom.
         Makes decisions based solely on skill guidance.
@@ -181,5 +181,5 @@ agents:
 # OBSERVER AGENT (runs separately, 1x/day)
 # Trigger via: POST /api/observer/analyze
 # Uses Opus 4.5 for deep pattern analysis (~$0.90/day)
-# Skills auto-generated in .claude/skills/
+# Skills auto-generated in skills/
 # ============================================================================

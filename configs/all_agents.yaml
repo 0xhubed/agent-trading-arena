@@ -53,7 +53,7 @@ agents:
     config:
       model: claude-sonnet-4-20250514
       max_iterations: 4
-      skills_dir: ".claude/skills"
+      skills_dir: "skills"
       always_check_skills: true
       character: "Uses Observer-generated skills"
 

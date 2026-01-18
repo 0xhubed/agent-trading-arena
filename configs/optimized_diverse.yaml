@@ -94,7 +94,7 @@ agents:
     config:
       model: claude-sonnet-4-20250514
       max_iterations: 3
-      skills_dir: ".claude/skills"
+      skills_dir: "skills"
       always_check_skills: true
       character: |
         Combines learned skills with real-time analysis.
@@ -135,7 +135,7 @@ agents:
     config:
       model: claude-haiku-4-5-20251001
       max_iterations: 2
-      skills_dir: ".claude/skills"
+      skills_dir: "skills"
       character: |
         Pure skill follower. No complex analysis.
         Just applies learned rules.

@@ -109,7 +109,7 @@ class SkillWriter:
     # Days without confirmation before applying decay
     DECAY_GRACE_PERIOD_DAYS = 1
 
-    def __init__(self, skills_dir: str | Path = ".claude/skills"):
+    def __init__(self, skills_dir: str | Path = "skills"):
         self.skills_dir = Path(skills_dir)
         self.skills_dir.mkdir(parents=True, exist_ok=True)
 

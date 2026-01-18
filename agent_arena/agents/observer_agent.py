@@ -82,7 +82,7 @@ class ObserverAgent:
     - Doesn't participate in trading
     - Runs on a schedule (e.g., daily)
     - Has read access to all agent data
-    - Writes knowledge to .claude/skills/
+    - Writes knowledge to skills/
 
     Architecture:
     1. Data Collection: Query storage for decisions, trades, outcomes
@@ -91,14 +91,14 @@ class ObserverAgent:
     4. Skill Writing: Generate/update SKILL.md files
 
     Example usage:
-        observer = ObserverAgent(storage, skills_dir=".claude/skills")
+        observer = ObserverAgent(storage, skills_dir="skills")
         await observer.run_daily_analysis()
     """
 
     def __init__(
         self,
         storage: Any,
-        skills_dir: str | Path = ".claude/skills",
+        skills_dir: str | Path = "skills",
         model: str = "claude-opus-4-5-20251101",  # Opus for best analysis
         min_confidence: float = 0.6,
         min_sample_size: int = 10,

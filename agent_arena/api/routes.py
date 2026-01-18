@@ -890,7 +890,7 @@ async def run_observer_analysis(
     if _observer is None:
         _observer = ObserverAgent(
             storage=_storage,
-            skills_dir=".claude/skills",
+            skills_dir="skills",
             min_confidence=min_confidence,
             min_sample_size=min_sample_size,
         )
@@ -919,7 +919,7 @@ async def list_skills() -> dict:
     from pathlib import Path
     import json
 
-    skills_dir = Path(".claude/skills")
+    skills_dir = Path("skills")
     skills = []
 
     if skills_dir.exists():
@@ -976,7 +976,7 @@ async def get_skill(skill_name: str) -> dict:
     from pathlib import Path
     import json
 
-    skill_file = Path(f".claude/skills/{skill_name}/SKILL.md")
+    skill_file = Path(f"skills/{skill_name}/SKILL.md")
 
     if not skill_file.exists():
         raise HTTPException(status_code=404, detail=f"Skill '{skill_name}' not found")

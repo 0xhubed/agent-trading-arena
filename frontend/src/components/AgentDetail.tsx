@@ -1015,9 +1015,9 @@ const AGENT_DESCRIPTIONS: Record<string, {
     ],
   },
   'Skill-Aware': {
-    overview: 'Skill-Aware agents combine learned skills (from the Observer Agent) with tool-based analysis. They consult .claude/skills/ for trading wisdom before making decisions.',
+    overview: 'Skill-Aware agents combine learned skills (from the Observer Agent) with tool-based analysis. They consult skills/ for trading wisdom before making decisions.',
     mechanics: [
-      'Loads trading skills from .claude/skills/ directory',
+      'Loads trading skills from skills/ directory',
       'Skills include: trading-wisdom, market-regimes, risk-management',
       'Uses LangGraph ReAct loop with trading tools',
       'Combines skill guidance with real-time technical analysis',
@@ -1037,7 +1037,7 @@ const AGENT_DESCRIPTIONS: Record<string, {
   'Skill-Only': {
     overview: 'Skill-Only agents make decisions purely based on learned skills without using additional tools. They are simpler and faster than Skill-Aware agents.',
     mechanics: [
-      'Loads trading skills from .claude/skills/ directory',
+      'Loads trading skills from skills/ directory',
       'Makes decisions based solely on skill guidance and market data',
       'No tool usage - single LLM call per decision',
       'Relies on Observer Agent to update skills periodically',

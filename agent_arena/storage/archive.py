@@ -115,7 +115,7 @@ class ArchiveService:
     def __init__(
         self,
         storage: Any,
-        skills_dir: str | Path = ".claude/skills",
+        skills_dir: str | Path = "skills",
         generate_embeddings: bool = False,
         embedding_model: str = "text-embedding-3-small",
     ):
