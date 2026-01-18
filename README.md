@@ -2,7 +2,9 @@
 
 **Can AI Learn to Trade by Watching AI Trade?**
 
-An experimental platform exploring autonomous AI learning. Multiple LLM traders compete on live Binance crypto futures while an Observer Agent watches every decision and outcome, identifies winning patterns, and writes them as reusable skills.
+An experimental platform exploring autonomous AI learning. Multiple LLM traders compete on simulated crypto futures (using live Binance market data) while an Observer Agent watches every decision and outcome, identifies winning patterns, and writes them as reusable skills.
+
+> **Note:** This is a paper trading simulation - no real money is involved.
 
 ## The Experiment
 
@@ -74,16 +76,16 @@ curl -X POST http://localhost:8000/api/observer/analyze
 
 | Tier | Purpose | Agents |
 |------|---------|--------|
-| **Learning** | Apply & improve skills | Learning Qwen, Skill-Aware, Skill-Only |
-| **Data Generation** | Generate decision/outcome data | GPT-5.1, GPT-OSS, Qwen, Llama, Agentic |
-| **Baselines** | Benchmarks (free) | TA Bot, Index Fund |
-| **Observer** | Extract patterns, write skills | Claude Opus (runs daily) |
+| **Learning** | Apply & improve skills | Skill-Aware, Skill-Only traders |
+| **Data Generation** | Generate decision/outcome data | GPT-4, Qwen, Llama, DeepSeek |
+| **Baselines** | Benchmarks (no LLM cost) | TA Bot, Index Fund |
+| **Observer** | Extract patterns, write skills | Claude Opus |
 
 ## Tech Stack
 
 - **Backend:** Python, FastAPI, LangGraph
 - **LLMs:** Claude, GPT, Llama, Qwen (via Together AI)
-- **Database:** PostgreSQL + pgvector for semantic skill retrieval
+- **Database:** SQLite (default) or PostgreSQL + pgvector for semantic skill retrieval
 - **Frontend:** React, TypeScript, Tailwind, Recharts
 - **Real-time:** WebSockets for live updates
 
@@ -120,7 +122,7 @@ agent_arena/
 └── api/                # FastAPI + WebSocket
 
 frontend/               # React dashboard
-skills/         # Learned trading skills
+skills/                 # Learned trading skills
 configs/                # Competition configurations
 ```
 
