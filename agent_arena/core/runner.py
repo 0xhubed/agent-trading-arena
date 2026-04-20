@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+from collections import deque
 from datetime import datetime, timezone
 from decimal import Decimal
 from typing import Any, Callable, Optional
@@ -12,20 +13,13 @@ from agent_arena.core.agent import BaseAgent
 from agent_arena.core.arena import TradingArena
 from agent_arena.core.config import CompetitionConfig
 from agent_arena.core.models import Decision, Trade
+from agent_arena.core.regime import classify_regime, get_regime_characteristics
+from agent_arena.forum.runner import DiscussionAgentRunner
 from agent_arena.providers.base import DataProvider
-from agent_arena.providers.binance import BinanceProvider
+from agent_arena.providers.kraken import KrakenProvider
+from agent_arena.utils.time import utc_iso, utc_now_iso
 
 logger = logging.getLogger(__name__)
-
-
-def utc_iso(dt: datetime) -> str:
-    """Format datetime as ISO string with Z suffix for JavaScript."""
-    return dt.isoformat().replace("+00:00", "Z")
-
-
-def utc_now_iso() -> str:
-    """Return current UTC time as ISO string with Z suffix for JavaScript."""
-    return utc_iso(datetime.now(timezone.utc))
 
 
 class CompetitionRunner:
@@ -64,16 +58,32 @@ class CompetitionRunner:
         self.started_at: Optional[datetime] = None
         self._last_archive_date = None  # Track for end-of-day archival
 
+        # Per-agent recent decision history (in-memory ring buffer)
+        self._decision_history: dict[str, list[dict]] = {a.agent_id: [] for a in agents}
+        self._decision_history_limit = 10  # Keep last N decisions per agent
+
+        # Trade frequency gate: rolling window of (tick, action) per agent
+        window_size = config.constraints.trade_window_ticks
+        self._tick_window_trades: dict[str, deque[int]] = {
+            a.agent_id: deque(maxlen=window_size) for a in agents
+        }
+
+        # Forum discussion agents (M3)
+        self.discussion_runner: Optional[DiscussionAgentRunner] = None
+
     async def start(self) -> None:
         """Start the competition."""
         self.running = True
         self.started_at = datetime.now(timezone.utc)
-        self.tick = 0
+        resuming = self.tick > 0  # tick was set by app.py resume
+        if not resuming:
+            self.tick = 0
         self._last_archive_date = self.started_at.date()
 
-        # Initialize agents
+        # Initialize agents — skip register if portfolio was restored
         for agent in self.agents.values():
-            self.arena.register_agent(agent.agent_id)
+            if not self.arena.get_portfolio(agent.agent_id):
+                self.arena.register_agent(agent.agent_id)
             # Inject storage for agentic agents that need it
             if hasattr(agent, "set_storage") and self.storage:
                 agent.set_storage(self.storage)
@@ -104,6 +114,20 @@ class CompetitionRunner:
         for provider in self.providers:
             await provider.start()
 
+        # Initialize forum discussion agents if configured (M3)
+        discussion_agents_config = self.config.raw_config.get("discussion_agents", [])
+        if discussion_agents_config and self.storage:
+            try:
+                self.discussion_runner = DiscussionAgentRunner(
+                    storage=self.storage,
+                    config={"discussion_agents": discussion_agents_config},
+                )
+                await self.discussion_runner.initialize()
+                logger.info(f"Initialized {self.discussion_runner.get_agent_count()} discussion agents")
+            except Exception as e:
+                logger.error(f"Failed to initialize discussion agents: {e}", exc_info=True)
+                self.discussion_runner = None
+
         self.emit(
             "competition_started",
             {
@@ -122,7 +146,7 @@ class CompetitionRunner:
 
                 # Check duration limit
                 if self.config.duration_seconds:
-                    elapsed = (datetime.utcnow() - self.started_at).total_seconds()
+                    elapsed = (datetime.now(timezone.utc) - self.started_at).total_seconds()
                     if elapsed >= self.config.duration_seconds:
                         logger.info("Duration limit reached, stopping")
                         break
@@ -170,6 +194,13 @@ class CompetitionRunner:
 
         # 1. Gather data from all providers
         context = await self._build_context()
+
+        # 1b. Run forum discussion agents (M3)
+        if self.discussion_runner:
+            try:
+                await self.discussion_runner.on_tick(context)
+            except Exception as e:
+                logger.error(f"Error running discussion agents: {e}", exc_info=True)
 
         # 2. Update arena prices
         if "market" in context:
@@ -259,6 +290,56 @@ class CompetitionRunner:
         # 5. Get decisions from all agents (concurrently)
         decisions = await self._get_all_decisions(context)
 
+        # 5b. Trade frequency gate — override to HOLD if agent exceeded limit
+        # Closes are exempt: they reduce risk (profit-taking, stop-loss) and
+        # should never be blocked by a frequency cap.
+        _EXEMPT_ACTIONS = {"hold", "close", "set_stop_loss", "set_take_profit", "cancel_order"}
+        max_trades = self.config.constraints.max_trades_per_window
+        window_ticks = self.config.constraints.trade_window_ticks
+        for agent_id, decision in decisions.items():
+            if decision and decision.action not in _EXEMPT_ACTIONS:
+                window = self._tick_window_trades.get(agent_id)
+                if window is not None:
+                    # Evict trades outside the rolling window
+                    while window and window[0] <= self.tick - window_ticks:
+                        window.popleft()
+                if window is not None and len(window) >= max_trades:
+                    logger.info(
+                        "Frequency cap: %s capped at tick %d "
+                        "(%d trades in last %d ticks, limit %d) — overriding %s to HOLD",
+                        agent_id, self.tick, len(window),
+                        self.config.constraints.trade_window_ticks,
+                        max_trades, decision.action,
+                    )
+                    original_action = decision.action
+                    decision.action = "hold"
+                    decision.reasoning = (
+                        f"[FREQUENCY CAP] Original: {original_action}. "
+                        f"Overridden — {len(window)} trades in last "
+                        f"{self.config.constraints.trade_window_ticks} ticks "
+                        f"(limit: {max_trades}). {decision.reasoning}"
+                    )
+                    if decision.metadata is None:
+                        decision.metadata = {}
+                    decision.metadata["frequency_capped"] = True
+                    decision.metadata["original_action"] = original_action
+                    self.emit("frequency_cap", {
+                        "agent_id": agent_id,
+                        "tick": self.tick,
+                        "original_action": original_action,
+                        "trades_in_window": len(window),
+                        "window_ticks": self.config.constraints.trade_window_ticks,
+                        "limit": max_trades,
+                    })
+
+        # 5c. Record non-hold decisions in rolling window (after gate)
+        # Only count position-opening actions; closes don't consume cap.
+        for agent_id, decision in decisions.items():
+            if decision and decision.action not in _EXEMPT_ACTIONS:
+                window = self._tick_window_trades.get(agent_id)
+                if window is not None:
+                    window.append(self.tick)
+
         # 6. Execute decisions and collect results
         results = {}
         for agent_id, decision in decisions.items():
@@ -267,6 +348,22 @@ class CompetitionRunner:
                 trade = self.arena.execute(agent_id, decision)
                 if self.storage:
                     await self._store_decision(agent_id, decision, trade)
+
+                # Record in per-agent decision history buffer
+                history = self._decision_history.setdefault(agent_id, [])
+                history.append({
+                    "tick": self.tick,
+                    "action": decision.action,
+                    "symbol": decision.symbol,
+                    "confidence": decision.confidence,
+                    "reasoning": decision.reasoning,
+                    "trade_pnl": (
+                        float(trade.realized_pnl) if trade and trade.realized_pnl else None
+                    ),
+                })
+                if len(history) > self._decision_history_limit:
+                    history.pop(0)
+
                 self.emit(
                     "decision",
                     {
@@ -345,7 +442,7 @@ class CompetitionRunner:
                 )
 
         # 7. Emit tick update
-        leaderboard = self.arena.get_leaderboard()
+        leaderboard = self.arena.get_extended_leaderboard()
         tick_data = {
             "tick": self.tick,
             "timestamp": utc_iso(tick_start),
@@ -421,28 +518,49 @@ class CompetitionRunner:
             if candles:
                 context["candles"] = candles
 
+                # Compute market regime from primary symbol candles
+                primary_symbol = self.config.symbols[0] if self.config.symbols else None
+                if primary_symbol and primary_symbol in candles:
+                    # Prefer 1h candles, fall back to 4h, then 15m
+                    symbol_candles = candles[primary_symbol]
+                    candle_list = (
+                        symbol_candles.get("1h")
+                        or symbol_candles.get("4h")
+                        or symbol_candles.get("15m")
+                        or []
+                    )
+                    if candle_list:
+                        regime = classify_regime(candle_list)
+                        guidance = get_regime_characteristics(regime)
+                        context["regime"] = regime
+                        context["regime_guidance"] = guidance
+
         return context
 
     async def _fetch_candles(self) -> dict[str, dict[str, list[dict]]]:
-        """Fetch historical candles from Binance provider."""
-        # Find the Binance provider
-        binance_provider = None
+        """Fetch historical candles from Kraken provider."""
+        kraken_provider = None
         for provider in self.providers:
-            if isinstance(provider, BinanceProvider):
-                binance_provider = provider
+            if isinstance(provider, KrakenProvider):
+                kraken_provider = provider
                 break
 
-        if not binance_provider:
+        if not kraken_provider:
             return {}
 
-        return await binance_provider.get_candles_multi(
+        return await kraken_provider.get_candles_multi(
             symbols=self.config.symbols,
             intervals=self.config.candles.intervals,
             limit=self.config.candles.limit,
         )
 
     async def _get_all_decisions(self, base_context: dict) -> dict[str, Optional[Decision]]:
-        """Get decisions from all agents concurrently."""
+        """Get decisions from all agents, staggered: fast agents first, then agentic.
+
+        Staggering reduces GPU contention by letting simple/rule-based agents
+        finish before agentic agents start their multi-step tool loops.
+        """
+        from agent_arena.agentic.base import AgenticTrader
 
         async def get_decision(agent: BaseAgent) -> tuple[str, Optional[Decision]]:
             # Add agent-specific portfolio to context
@@ -453,6 +571,7 @@ class CompetitionRunner:
             context = {
                 **base_context,
                 "portfolio": portfolio.to_context(),
+                "recent_decisions": list(self._decision_history.get(agent.agent_id, [])),
             }
 
             try:
@@ -474,10 +593,29 @@ class CompetitionRunner:
                     metadata={"error": str(e)},
                 )
 
-        tasks = [get_decision(agent) for agent in self.agents.values()]
-        results = await asyncio.gather(*tasks)
+        # Split agents into fast (simple/rule-based) and slow (agentic)
+        fast_agents = []
+        slow_agents = []
+        for agent in self.agents.values():
+            if isinstance(agent, AgenticTrader):
+                slow_agents.append(agent)
+            else:
+                fast_agents.append(agent)
 
-        return dict(results)
+        # Run fast agents first (concurrent), then agentic agents (concurrent)
+        all_results = {}
+
+        if fast_agents:
+            fast_tasks = [get_decision(a) for a in fast_agents]
+            fast_results = await asyncio.gather(*fast_tasks)
+            all_results.update(dict(fast_results))
+
+        if slow_agents:
+            slow_tasks = [get_decision(a) for a in slow_agents]
+            slow_results = await asyncio.gather(*slow_tasks)
+            all_results.update(dict(slow_results))
+
+        return all_results
 
     async def _store_decision(
         self,

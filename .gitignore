@@ -136,6 +136,7 @@ celerybeat.pid
 
 # Environments
 .env
+.env.*
 .envrc
 .venv
 env/
@@ -205,3 +206,15 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Node
+node_modules/
+
+# Codegen worktree
+.codegen-work/
+
+# Secrets
+docs/SECRETS.md
+
+# Kraken migration archive (2026-04-19-binance)
+data/archive/

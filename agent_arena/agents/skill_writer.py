@@ -14,9 +14,8 @@ from __future__ import annotations
 
 import hashlib
 import json
-import re
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Optional
 
@@ -109,7 +108,7 @@ class SkillWriter:
     # Days without confirmation before applying decay
     DECAY_GRACE_PERIOD_DAYS = 1
 
-    def __init__(self, skills_dir: str | Path = "skills"):
+    def __init__(self, skills_dir: str | Path = ".claude/skills"):
         self.skills_dir = Path(skills_dir)
         self.skills_dir.mkdir(parents=True, exist_ok=True)
 
@@ -145,7 +144,7 @@ class SkillWriter:
         self, history: dict[str, PatternHistory], confirmed_ids: set[str]
     ) -> dict[str, PatternHistory]:
         """Apply confidence decay to patterns not confirmed in this update."""
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         updated_history = {}
 
         for pid, pattern in history.items():
@@ -188,7 +187,7 @@ class SkillWriter:
         Returns:
             Tuple of (merged history, set of confirmed pattern IDs)
         """
-        now = datetime.utcnow().isoformat()
+        now = datetime.now(timezone.utc).isoformat()
         confirmed_ids = set()
         merged = dict(existing_history)
 
@@ -306,7 +305,7 @@ class SkillWriter:
         else:
             # Replace mode - start fresh
             final_history = {}
-            now = datetime.utcnow().isoformat()
+            now = datetime.now(timezone.utc).isoformat()
             for pattern in update.patterns:
                 pattern_id = PatternHistory.generate_id(
                     pattern.description, pattern.pattern_type
@@ -342,7 +341,7 @@ class SkillWriter:
         meta = {
             "name": update.skill_name,
             "version": update.version,
-            "last_updated": datetime.utcnow().isoformat(),
+            "last_updated": datetime.now(timezone.utc).isoformat(),
             "total_patterns": len(final_history),
             "active_patterns": len(active_patterns),
             "inactive_patterns": len(final_history) - len(active_patterns),
@@ -375,7 +374,7 @@ class SkillWriter:
         # Statistics
         active_patterns = [p for p in history.values() if p.is_active]
         total_samples = sum(p.sample_size for p in active_patterns)
-        lines.append(f"> Last updated: {datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')}")
+        lines.append(f"> Last updated: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}")
         lines.append(f"> Active patterns: {len(active_patterns)}")
         lines.append(f"> Total samples: {total_samples}")
         lines.append(f"> Confidence threshold: {update.confidence_threshold:.0%}")
@@ -635,256 +634,6 @@ class SkillWriter:
                 lines.append(f"- Samples: {p.sample_size}")
                 lines.append(f"- Seen: {p.times_seen} times")
                 lines.append("")
-
-        return lines
-
-    def _generate_skill_content(
-        self,
-        update: SkillUpdate,
-        existing_content: Optional[str] = None,
-    ) -> str:
-        """Generate the SKILL.md content."""
-        lines = []
-
-        # YAML frontmatter
-        lines.append("---")
-        lines.append(f"name: {update.skill_name}")
-        lines.append(f"description: {update.description}")
-        lines.append("---")
-        lines.append("")
-
-        # Title
-        title = update.skill_name.replace("-", " ").title()
-        lines.append(f"# {title}")
-        lines.append("")
-
-        # Add generation timestamp
-        lines.append(f"> Last updated: {datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')}")
-        lines.append(f"> Patterns analyzed: {len(update.patterns)}")
-        lines.append(f"> Confidence threshold: {update.confidence_threshold:.0%}")
-        lines.append("")
-
-        # Generate sections based on skill type
-        if update.skill_name == "trading-wisdom":
-            lines.extend(self._generate_trading_wisdom_sections(update))
-        elif update.skill_name == "market-regimes":
-            lines.extend(self._generate_market_regimes_sections(update))
-        elif update.skill_name == "risk-management":
-            lines.extend(self._generate_risk_management_sections(update))
-        elif update.skill_name == "entry-signals":
-            lines.extend(self._generate_signals_sections(update, "entry"))
-        elif update.skill_name == "exit-signals":
-            lines.extend(self._generate_signals_sections(update, "exit"))
-        else:
-            lines.extend(self._generate_generic_sections(update))
-
-        # Add confidence guide
-        lines.extend(self._generate_confidence_guide())
-
-        return "\n".join(lines)
-
-    def _generate_trading_wisdom_sections(self, update: SkillUpdate) -> list[str]:
-        """Generate sections for the master trading-wisdom skill."""
-        lines = []
-
-        # Key learnings
-        lines.append("## Key Learnings")
-        lines.append("")
-        learnings = update.sections.get("key_learnings", [])
-        if learnings:
-            for i, learning in enumerate(learnings, 1):
-                lines.append(f"{i}. {learning}")
-            lines.append("")
-        else:
-            lines.append("*No key learnings extracted yet.*")
-            lines.append("")
-
-        # Winning strategies
-        lines.append("## Winning Strategies")
-        lines.append("")
-        winning = [p for p in update.patterns if p.pattern_type == "winning_strategy"]
-        if winning:
-            for pattern in sorted(winning, key=lambda x: -x.confidence):
-                lines.append(f"### {pattern.description[:50]}...")
-                lines.append(f"- **Confidence**: {pattern.confidence:.0%}")
-                lines.append(f"- **Sample size**: {pattern.sample_size}")
-                lines.append(f"- **Details**: {pattern.description}")
-                lines.append("")
-        else:
-            lines.append("*No winning strategies identified yet.*")
-            lines.append("")
-
-        # Patterns to avoid
-        lines.append("## Patterns to Avoid")
-        lines.append("")
-        losing = [p for p in update.patterns if p.pattern_type == "losing_pattern"]
-        if losing:
-            for pattern in sorted(losing, key=lambda x: -x.confidence):
-                lines.append(f"- **AVOID**: {pattern.description}")
-                lines.append(f"  - Conf: {pattern.confidence:.0%}, N={pattern.sample_size}")
-            lines.append("")
-        else:
-            lines.append("*No losing patterns identified yet.*")
-            lines.append("")
-
-        return lines
-
-    def _generate_market_regimes_sections(self, update: SkillUpdate) -> list[str]:
-        """Generate sections for market-regimes skill."""
-        lines = []
-
-        lines.append("## How to Use This Skill")
-        lines.append("")
-        lines.append("1. Identify the current market regime using price action and volatility")
-        lines.append("2. Look up the recommended strategy for that regime below")
-        lines.append("3. Adjust your trading approach accordingly")
-        lines.append("4. Monitor for regime changes")
-        lines.append("")
-
-        lines.append("## Regime Strategies")
-        lines.append("")
-
-        regimes = update.sections.get("regimes", [])
-        if regimes:
-            for regime_data in regimes:
-                regime = regime_data.get("regime", "unknown")
-                strategy = regime_data.get("strategy", "No strategy")
-                confidence = regime_data.get("confidence", 0.5)
-
-                lines.append(f"### {regime.replace('_', ' ').title()}")
-                lines.append("")
-                lines.append(f"**Recommended approach** ({confidence:.0%} confidence):")
-                lines.append(f"> {strategy}")
-                lines.append("")
-
-                # Add specific guidance based on regime type
-                if "trending_up" in regime.lower() or "bull" in regime.lower():
-                    lines.append("**Typical characteristics:**")
-                    lines.append("- Higher highs and higher lows")
-                    lines.append("- Price above key moving averages")
-                    lines.append("- Positive momentum indicators")
-                    lines.append("")
-                elif "trending_down" in regime.lower() or "bear" in regime.lower():
-                    lines.append("**Typical characteristics:**")
-                    lines.append("- Lower highs and lower lows")
-                    lines.append("- Price below key moving averages")
-                    lines.append("- Negative momentum indicators")
-                    lines.append("")
-                elif "ranging" in regime.lower() or "sideways" in regime.lower():
-                    lines.append("**Typical characteristics:**")
-                    lines.append("- Price oscillating between support and resistance")
-                    lines.append("- Low directional momentum")
-                    lines.append("- Mean reversion opportunities")
-                    lines.append("")
-                elif "volatile" in regime.lower():
-                    lines.append("**Typical characteristics:**")
-                    lines.append("- Large price swings in both directions")
-                    lines.append("- Increased uncertainty")
-                    lines.append("- Higher risk, potentially higher reward")
-                    lines.append("")
-        else:
-            lines.append("*No regime strategies learned yet.*")
-            lines.append("")
-
-        return lines
-
-    def _generate_risk_management_sections(self, update: SkillUpdate) -> list[str]:
-        """Generate sections for risk-management skill."""
-        lines = []
-
-        lines.append("## Core Principles")
-        lines.append("")
-        lines.append("These rules are derived from analyzing profitable vs losing trades:")
-        lines.append("")
-
-        rules = update.sections.get("rules", [])
-        if rules:
-            # Sort by success rate
-            sorted_rules = sorted(rules, key=lambda x: -x.get("success_rate", 0))
-
-            lines.append("| Rule | Success Rate | Sample Size |")
-            lines.append("|------|-------------|-------------|")
-            for rule in sorted_rules:
-                lines.append(
-                    f"| {rule['rule']} | {rule['success_rate']:.0%} | {rule['sample_size']} |"
-                )
-            lines.append("")
-
-            # Highlight top rules
-            lines.append("## Top Risk Rules")
-            lines.append("")
-            for rule in sorted_rules[:5]:
-                lines.append(f"### {rule['rule']}")
-                lines.append(f"- Success rate: {rule['success_rate']:.0%}")
-                lines.append(f"- Based on {rule['sample_size']} observations")
-                lines.append("")
-        else:
-            lines.append("*No risk rules learned yet.*")
-            lines.append("")
-
-        # Add general risk guidelines
-        lines.append("## General Guidelines")
-        lines.append("")
-        lines.append("- Never risk more than 2% of equity on a single trade")
-        lines.append("- Use stop-losses on every position")
-        lines.append("- Reduce position size in high volatility regimes")
-        lines.append("- Don't add to losing positions")
-        lines.append("")
-
-        return lines
-
-    def _generate_signals_sections(self, update: SkillUpdate, signal_type: str) -> list[str]:
-        """Generate sections for entry/exit signals skill."""
-        lines = []
-
-        lines.append(f"## {signal_type.title()} Signals")
-        lines.append("")
-        lines.append(f"These {signal_type} signals have been identified from competition data:")
-        lines.append("")
-
-        signals = update.sections.get("signals", [])
-        if signals:
-            lines.append("| Signal | Success Rate | Sample Size |")
-            lines.append("|--------|-------------|-------------|")
-            for signal in sorted(signals, key=lambda x: -x.get("success_rate", 0)):
-                sig = signal["signal"][:40]
-                lines.append(f"| {sig} | {signal['success_rate']:.0%} | {signal['sample_size']} |")
-            lines.append("")
-
-            # Detail top signals
-            lines.append("## Signal Details")
-            lines.append("")
-            for signal in sorted(signals, key=lambda x: -x.get("success_rate", 0))[:5]:
-                lines.append(f"### {signal['signal'][:40]}...")
-                lines.append(f"**Success rate**: {signal['success_rate']:.0%}")
-                lines.append(f"**Sample size**: {signal['sample_size']}")
-                lines.append(f"**Description**: {signal['signal']}")
-                lines.append("")
-        else:
-            lines.append(f"*No {signal_type} signals learned yet.*")
-            lines.append("")
-
-        return lines
-
-    def _generate_generic_sections(self, update: SkillUpdate) -> list[str]:
-        """Generate sections for a generic skill."""
-        lines = []
-
-        for section_name, section_content in update.sections.items():
-            lines.append(f"## {section_name.replace('_', ' ').title()}")
-            lines.append("")
-            if isinstance(section_content, list):
-                for item in section_content:
-                    if isinstance(item, dict):
-                        lines.append(f"- {item}")
-                    else:
-                        lines.append(f"- {item}")
-            elif isinstance(section_content, dict):
-                for key, value in section_content.items():
-                    lines.append(f"- **{key}**: {value}")
-            else:
-                lines.append(str(section_content))
-            lines.append("")
 
         return lines
 

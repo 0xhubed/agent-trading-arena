@@ -1,0 +1,9 @@
+{
+  "name": "entry-signals",
+  "version": "1.0",
+  "last_updated": "2026-03-09T20:08:51.729791+00:00",
+  "total_patterns": 119,
+  "active_patterns": 33,
+  "inactive_patterns": 86,
+  "confidence_threshold": 0.6
+}

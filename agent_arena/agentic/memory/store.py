@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Optional
 
 
@@ -68,7 +68,7 @@ class AgentMemoryStore:
                 content,
                 importance,
                 tick,
-                datetime.utcnow().isoformat(),
+                datetime.now(timezone.utc).isoformat(),
                 json.dumps(metadata) if metadata else None,
             ),
         )

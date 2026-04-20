@@ -1,10 +1,10 @@
 """Base interface for trading tools."""
 
 from abc import ABC, abstractmethod
-from typing import Any, Optional
+from typing import Any
 
 from langchain_core.tools import BaseTool
-from pydantic import BaseModel
+from pydantic import PrivateAttr
 
 
 class TradingTool(BaseTool, ABC):
@@ -19,9 +19,9 @@ class TradingTool(BaseTool, ABC):
     name: str
     description: str
 
-    # Shared context (set before each decision)
-    _context: dict = {}
-    _storage: Any = None
+    # Per-instance context (set before each decision)
+    _context: dict = PrivateAttr(default_factory=dict)
+    _storage: Any = PrivateAttr(default=None)
 
     class Config:
         arbitrary_types_allowed = True

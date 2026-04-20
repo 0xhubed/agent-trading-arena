@@ -165,8 +165,62 @@ class SQLiteStorage:
             CREATE INDEX IF NOT EXISTS idx_liquidations_tick ON liquidations(tick);
             CREATE INDEX IF NOT EXISTS idx_sl_tp_agent ON sl_tp_triggers(agent_id);
             CREATE INDEX IF NOT EXISTS idx_sl_tp_tick ON sl_tp_triggers(tick);
+
+            -- Bias profiles table
+            CREATE TABLE IF NOT EXISTS bias_profiles (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                agent_id TEXT NOT NULL,
+                timestamp TEXT NOT NULL,
+                bias_type TEXT NOT NULL,
+                score REAL,
+                sample_size INTEGER NOT NULL,
+                sufficient_data INTEGER NOT NULL DEFAULT 0,
+                details TEXT,
+                evolution_run_id TEXT,
+                generation INTEGER,
+                created_at TEXT DEFAULT CURRENT_TIMESTAMP
+            );
+            CREATE INDEX IF NOT EXISTS idx_bias_agent ON bias_profiles(agent_id);
+
+            -- Contagion snapshots table
+            CREATE TABLE IF NOT EXISTS contagion_snapshots (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                timestamp TEXT NOT NULL,
+                tick INTEGER,
+                metric_type TEXT NOT NULL,
+                value REAL,
+                sample_size INTEGER NOT NULL,
+                sufficient_data INTEGER NOT NULL DEFAULT 0,
+                details TEXT,
+                agent_count INTEGER,
+                created_at TEXT DEFAULT CURRENT_TIMESTAMP
+            );
+            CREATE INDEX IF NOT EXISTS idx_contagion_tick ON contagion_snapshots(tick);
+            CREATE INDEX IF NOT EXISTS idx_contagion_type ON contagion_snapshots(metric_type);
+
+            -- Observer journal table
+            CREATE TABLE IF NOT EXISTS observer_journal (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                journal_date TEXT NOT NULL UNIQUE,
+                generated_at TEXT NOT NULL,
+                lookback_hours INTEGER NOT NULL DEFAULT 24,
+                full_markdown TEXT NOT NULL,
+                market_summary TEXT DEFAULT '',
+
+                forum_summary TEXT DEFAULT '',
+                learning_summary TEXT DEFAULT '',
+                recommendations TEXT DEFAULT '',
+                agent_reports TEXT DEFAULT '{}',
+                metrics TEXT DEFAULT '{}',
+                model TEXT
+            );
+            CREATE INDEX IF NOT EXISTS idx_journal_date ON observer_journal(journal_date);
         """)
         await self._connection.commit()
+
+        # Create backtest-related tables
+        from agent_arena.storage.candles import CandleStorage
+        await CandleStorage.create_tables(self._connection)
 
     async def close(self) -> None:
         """Close database connection."""
@@ -528,6 +582,48 @@ class SQLiteStorage:
             results.append(d)
         return results
 
+    async def get_agent_funding_summary(self, agent_id: str) -> dict:
+        """Get funding payment summary using SQL aggregation."""
+        if not self._connection:
+            await self.initialize()
+        cursor = await self._connection.execute(
+            """
+            SELECT
+                COALESCE(SUM(CASE WHEN direction='paid'
+                    THEN ABS(CAST(amount AS REAL)) ELSE 0 END), 0) as paid,
+                COALESCE(SUM(CASE WHEN direction='received'
+                    THEN ABS(CAST(amount AS REAL)) ELSE 0 END), 0) as received
+            FROM funding_payments WHERE agent_id = ?
+            """,
+            (agent_id,),
+        )
+        row = await cursor.fetchone()
+        paid = float(row[0]) if row else 0.0
+        received = float(row[1]) if row else 0.0
+        return {"paid": paid, "received": received, "net": received - paid}
+
+    async def get_agent_trade_count(self, agent_id: str) -> int:
+        """Get trade count using SQL aggregation."""
+        if not self._connection:
+            await self.initialize()
+        cursor = await self._connection.execute(
+            "SELECT COUNT(*) FROM trades WHERE agent_id = ?",
+            (agent_id,),
+        )
+        row = await cursor.fetchone()
+        return row[0] if row else 0
+
+    async def get_agent_liquidation_count(self, agent_id: str) -> int:
+        """Get liquidation count using SQL aggregation."""
+        if not self._connection:
+            await self.initialize()
+        cursor = await self._connection.execute(
+            "SELECT COUNT(*) FROM liquidations WHERE agent_id = ?",
+            (agent_id,),
+        )
+        row = await cursor.fetchone()
+        return row[0] if row else 0
+
     async def get_agent_behavioral_stats(self, agent_id: str) -> dict:
         """Get behavioral statistics for an agent from decisions and trades."""
         if not self._connection:
@@ -625,3 +721,435 @@ class SQLiteStorage:
             "short_pct": round(short_count / total_sides * 100, 1) if total_sides > 0 else 0,
             "average_leverage": avg_leverage,
         }
+
+    async def get_all_decisions(
+        self, agent_id: str, limit: int = 0,
+    ) -> list[dict]:
+        """Get decisions for an agent, ordered by tick ascending."""
+        if not self._connection:
+            await self.initialize()
+
+        if limit > 0:
+            cursor = await self._connection.execute(
+                "SELECT * FROM ("
+                "  SELECT * FROM decisions WHERE agent_id = ? "
+                "  ORDER BY tick DESC LIMIT ?"
+                ") sub ORDER BY tick ASC",
+                (agent_id, limit),
+            )
+        else:
+            cursor = await self._connection.execute(
+                "SELECT * FROM decisions "
+                "WHERE agent_id = ? ORDER BY tick ASC",
+                (agent_id,),
+            )
+        rows = await cursor.fetchall()
+        columns = [desc[0] for desc in cursor.description]
+
+        decisions = []
+        for row in rows:
+            d = dict(zip(columns, row))
+            if d.get("metadata"):
+                d["metadata"] = json.loads(d["metadata"])
+            decisions.append(d)
+        return decisions
+
+    async def get_all_trades(
+        self, agent_id: str, limit: int = 0,
+    ) -> list[dict]:
+        """Get trades for an agent, ordered by timestamp ascending."""
+        if not self._connection:
+            await self.initialize()
+
+        if limit > 0:
+            cursor = await self._connection.execute(
+                "SELECT * FROM ("
+                "  SELECT * FROM trades WHERE agent_id = ? "
+                "  ORDER BY timestamp DESC LIMIT ?"
+                ") sub ORDER BY timestamp ASC",
+                (agent_id, limit),
+            )
+        else:
+            cursor = await self._connection.execute(
+                "SELECT * FROM trades "
+                "WHERE agent_id = ? ORDER BY timestamp ASC",
+                (agent_id,),
+            )
+        rows = await cursor.fetchall()
+        columns = [desc[0] for desc in cursor.description]
+        return [dict(zip(columns, row)) for row in rows]
+
+    async def get_all_agent_ids(self) -> list[str]:
+        """Get all distinct agent IDs from decisions."""
+        if not self._connection:
+            await self.initialize()
+
+        cursor = await self._connection.execute(
+            "SELECT DISTINCT agent_id FROM decisions ORDER BY agent_id",
+        )
+        rows = await cursor.fetchall()
+        return [row[0] for row in rows]
+
+    async def save_bias_profile(self, profile_dict: dict) -> None:
+        """Save a bias profile (one row per bias type)."""
+        if not self._connection:
+            await self.initialize()
+
+        agent_id = profile_dict["agent_id"]
+        timestamp = profile_dict["timestamp"]
+
+        for bias_key in ("disposition_effect", "loss_aversion", "overconfidence"):
+            bias = profile_dict.get(bias_key, {})
+            await self._connection.execute(
+                """
+                INSERT INTO bias_profiles (
+                    agent_id, timestamp, bias_type, score,
+                    sample_size, sufficient_data, details,
+                    evolution_run_id, generation
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    agent_id,
+                    timestamp,
+                    bias["bias_type"],
+                    bias.get("value"),
+                    bias.get("sample_size", 0),
+                    1 if bias.get("sufficient_data") else 0,
+                    json.dumps(bias.get("details", {})),
+                    profile_dict.get("evolution_run_id"),
+                    profile_dict.get("generation"),
+                ),
+            )
+
+        await self._connection.commit()
+
+    async def get_bias_profiles(
+        self, agent_id: Optional[str] = None,
+    ) -> list[dict]:
+        """Get latest bias profiles per agent+type."""
+        if not self._connection:
+            await self.initialize()
+
+        if agent_id:
+            cursor = await self._connection.execute(
+                """
+                SELECT bp.* FROM bias_profiles bp
+                INNER JOIN (
+                    SELECT agent_id, bias_type, MAX(id) as max_id
+                    FROM bias_profiles
+                    WHERE agent_id = ?
+                    GROUP BY agent_id, bias_type
+                ) latest ON bp.agent_id = latest.agent_id
+                    AND bp.bias_type = latest.bias_type
+                    AND bp.id = latest.max_id
+                ORDER BY bp.agent_id, bp.bias_type
+                """,
+                (agent_id,),
+            )
+        else:
+            cursor = await self._connection.execute(
+                """
+                SELECT bp.* FROM bias_profiles bp
+                INNER JOIN (
+                    SELECT agent_id, bias_type, MAX(id) as max_id
+                    FROM bias_profiles
+                    GROUP BY agent_id, bias_type
+                ) latest ON bp.agent_id = latest.agent_id
+                    AND bp.bias_type = latest.bias_type
+                    AND bp.id = latest.max_id
+                ORDER BY bp.agent_id, bp.bias_type
+                """,
+            )
+
+        rows = await cursor.fetchall()
+        columns = [desc[0] for desc in cursor.description]
+        results = []
+        for row in rows:
+            d = dict(zip(columns, row))
+            if d.get("details"):
+                d["details"] = json.loads(d["details"])
+            d["sufficient_data"] = bool(d.get("sufficient_data"))
+            results.append(d)
+        return results
+
+    async def get_bias_history(
+        self,
+        agent_id: str,
+        bias_type: Optional[str] = None,
+    ) -> list[dict]:
+        """Get historical bias scores for an agent."""
+        if not self._connection:
+            await self.initialize()
+
+        if bias_type:
+            cursor = await self._connection.execute(
+                """
+                SELECT * FROM bias_profiles
+                WHERE agent_id = ? AND bias_type = ?
+                ORDER BY created_at ASC
+                """,
+                (agent_id, bias_type),
+            )
+        else:
+            cursor = await self._connection.execute(
+                """
+                SELECT * FROM bias_profiles
+                WHERE agent_id = ?
+                ORDER BY created_at ASC
+                """,
+                (agent_id,),
+            )
+
+        rows = await cursor.fetchall()
+        columns = [desc[0] for desc in cursor.description]
+        results = []
+        for row in rows:
+            d = dict(zip(columns, row))
+            if d.get("details"):
+                d["details"] = json.loads(d["details"])
+            d["sufficient_data"] = bool(d.get("sufficient_data"))
+            results.append(d)
+        return results
+
+    # --- Contagion Tracker storage ---
+
+    async def save_contagion_snapshot(self, snapshot_dict: dict) -> None:
+        """Save a contagion snapshot (one row per metric type)."""
+        if not self._connection:
+            await self.initialize()
+
+        timestamp = snapshot_dict["timestamp"]
+        tick = snapshot_dict.get("tick")
+        agent_count = snapshot_dict.get("agent_count", 0)
+
+        for metric_key in ("position_diversity", "reasoning_entropy"):
+            metric = snapshot_dict.get(metric_key, {})
+            await self._connection.execute(
+                """
+                INSERT INTO contagion_snapshots (
+                    timestamp, tick, metric_type, value,
+                    sample_size, sufficient_data, details, agent_count
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    timestamp,
+                    tick,
+                    metric.get("metric_type", metric_key),
+                    metric.get("value"),
+                    metric.get("sample_size", 0),
+                    1 if metric.get("sufficient_data") else 0,
+                    json.dumps(metric.get("details", {})),
+                    agent_count,
+                ),
+            )
+
+        await self._connection.commit()
+
+    async def get_contagion_snapshots(
+        self,
+        metric_type: Optional[str] = None,
+        limit: int = 100,
+    ) -> list[dict]:
+        """Get recent contagion snapshots."""
+        if not self._connection:
+            await self.initialize()
+
+        if metric_type:
+            cursor = await self._connection.execute(
+                """
+                SELECT * FROM contagion_snapshots
+                WHERE metric_type = ?
+                ORDER BY created_at DESC
+                LIMIT ?
+                """,
+                (metric_type, limit),
+            )
+        else:
+            cursor = await self._connection.execute(
+                """
+                SELECT * FROM contagion_snapshots
+                ORDER BY created_at DESC
+                LIMIT ?
+                """,
+                (limit,),
+            )
+
+        rows = await cursor.fetchall()
+        columns = [desc[0] for desc in cursor.description]
+        results = []
+        for row in rows:
+            d = dict(zip(columns, row))
+            if d.get("details"):
+                d["details"] = json.loads(d["details"])
+            d["sufficient_data"] = bool(d.get("sufficient_data"))
+            results.append(d)
+        return results
+
+    async def get_contagion_latest(self) -> list[dict]:
+        """Get the most recent snapshot per metric type."""
+        if not self._connection:
+            await self.initialize()
+
+        cursor = await self._connection.execute(
+            """
+            SELECT cs.* FROM contagion_snapshots cs
+            INNER JOIN (
+                SELECT metric_type, MAX(id) as max_id
+                FROM contagion_snapshots
+                GROUP BY metric_type
+            ) latest ON cs.metric_type = latest.metric_type
+                AND cs.id = latest.max_id
+            ORDER BY cs.metric_type
+            """,
+        )
+
+        rows = await cursor.fetchall()
+        columns = [desc[0] for desc in cursor.description]
+        results = []
+        for row in rows:
+            d = dict(zip(columns, row))
+            if d.get("details"):
+                d["details"] = json.loads(d["details"])
+            d["sufficient_data"] = bool(d.get("sufficient_data"))
+            results.append(d)
+        return results
+
+    # =========================================================================
+    # Observer Journal Methods
+    # =========================================================================
+
+    async def save_journal_entry(self, entry: dict) -> int:
+        """Save a journal entry. Upserts by journal_date."""
+        if not self._connection:
+            await self.initialize()
+
+        cursor = await self._connection.execute(
+            """
+            INSERT INTO observer_journal (
+                journal_date, generated_at, lookback_hours,
+                full_markdown, market_summary,
+                forum_summary, learning_summary, recommendations,
+                agent_reports, metrics, model
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(journal_date) DO UPDATE SET
+                generated_at = excluded.generated_at,
+                lookback_hours = excluded.lookback_hours,
+                full_markdown = excluded.full_markdown,
+                market_summary = excluded.market_summary,
+                forum_summary = excluded.forum_summary,
+                learning_summary = excluded.learning_summary,
+                recommendations = excluded.recommendations,
+                agent_reports = excluded.agent_reports,
+                metrics = excluded.metrics,
+                model = excluded.model
+            """,
+            (
+                entry["journal_date"] if isinstance(entry["journal_date"], str)
+                    else entry["journal_date"].isoformat(),
+                entry["generated_at"] if isinstance(entry["generated_at"], str)
+                    else entry["generated_at"].isoformat(),
+                entry.get("lookback_hours", 24),
+                entry["full_markdown"],
+                entry.get("market_summary", ""),
+                entry.get("forum_summary", ""),
+                entry.get("learning_summary", ""),
+                entry.get("recommendations", ""),
+                json.dumps(entry.get("agent_reports", {})),
+                json.dumps(entry.get("metrics", {})),
+                entry.get("model"),
+            ),
+        )
+        await self._connection.commit()
+        return cursor.lastrowid
+
+    async def get_journal_entries(self, limit: int = 30) -> list[dict]:
+        """Get journal entries ordered by date descending."""
+        if not self._connection:
+            await self.initialize()
+
+        cursor = await self._connection.execute(
+            """
+            SELECT id, journal_date, generated_at, lookback_hours,
+                   market_summary, forum_summary,
+                   learning_summary, recommendations, model,
+                   agent_reports, metrics
+            FROM observer_journal
+            ORDER BY journal_date DESC
+            LIMIT ?
+            """,
+            (limit,),
+        )
+
+        rows = await cursor.fetchall()
+        columns = [desc[0] for desc in cursor.description]
+        results = []
+        for row in rows:
+            d = dict(zip(columns, row))
+            if isinstance(d.get("agent_reports"), str):
+                try:
+                    d["agent_reports"] = json.loads(d["agent_reports"])
+                except (json.JSONDecodeError, TypeError):
+                    d["agent_reports"] = {}
+            if isinstance(d.get("metrics"), str):
+                try:
+                    d["metrics"] = json.loads(d["metrics"])
+                except (json.JSONDecodeError, TypeError):
+                    d["metrics"] = {}
+            results.append(d)
+        return results
+
+    async def get_journal_entry_by_date(self, journal_date: str) -> dict | None:
+        """Get a journal entry by date (YYYY-MM-DD)."""
+        if not self._connection:
+            await self.initialize()
+
+        cursor = await self._connection.execute(
+            "SELECT * FROM observer_journal WHERE journal_date = ?",
+            (journal_date,),
+        )
+
+        row = await cursor.fetchone()
+        if not row:
+            return None
+
+        columns = [desc[0] for desc in cursor.description]
+        d = dict(zip(columns, row))
+        if isinstance(d.get("agent_reports"), str):
+            try:
+                d["agent_reports"] = json.loads(d["agent_reports"])
+            except (json.JSONDecodeError, TypeError):
+                d["agent_reports"] = {}
+        if isinstance(d.get("metrics"), str):
+            try:
+                d["metrics"] = json.loads(d["metrics"])
+            except (json.JSONDecodeError, TypeError):
+                d["metrics"] = {}
+        return d
+
+    async def get_latest_journal_entry(self) -> dict | None:
+        """Get the most recent journal entry."""
+        if not self._connection:
+            await self.initialize()
+
+        cursor = await self._connection.execute(
+            """SELECT * FROM observer_journal
+               ORDER BY journal_date DESC LIMIT 1"""
+        )
+
+        row = await cursor.fetchone()
+        if not row:
+            return None
+
+        columns = [desc[0] for desc in cursor.description]
+        d = dict(zip(columns, row))
+        if isinstance(d.get("agent_reports"), str):
+            try:
+                d["agent_reports"] = json.loads(d["agent_reports"])
+            except (json.JSONDecodeError, TypeError):
+                d["agent_reports"] = {}
+        if isinstance(d.get("metrics"), str):
+            try:
+                d["metrics"] = json.loads(d["metrics"])
+            except (json.JSONDecodeError, TypeError):
+                d["metrics"] = {}
+        return d

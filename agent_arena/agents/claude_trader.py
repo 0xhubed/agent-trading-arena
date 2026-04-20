@@ -2,14 +2,17 @@
 
 from __future__ import annotations
 
-import json
-import re
-from datetime import datetime
+from datetime import datetime, timezone
 from decimal import Decimal
 from typing import Optional
 
 import anthropic
 
+from agent_arena.agents.prompt_utils import (
+    format_market,
+    format_positions,
+    parse_json_response,
+)
 from agent_arena.core.agent import BaseAgent
 from agent_arena.core.models import Decision
 
@@ -22,7 +25,7 @@ class ClaudeTrader(BaseAgent):
 
     def __init__(self, agent_id: str, name: str, config: Optional[dict] = None):
         super().__init__(agent_id, name, config)
-        self.client = anthropic.Anthropic()
+        self.client = anthropic.AsyncAnthropic()
         # Default to Sonnet 4.5 for better reasoning (no tools to assist)
         self.model = config.get("model", "claude-sonnet-4-5-20250929") if config else "claude-sonnet-4-5-20250929"
         self.character = config.get("character", "") if config else ""
@@ -31,14 +34,14 @@ class ClaudeTrader(BaseAgent):
         """Make a trading decision based on market context."""
         prompt = self._build_prompt(context)
 
-        start = datetime.utcnow()
+        start = datetime.now(timezone.utc)
         try:
-            response = self.client.messages.create(
+            response = await self.client.messages.create(
                 model=self.model,
                 max_tokens=1024,
                 messages=[{"role": "user", "content": prompt}],
             )
-            latency = (datetime.utcnow() - start).total_seconds() * 1000
+            latency = (datetime.now(timezone.utc) - start).total_seconds() * 1000
 
             # Parse response into Decision
             raw_text = response.content[0].text
@@ -71,8 +74,8 @@ class ClaudeTrader(BaseAgent):
         portfolio = context.get("portfolio", {})
         tick = context.get("tick", 0)
 
-        market_str = self._format_market(market)
-        positions_str = self._format_positions(portfolio.get("positions", []))
+        market_str = format_market(market)
+        positions_str = format_positions(portfolio.get("positions", []))
 
         character_section = ""
         if self.character:
@@ -115,73 +118,13 @@ Analyze the market and make a decision. Consider:
 Respond ONLY with valid JSON (no markdown, no explanation outside JSON):
 {{
     "action": "hold" | "open_long" | "open_short" | "close",
-    "symbol": "BTCUSDT" (required if action is not hold),
+    "symbol": "PF_XBTUSD" (required if action is not hold),
     "size": 0.01 (position size in base currency, required for open_long/open_short),
     "leverage": 2 (1-10, default 1),
     "confidence": 0.75 (0.0-1.0, how confident you are),
     "reasoning": "Brief explanation of your thinking (1-2 sentences)"
 }}"""
 
-    def _format_market(self, market: dict) -> str:
-        """Format market data for the prompt."""
-        if not market:
-            return "No market data available"
-
-        lines = []
-        for symbol, data in market.items():
-            price = data.get("price", 0)
-            change = data.get("change_24h", 0)
-            funding = data.get("funding_rate")
-
-            line = f"{symbol}: ${float(price):,.2f} ({change:+.2f}%)"
-            if funding is not None:
-                line += f" | Funding: {float(funding)*100:.4f}%"
-            lines.append(line)
-
-        return "\n".join(lines)
-
-    def _format_positions(self, positions: list) -> str:
-        """Format positions for the prompt."""
-        if not positions:
-            return "No open positions"
-
-        lines = []
-        for pos in positions:
-            pnl = pos.get("unrealized_pnl", 0)
-            roe = pos.get("roe_percent", 0)
-            lines.append(
-                f"  {pos['symbol']} {pos['side'].upper()} "
-                f"Size: {pos['size']} @ {pos['leverage']}x | "
-                f"Entry: ${pos['entry_price']:,.2f} | "
-                f"P&L: ${pnl:+,.2f} ({roe:+.2f}%)"
-            )
-
-        return "\n".join(lines)
-
     def _parse_response(self, text: str) -> dict:
         """Extract JSON from response."""
-        # Try to find JSON in the response
-        try:
-            # First try direct parse
-            return json.loads(text)
-        except json.JSONDecodeError:
-            pass
-
-        # Try to extract JSON from markdown code block
-        match = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", text, re.DOTALL)
-        if match:
-            try:
-                return json.loads(match.group(1))
-            except json.JSONDecodeError:
-                pass
-
-        # Try to find raw JSON object
-        match = re.search(r"\{[^{}]*\}", text, re.DOTALL)
-        if match:
-            try:
-                return json.loads(match.group())
-            except json.JSONDecodeError:
-                pass
-
-        # Default to hold if parsing fails
-        return {"action": "hold", "reasoning": "Failed to parse response"}
+        return parse_json_response(text)

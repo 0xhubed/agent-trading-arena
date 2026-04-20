@@ -3,7 +3,7 @@
 import json
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, PrivateAttr
 
 from agent_arena.agentic.tools.base import TradingTool
 
@@ -11,7 +11,7 @@ from agent_arena.agentic.tools.base import TradingTool
 class TechnicalAnalysisInput(BaseModel):
     """Input schema for technical analysis."""
 
-    symbol: str = Field(description="Trading symbol (e.g., BTCUSDT)")
+    symbol: str = Field(description="Trading symbol (e.g., PF_XBTUSD)")
     indicators: list[str] = Field(
         default=["rsi", "sma", "macd", "bollinger"],
         description="Indicators to calculate: rsi, sma, macd, bollinger",
@@ -38,8 +38,8 @@ Returns: Dictionary with indicator values and interpretation."""
 
     args_schema: type[BaseModel] = TechnicalAnalysisInput
 
-    # Price history (shared across calls within a session)
-    _price_history: dict[str, list[float]] = {}
+    # Price history (per-instance, across calls within a session)
+    _price_history: dict[str, list[float]] = PrivateAttr(default_factory=dict)
 
     def _run(
         self,

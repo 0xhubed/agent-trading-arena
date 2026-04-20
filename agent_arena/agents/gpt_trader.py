@@ -2,15 +2,18 @@
 
 from __future__ import annotations
 
-import json
 import os
-import re
-from datetime import datetime
+from datetime import datetime, timezone
 from decimal import Decimal
 from typing import Optional
 
 import httpx
 
+from agent_arena.agents.prompt_utils import (
+    format_market,
+    format_positions,
+    parse_json_response,
+)
 from agent_arena.core.agent import BaseAgent
 from agent_arena.core.models import Decision
 
@@ -28,62 +31,67 @@ class GPTTrader(BaseAgent):
         self.model = config.get("model", "gpt-5.1") if config else "gpt-5.1"
         self.character = config.get("character", "") if config else ""
         self.base_url = "https://api.openai.com/v1/chat/completions"
+        self._client: httpx.AsyncClient | None = None
+
+    def _get_client(self) -> httpx.AsyncClient:
+        if self._client is None:
+            self._client = httpx.AsyncClient(timeout=60.0)
+        return self._client
 
     async def decide(self, context: dict) -> Decision:
         """Make a trading decision based on market context."""
         prompt = self._build_prompt(context)
 
-        start = datetime.utcnow()
+        start = datetime.now(timezone.utc)
         try:
-            async with httpx.AsyncClient(timeout=60.0) as client:
-                response = await client.post(
-                    self.base_url,
-                    headers={
-                        "Authorization": f"Bearer {self.api_key}",
-                        "Content-Type": "application/json",
-                    },
-                    json={
+            client = self._get_client()
+            response = await client.post(
+                self.base_url,
+                headers={
+                    "Authorization": f"Bearer {self.api_key}",
+                    "Content-Type": "application/json",
+                },
+                json={
+                    "model": self.model,
+                    "messages": [
+                        {
+                            "role": "system",
+                            "content": "You are a crypto futures trader. Respond only with valid JSON.",
+                        },
+                        {"role": "user", "content": prompt},
+                    ],
+                    "max_completion_tokens": 1024,
+                    "temperature": 0.7,
+                },
+            )
+
+            # Check for errors with detailed response body
+            if response.status_code != 200:
+                error_body = response.text
+                try:
+                    error_json = response.json()
+                    error_msg = error_json.get("error", {}).get("message", error_body)
+                    error_type = error_json.get("error", {}).get("type", "unknown")
+                    error_code = error_json.get("error", {}).get("code", "unknown")
+                except Exception:
+                    error_msg = error_body
+                    error_type = "unknown"
+                    error_code = "unknown"
+
+                return Decision(
+                    action="hold",
+                    reasoning=f"OpenAI API error ({response.status_code}): {error_msg}",
+                    metadata={
+                        "error": error_msg,
+                        "error_type": error_type,
+                        "error_code": error_code,
+                        "status_code": response.status_code,
                         "model": self.model,
-                        "messages": [
-                            {
-                                "role": "system",
-                                "content": "You are a crypto futures trader. Respond only with valid JSON.",
-                            },
-                            {"role": "user", "content": prompt},
-                        ],
-                        "max_completion_tokens": 1024,
-                        "temperature": 0.7,
                     },
                 )
 
-                # Check for errors with detailed response body
-                if response.status_code != 200:
-                    error_body = response.text
-                    try:
-                        error_json = response.json()
-                        error_msg = error_json.get("error", {}).get("message", error_body)
-                        error_type = error_json.get("error", {}).get("type", "unknown")
-                        error_code = error_json.get("error", {}).get("code", "unknown")
-                    except Exception:
-                        error_msg = error_body
-                        error_type = "unknown"
-                        error_code = "unknown"
-
-                    return Decision(
-                        action="hold",
-                        reasoning=f"OpenAI API error ({response.status_code}): {error_msg}",
-                        metadata={
-                            "error": error_msg,
-                            "error_type": error_type,
-                            "error_code": error_code,
-                            "status_code": response.status_code,
-                            "model": self.model,
-                        },
-                    )
-
-                data = response.json()
-
-            latency = (datetime.utcnow() - start).total_seconds() * 1000
+            data = response.json()
+            latency = (datetime.now(timezone.utc) - start).total_seconds() * 1000
 
             raw_text = data["choices"][0]["message"]["content"]
             parsed = self._parse_response(raw_text)
@@ -118,8 +126,8 @@ class GPTTrader(BaseAgent):
         portfolio = context.get("portfolio", {})
         tick = context.get("tick", 0)
 
-        market_str = self._format_market(market)
-        positions_str = self._format_positions(portfolio.get("positions", []))
+        market_str = format_market(market)
+        positions_str = format_positions(portfolio.get("positions", []))
 
         character_section = ""
         if self.character:
@@ -156,68 +164,13 @@ AVAILABLE ACTIONS:
 Respond ONLY with valid JSON:
 {{
     "action": "hold" | "open_long" | "open_short" | "close",
-    "symbol": "BTCUSDT" (required if action is not hold),
+    "symbol": "PF_XBTUSD" (required if action is not hold),
     "size": 0.01 (position size in base currency, required for open_long/open_short),
     "leverage": 2 (1-10, default 1),
     "confidence": 0.75 (0.0-1.0, how confident you are),
     "reasoning": "Brief explanation of your thinking (1-2 sentences)"
 }}"""
 
-    def _format_market(self, market: dict) -> str:
-        """Format market data for the prompt."""
-        if not market:
-            return "No market data available"
-
-        lines = []
-        for symbol, data in market.items():
-            price = data.get("price", 0)
-            change = data.get("change_24h", 0)
-            funding = data.get("funding_rate")
-
-            line = f"{symbol}: ${float(price):,.2f} ({change:+.2f}%)"
-            if funding is not None:
-                line += f" | Funding: {float(funding)*100:.4f}%"
-            lines.append(line)
-
-        return "\n".join(lines)
-
-    def _format_positions(self, positions: list) -> str:
-        """Format positions for the prompt."""
-        if not positions:
-            return "No open positions"
-
-        lines = []
-        for pos in positions:
-            pnl = pos.get("unrealized_pnl", 0)
-            roe = pos.get("roe_percent", 0)
-            lines.append(
-                f"  {pos['symbol']} {pos['side'].upper()} "
-                f"Size: {pos['size']} @ {pos['leverage']}x | "
-                f"Entry: ${pos['entry_price']:,.2f} | "
-                f"P&L: ${pnl:+,.2f} ({roe:+.2f}%)"
-            )
-
-        return "\n".join(lines)
-
     def _parse_response(self, text: str) -> dict:
         """Extract JSON from response."""
-        try:
-            return json.loads(text)
-        except json.JSONDecodeError:
-            pass
-
-        match = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", text, re.DOTALL)
-        if match:
-            try:
-                return json.loads(match.group(1))
-            except json.JSONDecodeError:
-                pass
-
-        match = re.search(r"\{[^{}]*\}", text, re.DOTALL)
-        if match:
-            try:
-                return json.loads(match.group())
-            except json.JSONDecodeError:
-                pass
-
-        return {"action": "hold", "reasoning": "Failed to parse response"}
+        return parse_json_response(text)

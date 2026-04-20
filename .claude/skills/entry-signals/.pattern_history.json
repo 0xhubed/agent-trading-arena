@@ -1,0 +1,1787 @@
+{
+  "a7a65824ae5c": {
+    "pattern_id": "a7a65824ae5c",
+    "pattern_type": "entry_signal",
+    "description": "Multi-timeframe bullish alignment (15m, 1h, 4h) as entry signal produces losses in flat markets - signal is designed for trending conditions",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.18146258503401358,
+    "sample_size": 294,
+    "confidence": 0,
+    "first_seen": "2026-01-13T11:23:59.258068",
+    "last_confirmed": "2026-01-13T17:50:18.247809",
+    "times_seen": 2,
+    "is_active": false
+  },
+  "6b723bed1691": {
+    "pattern_id": "6b723bed1691",
+    "pattern_type": "entry_signal",
+    "description": "Positive funding rate interpreted as bullish momentum is a losing signal - actually indicates crowded longs vulnerable to liquidation",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.3,
+    "sample_size": 208,
+    "confidence": 0,
+    "first_seen": "2026-01-13T11:23:59.258068",
+    "last_confirmed": "2026-01-13T11:23:59.258068",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "fcdc3d83a3de": {
+    "pattern_id": "fcdc3d83a3de",
+    "pattern_type": "entry_signal",
+    "description": "Relative strength divergence (one asset up while others down) as entry signal shows mixed results",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.45,
+    "sample_size": 79,
+    "confidence": 0,
+    "first_seen": "2026-01-13T11:23:59.258068",
+    "last_confirmed": "2026-01-13T11:23:59.258068",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "262a71a21cba": {
+    "pattern_id": "262a71a21cba",
+    "pattern_type": "entry_signal",
+    "description": "SMA and MACD bearish signals for shorting fail when market is essentially flat (-0.02%)",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.35,
+    "sample_size": 50,
+    "confidence": 0,
+    "first_seen": "2026-01-13T11:23:59.258068",
+    "last_confirmed": "2026-01-13T11:23:59.258068",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "e27d335aa54f": {
+    "pattern_id": "e27d335aa54f",
+    "pattern_type": "entry_signal",
+    "description": "Positive funding rate interpreted as bullish momentum is a losing signal - elevated funding indicates crowded longs vulnerable to liquidation, not strength",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.15,
+    "sample_size": 225,
+    "confidence": 0,
+    "first_seen": "2026-01-13T17:50:18.247809",
+    "last_confirmed": "2026-01-13T17:50:18.247809",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "4aec9a1fc980": {
+    "pattern_id": "4aec9a1fc980",
+    "pattern_type": "entry_signal",
+    "description": "Relative strength divergence (one asset up while others down) as entry signal shows poor results in low-volatility environment",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.2,
+    "sample_size": 72,
+    "confidence": 0,
+    "first_seen": "2026-01-13T17:50:18.247809",
+    "last_confirmed": "2026-01-13T17:50:18.247809",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "617151567977": {
+    "pattern_id": "617151567977",
+    "pattern_type": "entry_signal",
+    "description": "SMA and MACD bearish signals for shorting fail when market is essentially flat (-0.02% BTC) - technical indicators need volatility to be meaningful",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.18,
+    "sample_size": 50,
+    "confidence": 0,
+    "first_seen": "2026-01-13T17:50:18.247809",
+    "last_confirmed": "2026-01-13T17:50:18.247809",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "0e2bd85d7e70": {
+    "pattern_id": "0e2bd85d7e70",
+    "pattern_type": "entry_signal",
+    "description": "Multi-timeframe bullish alignment (15m, 1h, 4h) combined with explicit risk validation produces profits in trending markets. skill_aware_oss: 'All timeframes bullish, technical indicators show bullish bias, no performance issues'.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.85,
+    "sample_size": 157,
+    "confidence": 0,
+    "first_seen": "2026-01-14T13:41:05.811368",
+    "last_confirmed": "2026-01-14T13:41:05.811368",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "aa22af21d3b5": {
+    "pattern_id": "aa22af21d3b5",
+    "pattern_type": "entry_signal",
+    "description": "High funding rate alone as bullish signal remains unreliable. llama4_scout repeatedly cited 'high funding rate indicating bullish momentum' but lost money.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.35,
+    "sample_size": 248,
+    "confidence": 0,
+    "first_seen": "2026-01-14T13:41:05.811368",
+    "last_confirmed": "2026-01-14T13:41:05.811368",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "353e6b3db59e": {
+    "pattern_id": "353e6b3db59e",
+    "pattern_type": "entry_signal",
+    "description": "Scaling into existing winning positions ('scaling into existing long positions') during confirmed trends captures additional alpha.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.8,
+    "sample_size": 157,
+    "confidence": 0,
+    "first_seen": "2026-01-14T13:41:05.811368",
+    "last_confirmed": "2026-01-14T13:41:05.811368",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "714f9ec4bcaa": {
+    "pattern_id": "714f9ec4bcaa",
+    "pattern_type": "entry_signal",
+    "description": "Multi-timeframe bullish alignment (15m, 1h, 4h) WITH explicit risk validation produces profitable entries. skill_aware_oss: 'Multi-timeframe analysis shows strong bullish alignment and high momentum... validation passes'. Success requires both trend confirmation AND risk checks.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.85,
+    "sample_size": 164,
+    "confidence": 0,
+    "first_seen": "2026-01-14T16:35:29.363431",
+    "last_confirmed": "2026-01-14T16:35:29.363431",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "60b9a483be87": {
+    "pattern_id": "60b9a483be87",
+    "pattern_type": "entry_signal",
+    "description": "SMA crossover + bullish MACD + neutral Bollinger as entry confirmation. agentic_gptoss: 'Technical indicators (SMA crossover, bullish MACD, neutral Bollinger) support a long entry'. Combined with risk calculator validation.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.82,
+    "sample_size": 184,
+    "confidence": 0,
+    "first_seen": "2026-01-14T16:35:29.363431",
+    "last_confirmed": "2026-01-14T16:35:29.363431",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "391c0cae07e8": {
+    "pattern_id": "391c0cae07e8",
+    "pattern_type": "entry_signal",
+    "description": "High funding rate alone as bullish signal is UNRELIABLE. llama4_scout repeatedly uses 'high funding rate, indicating potential for further growth' but loses money. Funding rate indicates crowding, not momentum.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.35,
+    "sample_size": 248,
+    "confidence": 0,
+    "first_seen": "2026-01-14T16:35:29.363431",
+    "last_confirmed": "2026-01-14T16:35:29.363431",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "4018e6a96e2b": {
+    "pattern_id": "4018e6a96e2b",
+    "pattern_type": "entry_signal",
+    "description": "Scaling into existing winning positions during confirmed uptrends. skill_aware_oss references 'scaled-up' positions when 'overall bias remains bullish' despite short-term overbought conditions.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.78,
+    "sample_size": 164,
+    "confidence": 0,
+    "first_seen": "2026-01-14T16:35:29.363431",
+    "last_confirmed": "2026-01-14T16:35:29.363431",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "87a1247f05d4": {
+    "pattern_id": "87a1247f05d4",
+    "pattern_type": "entry_signal",
+    "description": "Multi-timeframe bullish alignment (15m, 1h, 4h) WITH explicit risk validation and trade validation passed - produces strong returns in trending markets",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.85,
+    "sample_size": 164,
+    "confidence": 0,
+    "first_seen": "2026-01-14T16:48:38.215945",
+    "last_confirmed": "2026-01-14T16:48:38.215945",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "e94fa78e5942": {
+    "pattern_id": "e94fa78e5942",
+    "pattern_type": "entry_signal",
+    "description": "SMA crossover + bullish MACD + neutral Bollinger bands as entry confirmation with trend alignment - agentic_gptoss used this for +$697.86",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.82,
+    "sample_size": 184,
+    "confidence": 0,
+    "first_seen": "2026-01-14T16:48:38.215945",
+    "last_confirmed": "2026-01-14T16:48:38.215945",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "375675fb87eb": {
+    "pattern_id": "375675fb87eb",
+    "pattern_type": "entry_signal",
+    "description": "High funding rate alone as bullish signal is UNRELIABLE - llama4_scout repeatedly used this and lost money in a bull market",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.35,
+    "sample_size": 247,
+    "confidence": 0,
+    "first_seen": "2026-01-14T16:48:38.215945",
+    "last_confirmed": "2026-01-14T16:48:38.215945",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "2851e46d6e74": {
+    "pattern_id": "2851e46d6e74",
+    "pattern_type": "entry_signal",
+    "description": "Multi-timeframe bullish alignment (15m, 1h, 4h) WITH explicit risk validation and trade validation checks - skill_aware_oss uses this consistently with strong results (+$1236.81)",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.88,
+    "sample_size": 164,
+    "confidence": 0,
+    "first_seen": "2026-01-14T16:49:32.288170",
+    "last_confirmed": "2026-01-14T16:49:32.288170",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "b26b0a203852": {
+    "pattern_id": "b26b0a203852",
+    "pattern_type": "entry_signal",
+    "description": "SMA crossover + bullish MACD + neutral Bollinger bands as entry confirmation with validation checks - agentic_gptoss reasoning shows this pattern with +$697.86",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.82,
+    "sample_size": 184,
+    "confidence": 0,
+    "first_seen": "2026-01-14T16:49:32.288170",
+    "last_confirmed": "2026-01-14T16:49:32.288170",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "3973a0e3580c": {
+    "pattern_id": "3973a0e3580c",
+    "pattern_type": "entry_signal",
+    "description": "High funding rate alone as bullish signal is UNRELIABLE - llama4_scout repeatedly used 'high funding rate indicating bullish sentiment' but lost -$18.95 despite correct market direction",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.35,
+    "sample_size": 247,
+    "confidence": 0,
+    "first_seen": "2026-01-14T16:49:32.288170",
+    "last_confirmed": "2026-01-14T16:49:32.288170",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "9ab965269a03": {
+    "pattern_id": "9ab965269a03",
+    "pattern_type": "entry_signal",
+    "description": "Multi-timeframe bullish alignment (15m, 1h, 4h) as long entry signal FAILS in bearish markets. skill_only_oss used this for ETHUSDT longs while ETH declined -1.29%.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.25,
+    "sample_size": 88,
+    "confidence": 0,
+    "first_seen": "2026-01-16T15:51:30.868993",
+    "last_confirmed": "2026-01-16T15:51:30.868993",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "7bc35a56c778": {
+    "pattern_id": "7bc35a56c778",
+    "pattern_type": "entry_signal",
+    "description": "Positive momentum on small timeframe (+0.33% to +0.44%) as long entry signal is UNRELIABLE. llama4_scout repeatedly cited 'positive momentum' for ETHUSDT longs, lost $151.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.2,
+    "sample_size": 76,
+    "confidence": 0,
+    "first_seen": "2026-01-16T15:51:30.868993",
+    "last_confirmed": "2026-01-16T15:51:30.868993",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "cc116c3b4307": {
+    "pattern_id": "cc116c3b4307",
+    "pattern_type": "entry_signal",
+    "description": "Multi-timeframe bearish alignment for short entry. skill_aware_oss: 'multi-timeframe analysis shows strong bearish alignment' for SOLUSDT short - directionally correct as SOL fell -1.15%.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.65,
+    "sample_size": 103,
+    "confidence": 0,
+    "first_seen": "2026-01-16T15:51:30.868993",
+    "last_confirmed": "2026-01-16T15:51:30.868993",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "3d42415ca106": {
+    "pattern_id": "3d42415ca106",
+    "pattern_type": "entry_signal",
+    "description": "Multi-timeframe bullish alignment (15m, 1h, 4h) as long entry signal FAILS in mixed/choppy markets. skill_only_oss repeatedly entered longs on ETH with 0.85-0.9 confidence citing bullish alignment, but ETH was -0.03%.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.3,
+    "sample_size": 160,
+    "confidence": 0,
+    "first_seen": "2026-01-17T05:09:21.363096",
+    "last_confirmed": "2026-01-17T05:09:21.363096",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "f7ab65b9c505": {
+    "pattern_id": "f7ab65b9c505",
+    "pattern_type": "entry_signal",
+    "description": "Multi-timeframe bearish alignment for short entry FAILS in mixed markets. agentic_gptoss: 'All timeframes align on a bearish trend' for DOGE short, skill_aware_oss: 'bearish bias' for SOL short - both lost money.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.35,
+    "sample_size": 201,
+    "confidence": 0,
+    "first_seen": "2026-01-17T05:09:21.363096",
+    "last_confirmed": "2026-01-17T05:09:21.363096",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "60c46481c7dc": {
+    "pattern_id": "60c46481c7dc",
+    "pattern_type": "entry_signal",
+    "description": "Negative funding rate as long opportunity signal is UNRELIABLE. llama4_scout: 'funding rate is slightly negative which could indicate a potential long opportunity' - resulted in losses.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.25,
+    "sample_size": 180,
+    "confidence": 0,
+    "first_seen": "2026-01-17T05:09:21.363096",
+    "last_confirmed": "2026-01-17T05:09:21.363096",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "5a37d7b71509": {
+    "pattern_id": "5a37d7b71509",
+    "pattern_type": "entry_signal",
+    "description": "Contrarian 'bounce back' reasoning on downtrending assets is a LOSING signal. llama4_scout: 'shows a clear downtrend but might be due for a bounce back'.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.2,
+    "sample_size": 180,
+    "confidence": 0,
+    "first_seen": "2026-01-17T05:09:21.363096",
+    "last_confirmed": "2026-01-17T05:09:21.363096",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "39c0c7e83ecb": {
+    "pattern_id": "39c0c7e83ecb",
+    "pattern_type": "entry_signal",
+    "description": "Multi-timeframe bullish alignment (15m, 1h, 4h) as long entry signal WORKS in moderate bull markets. skill_only_oss: 'Current regime likely trending up; active multi-timeframe bullish alignment with 2% equity risk' - only profitable active trader.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.75,
+    "sample_size": 89,
+    "confidence": 0,
+    "first_seen": "2026-01-17T16:36:23.118892",
+    "last_confirmed": "2026-01-17T16:36:23.118892",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "253b6514bfcf": {
+    "pattern_id": "253b6514bfcf",
+    "pattern_type": "entry_signal",
+    "description": "Multi-timeframe bearish alignment for short entry FAILS in moderate bull markets. skill_aware_oss: 'Technical indicators show bearish bias (RSI overbought, MACD bearish)' led to -$173 loss.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.25,
+    "sample_size": 173,
+    "confidence": 0,
+    "first_seen": "2026-01-17T16:36:23.118892",
+    "last_confirmed": "2026-01-17T16:36:23.118892",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "d32d6adeba37": {
+    "pattern_id": "d32d6adeba37",
+    "pattern_type": "entry_signal",
+    "description": "RSI overbought + MACD bearish as short entry signal is UNRELIABLE in moderate bull markets. These signals triggered shorts that lost money as market continued higher.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.3,
+    "sample_size": 355,
+    "confidence": 0,
+    "first_seen": "2026-01-17T16:36:23.118892",
+    "last_confirmed": "2026-01-17T16:36:23.118892",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "9742337ffbbf": {
+    "pattern_id": "9742337ffbbf",
+    "pattern_type": "entry_signal",
+    "description": "Multi-timeframe bearish alignment (15m, 1h, 4h) for short entry FAILS in flat/slightly-positive markets. skill_aware_oss: 'Strong bearish alignment across 15m, 1h, 4h timeframes' resulted in -$183.75 loss.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.1,
+    "sample_size": 163,
+    "confidence": 0,
+    "first_seen": "2026-01-18T19:53:59.820015",
+    "last_confirmed": "2026-01-18T19:53:59.820015",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "1ee9cbe2dd49": {
+    "pattern_id": "1ee9cbe2dd49",
+    "pattern_type": "entry_signal",
+    "description": "High funding rate + positive momentum as bullish entry signal is UNRELIABLE in flat markets. llama4_scout repeatedly cited 'high funding rate indicating bullish sentiment' but lost -$159.27.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.15,
+    "sample_size": 248,
+    "confidence": 0,
+    "first_seen": "2026-01-18T19:53:59.820015",
+    "last_confirmed": "2026-01-18T19:53:59.820015",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "1209a0272650": {
+    "pattern_id": "1209a0272650",
+    "pattern_type": "entry_signal",
+    "description": "Multi-timeframe bullish alignment (15m, 1h, 4h) as long entry signal FAILS in flat markets. agentic_gptoss used this signal but lost -$275.84.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.12,
+    "sample_size": 192,
+    "confidence": 0,
+    "first_seen": "2026-01-18T19:53:59.820015",
+    "last_confirmed": "2026-01-18T19:53:59.820015",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "ef5fa94329b9": {
+    "pattern_id": "ef5fa94329b9",
+    "pattern_type": "entry_signal",
+    "description": "Strongest momentum asset selection (BNB at +1.95%) as entry signal showed initial promise but failed to sustain. Multiple agents entered BNB longs but market flattened to +0.07%.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.25,
+    "sample_size": 50,
+    "confidence": 0,
+    "first_seen": "2026-01-18T19:53:59.820015",
+    "last_confirmed": "2026-01-18T19:53:59.820015",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "1cdffeec30e7": {
+    "pattern_id": "1cdffeec30e7",
+    "pattern_type": "entry_signal",
+    "description": "Multi-timeframe bullish alignment (15m, 1h, 4h) as long entry signal FAILS in bearish markets. agentic_gptoss: 'All multi-timeframe trends bullish with strong alignment' on BNBUSDT which dropped -2.48%.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.05,
+    "sample_size": 189,
+    "confidence": 0,
+    "first_seen": "2026-01-19T17:56:45.699107",
+    "last_confirmed": "2026-01-19T17:56:45.699107",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "496ac034b170": {
+    "pattern_id": "496ac034b170",
+    "pattern_type": "entry_signal",
+    "description": "Small positive momentum (+0.6% to +1.3%) as long entry signal FAILS when broader market is bearish. llama4_scout repeatedly cited 'showing a 0.62-1.26% increase' on ETHUSDT which ended -3.59%.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.05,
+    "sample_size": 190,
+    "confidence": 0,
+    "first_seen": "2026-01-19T17:56:45.699107",
+    "last_confirmed": "2026-01-19T17:56:45.699107",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "3d1f5477f9fa": {
+    "pattern_id": "3d1f5477f9fa",
+    "pattern_type": "entry_signal",
+    "description": "RSI oversold (~34) as long entry signal FAILS in sustained bearish markets. agentic_gptoss: 'RSI ~34 indicates oversold' on SOLUSDT which dropped -5.69%.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.08,
+    "sample_size": 189,
+    "confidence": 0,
+    "first_seen": "2026-01-19T17:56:45.699107",
+    "last_confirmed": "2026-01-19T17:56:45.699107",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "06e5465a6385": {
+    "pattern_id": "06e5465a6385",
+    "pattern_type": "entry_signal",
+    "description": "Low/negative funding rate as bullish signal is UNRELIABLE in bearish markets. llama4_scout: 'relatively low funding rate, indicating potential for further upward movement' - ETHUSDT dropped -3.59%.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.1,
+    "sample_size": 190,
+    "confidence": 0,
+    "first_seen": "2026-01-19T17:56:45.699107",
+    "last_confirmed": "2026-01-19T17:56:45.699107",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "de7dcb19a91c": {
+    "pattern_id": "de7dcb19a91c",
+    "pattern_type": "entry_signal",
+    "description": "Positive funding rate + bullish sentiment as long entry signal FAILS in bearish regime. llama4_scout: 'relatively high funding rate, indicating bullish sentiment' on ETHUSDT which dropped -3.59%.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.08,
+    "sample_size": 190,
+    "confidence": 0,
+    "first_seen": "2026-01-19T17:56:45.699107",
+    "last_confirmed": "2026-01-19T17:56:45.699107",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "12502060ab25": {
+    "pattern_id": "12502060ab25",
+    "pattern_type": "entry_signal",
+    "description": "Multi-timeframe bearish alignment (15m, 1h, 4h) with MACD, SMA, RSI all bearish as SHORT entry signal SUCCEEDS in strong bearish markets. skill_aware_oss: 'All three timeframes show aligned bearish trend (STRONG_BEARISH), technical indicators (RSI, SMA, MACD) are bearish'.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.88,
+    "sample_size": 156,
+    "confidence": 0,
+    "first_seen": "2026-01-21T04:44:37.108321",
+    "last_confirmed": "2026-01-21T04:44:37.108321",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "2533fc12de56": {
+    "pattern_id": "2533fc12de56",
+    "pattern_type": "entry_signal",
+    "description": "Oversold RSI combined with bearish MACD/SMA as SHORT entry signal SUCCEEDS in sustained bearish markets. skill_aware_oss: 'Technical indicators show bearish bias (SMA, MACD) with oversold RSI' - oversold RSI did NOT trigger reversal.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.85,
+    "sample_size": 156,
+    "confidence": 0,
+    "first_seen": "2026-01-21T04:44:37.108321",
+    "last_confirmed": "2026-01-21T04:44:37.108321",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "df6781021268": {
+    "pattern_id": "df6781021268",
+    "pattern_type": "entry_signal",
+    "description": "'Potential breakout', 'slight increase in momentum', 'promising price movement' as LONG entry signals FAIL in bearish markets. llama4_scout lost -$475.20 using these signals.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.1,
+    "sample_size": 198,
+    "confidence": 0,
+    "first_seen": "2026-01-21T04:44:37.108321",
+    "last_confirmed": "2026-01-21T04:44:37.108321",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "64d9c8315bb1": {
+    "pattern_id": "64d9c8315bb1",
+    "pattern_type": "entry_signal",
+    "description": "'Positive funding rate' as bullish entry signal FAILS in bearish markets. llama4_scout: 'BNBUSDT is showing a clear uptrend with a positive funding rate' while BNB dropped -4.96%.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.12,
+    "sample_size": 198,
+    "confidence": 0,
+    "first_seen": "2026-01-21T04:44:37.108321",
+    "last_confirmed": "2026-01-21T04:44:37.108321",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "0ec433be00cc": {
+    "pattern_id": "0ec433be00cc",
+    "pattern_type": "entry_signal",
+    "description": "'Bullish momentum with breakout from recent consolidation' as LONG entry signal FAILS when broader market is bearish. skill_only_oss lost -$151.85 on BTCUSDT long.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.15,
+    "sample_size": 24,
+    "confidence": 0,
+    "first_seen": "2026-01-21T04:44:37.108321",
+    "last_confirmed": "2026-01-21T04:44:37.108321",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "dc291fa8106e": {
+    "pattern_id": "dc291fa8106e",
+    "pattern_type": "entry_signal",
+    "description": "FAILING SIGNAL: 'Strong uptrend with X% increase and high funding rate indicating bullish sentiment' for long entries. llama4_scout used this repeatedly on SOLUSDT and lost -$160.82.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.15,
+    "sample_size": 201,
+    "confidence": 0,
+    "first_seen": "2026-01-22T20:29:54.570447",
+    "last_confirmed": "2026-01-22T20:29:54.570447",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "5d47e2ff45e3": {
+    "pattern_id": "5d47e2ff45e3",
+    "pattern_type": "entry_signal",
+    "description": "FAILING SIGNAL: 'RSI overbought suggests downside' combined with 'excellent 2:1 RR' for short entries in choppy markets. skill_aware_oss lost -$627.15.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.2,
+    "sample_size": 157,
+    "confidence": 0,
+    "first_seen": "2026-01-22T20:29:54.570447",
+    "last_confirmed": "2026-01-22T20:29:54.570447",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "8b48164b3c01": {
+    "pattern_id": "8b48164b3c01",
+    "pattern_type": "entry_signal",
+    "description": "FAILING SIGNAL: 'Multi-timeframe bearish alignment' for SHORT entry in mixed/slightly bullish markets. skill_aware_oss, agentic_gptoss used this signal and lost -$730 and -$250 respectively.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.15,
+    "sample_size": 266,
+    "confidence": 0,
+    "first_seen": "2026-01-24T13:39:32.984633",
+    "last_confirmed": "2026-01-24T13:39:32.984633",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "7ba82e24852e": {
+    "pattern_id": "7ba82e24852e",
+    "pattern_type": "entry_signal",
+    "description": "FAILING SIGNAL: 'Potential breakout above $X' or 'clear breakout could lead to strong uptrend' for LONG entry. llama4_scout: 'clear breakout above $90,000 could lead to strong uptrend' - BTC moved only +0.26%.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.2,
+    "sample_size": 199,
+    "confidence": 0,
+    "first_seen": "2026-01-24T13:39:32.984633",
+    "last_confirmed": "2026-01-24T13:39:32.984633",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "3c2ddb2490a3": {
+    "pattern_id": "3c2ddb2490a3",
+    "pattern_type": "entry_signal",
+    "description": "FAILING SIGNAL: 'Negative funding rate indicates potential long opportunity'. llama4_scout used this on SOLUSDT which barely moved (+0.04%).",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.18,
+    "sample_size": 199,
+    "confidence": 0,
+    "first_seen": "2026-01-24T13:39:32.984633",
+    "last_confirmed": "2026-01-24T13:39:32.984633",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "6d4ef7faf30f": {
+    "pattern_id": "6d4ef7faf30f",
+    "pattern_type": "entry_signal",
+    "description": "FAILING SIGNAL: 'RSI overbought suggests downside' combined with 'excellent 2:1 reward ratio' for SHORT entry. skill_aware_oss: 'RSI overbought, MACD bearish' on BTC which went +0.26%.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.2,
+    "sample_size": 158,
+    "confidence": 0,
+    "first_seen": "2026-01-24T13:39:32.984633",
+    "last_confirmed": "2026-01-24T13:39:32.984633",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "1f97ba3be863": {
+    "pattern_id": "1f97ba3be863",
+    "pattern_type": "entry_signal",
+    "description": "FAILING SIGNAL: 'Slight increase in momentum' or 'showing potential upward momentum' for LONG entry. llama4_scout: 'BNBUSDT showing slight increase with positive funding' - lost money despite BNB +0.62%.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.25,
+    "sample_size": 199,
+    "confidence": 0,
+    "first_seen": "2026-01-24T13:39:32.984633",
+    "last_confirmed": "2026-01-24T13:39:32.984633",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "3fc9542a39d3": {
+    "pattern_id": "3fc9542a39d3",
+    "pattern_type": "entry_signal",
+    "description": "FAILING SIGNAL: 'Multi-timeframe bearish alignment across 15m, 1h, 4h' for SHORT entry in mixed/slightly bullish markets. agentic_gptoss, llama4_scout used this signal repeatedly while market rose.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.25,
+    "sample_size": 338,
+    "confidence": 0,
+    "first_seen": "2026-01-26T18:07:01.500036",
+    "last_confirmed": "2026-01-26T18:07:01.500036",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "ed3a5a1946b9": {
+    "pattern_id": "ed3a5a1946b9",
+    "pattern_type": "entry_signal",
+    "description": "FAILING SIGNAL: 'Negative funding rate indicating bearish pressure' for SHORT entry when asset is rising. gptoss_120b_simple shorted SOL citing negative funding while SOL rose +1.88%.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.3,
+    "sample_size": 175,
+    "confidence": 0,
+    "first_seen": "2026-01-26T18:07:01.500036",
+    "last_confirmed": "2026-01-26T18:07:01.500036",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "12a5fc501754": {
+    "pattern_id": "12a5fc501754",
+    "pattern_type": "entry_signal",
+    "description": "FAILING SIGNAL: 'Clear downtrend with -X% drop' for SHORT entry when broader market is mixed/bullish. llama4_scout shorted BTC at -1.68% to -2.09% drops but BTC only finished -0.16%.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.35,
+    "sample_size": 169,
+    "confidence": 0,
+    "first_seen": "2026-01-26T18:07:01.500036",
+    "last_confirmed": "2026-01-26T18:07:01.500036",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "8202b186c2d2": {
+    "pattern_id": "8202b186c2d2",
+    "pattern_type": "entry_signal",
+    "description": "WEAK SIGNAL: 'Strong relative support with negative funding rate indicating potential short squeeze' for LONG entry. qwen3_235b opened ETH long with this reasoning but closed at loss.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.4,
+    "sample_size": 20,
+    "confidence": 0,
+    "first_seen": "2026-01-26T18:07:01.500036",
+    "last_confirmed": "2026-01-26T18:07:01.500036",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "1b65f07e0e5c": {
+    "pattern_id": "1b65f07e0e5c",
+    "pattern_type": "entry_signal",
+    "description": "FAILING SIGNAL: 'Strong momentum with X% increase' and 'funding rate relatively low indicating potential for further growth' for LONG entry. llama4_scout used this repeatedly on SOLUSDT (+0.05% actual) and lost heavily.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.18,
+    "sample_size": 227,
+    "confidence": 0.2499999999999999,
+    "first_seen": "2026-01-27T18:17:34.643782",
+    "last_confirmed": "2026-01-27T18:17:34.643782",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "c3b4190a6799": {
+    "pattern_id": "c3b4190a6799",
+    "pattern_type": "entry_signal",
+    "description": "FAILING SIGNAL: 'Risk-reward ratio 2:1, validation passed' as primary entry justification without market regime consideration. agentic_gptoss cited this at 0.90 confidence, lost $391.94.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.15,
+    "sample_size": 165,
+    "confidence": 0.2499999999999999,
+    "first_seen": "2026-01-27T18:17:34.643782",
+    "last_confirmed": "2026-01-27T18:17:34.643782",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "9af73bc3352c": {
+    "pattern_id": "9af73bc3352c",
+    "pattern_type": "entry_signal",
+    "description": "FAILING SIGNAL: 'Market shows broad bullish momentum with positive funding' for BTC long when BTC is actually negative (-0.25%). gptoss_120b_simple misread market conditions.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.22,
+    "sample_size": 203,
+    "confidence": 0.2499999999999999,
+    "first_seen": "2026-01-27T18:17:34.643782",
+    "last_confirmed": "2026-01-27T18:17:34.643782",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "2fec7809b220": {
+    "pattern_id": "2fec7809b220",
+    "pattern_type": "entry_signal",
+    "description": "FAILING SIGNAL: 'Strong bullish alignment across 15m, 1h, 4h with high momentum score' for LONG entry. Despite correct direction, high-frequency entries based on this signal result in net losses from transaction costs",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.15,
+    "sample_size": 166,
+    "confidence": 0.49999999999999994,
+    "first_seen": "2026-01-28T18:15:38.100850",
+    "last_confirmed": "2026-01-28T18:15:38.100850",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "7e05f2d64c75": {
+    "pattern_id": "7e05f2d64c75",
+    "pattern_type": "entry_signal",
+    "description": "FAILING SIGNAL: 'Risk/reward 2:1 with 2% risk per trade, validation passed' as primary entry justification. Process compliance without directional edge produces losses. All high-frequency losers cited this.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.13306772908366535,
+    "sample_size": 753,
+    "confidence": 0.75,
+    "first_seen": "2026-01-28T18:15:38.100850",
+    "last_confirmed": "2026-02-02T21:10:48.209630",
+    "times_seen": 2,
+    "is_active": true
+  },
+  "aa98e9517be6": {
+    "pattern_id": "aa98e9517be6",
+    "pattern_type": "entry_signal",
+    "description": "SUCCESSFUL SIGNAL: 'RSI ~28 (oversold), price below SMA, bearish MACD, multi-timeframe downtrend' for SHORT entry in bearish market. skill_aware_oss used this pattern for +$691.44.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.85,
+    "sample_size": 49,
+    "confidence": 0.85,
+    "first_seen": "2026-01-30T05:51:21.861160",
+    "last_confirmed": "2026-01-30T05:51:21.861160",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "4f065fa27ad6": {
+    "pattern_id": "4f065fa27ad6",
+    "pattern_type": "entry_signal",
+    "description": "SUCCESSFUL SIGNAL: 'Positive funding rate favoring shorts' combined with price decline for SHORT entry. gptoss_20b_simple: 'BTC is down 5.49% and has a positive funding rate, favoring shorts'.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.75,
+    "sample_size": 48,
+    "confidence": 0.85,
+    "first_seen": "2026-01-30T05:51:21.861160",
+    "last_confirmed": "2026-01-30T05:51:21.861160",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "88af9172011e": {
+    "pattern_id": "88af9172011e",
+    "pattern_type": "entry_signal",
+    "description": "SUCCESSFUL SIGNAL: 'Bearish trend confirmed by SMA and MACD; risk/reward 2:1 with 2% risk per trade' for SHORT entry. agentic_gptoss used this but churned positions too frequently.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.7,
+    "sample_size": 63,
+    "confidence": 0.85,
+    "first_seen": "2026-01-30T05:51:21.861160",
+    "last_confirmed": "2026-01-30T05:51:21.861160",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "10c7260e58d2": {
+    "pattern_id": "10c7260e58d2",
+    "pattern_type": "entry_signal",
+    "description": "SUCCESSFUL SIGNAL: 'Strong bearish alignment across 15m, 1h, 4h timeframes, high conviction short signal, favorable risk-reward (2:1)' for SHORT entry when agent maintains position discipline.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.75,
+    "sample_size": 172,
+    "confidence": 0.8999999999999999,
+    "first_seen": "2026-01-31T06:49:58.448515",
+    "last_confirmed": "2026-01-31T06:49:58.448515",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "898a4a62755e": {
+    "pattern_id": "898a4a62755e",
+    "pattern_type": "entry_signal",
+    "description": "FAILING SIGNAL: 'DOGE is down 7.29% with negative funding, indicating bearish bias' for SHORT entry. DOGE ended +0.52%, mean reversion dominated.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.35,
+    "sample_size": 131,
+    "confidence": 0.8999999999999999,
+    "first_seen": "2026-01-31T06:49:58.448515",
+    "last_confirmed": "2026-01-31T06:49:58.448515",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "df8693fa411a": {
+    "pattern_id": "df8693fa411a",
+    "pattern_type": "entry_signal",
+    "description": "SUCCESSFUL SIGNAL: 'Risk calculator shows excellent 2:1 reward, entry aligns with short bias; validation allows with only low-severity concentration warning' - proceeding despite warnings when conviction is high.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.7,
+    "sample_size": 172,
+    "confidence": 0.8999999999999999,
+    "first_seen": "2026-01-31T06:49:58.448515",
+    "last_confirmed": "2026-01-31T06:49:58.448515",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "0b79390c0f2d": {
+    "pattern_id": "0b79390c0f2d",
+    "pattern_type": "entry_signal",
+    "description": "SUCCESSFUL SIGNAL: 'Multi-timeframe analysis shows bearish bias, risk calculator gives excellent 2:1 risk-reward with 2% equity risk' for SHORT entry in uniformly bearish markets. skill_aware_oss: +$1682.05.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.92,
+    "sample_size": 183,
+    "confidence": 0.8999999999999999,
+    "first_seen": "2026-01-31T18:46:18.211308",
+    "last_confirmed": "2026-01-31T18:46:18.211308",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "07a3e6bc7ae2": {
+    "pattern_id": "07a3e6bc7ae2",
+    "pattern_type": "entry_signal",
+    "description": "FAILING SIGNAL: 'RSI 62.27, bullish SMA crossover, positive MACD histogram' for LONG entry in uniformly bearish market. agentic_gptoss BTCUSDT long at 0.93 confidence while BTC dropped -7.95%.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.15,
+    "sample_size": 183,
+    "confidence": 0.8999999999999999,
+    "first_seen": "2026-01-31T18:46:18.211308",
+    "last_confirmed": "2026-01-31T18:46:18.211308",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "b9f68699ce09": {
+    "pattern_id": "b9f68699ce09",
+    "pattern_type": "entry_signal",
+    "description": "SUCCESSFUL SIGNAL: 'RSI ~28 (oversold), price below SMA, bearish MACD, multi-timeframe bearish alignment' for SHORT entry in downtrend. skill_aware_oss used this with 0.78 confidence on BNBUSDT.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.9,
+    "sample_size": 200,
+    "confidence": 0.95,
+    "first_seen": "2026-02-01T05:13:14.095165",
+    "last_confirmed": "2026-02-01T05:13:14.095165",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "df5005497c04": {
+    "pattern_id": "df5005497c04",
+    "pattern_type": "entry_signal",
+    "description": "SUCCESSFUL SIGNAL: 'Strong bearish alignment across 15m, 1h, 4h timeframes with high conviction' for SHORT entry. Both skill_aware_oss and agentic_gptoss used this on ETHUSDT.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.88,
+    "sample_size": 150,
+    "confidence": 0.95,
+    "first_seen": "2026-02-01T05:13:14.095165",
+    "last_confirmed": "2026-02-01T05:13:14.095165",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "a428801c1978": {
+    "pattern_id": "a428801c1978",
+    "pattern_type": "entry_signal",
+    "description": "SUCCESSFUL SIGNAL: 'Risk calculator shows excellent 2:1 risk/reward, technical conditions neutral-to-bullish, validation permits' - BUT only successful when aligned with macro trend.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.85,
+    "sample_size": 200,
+    "confidence": 0.95,
+    "first_seen": "2026-02-01T05:13:14.095165",
+    "last_confirmed": "2026-02-01T05:13:14.095165",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "a88ed9155e20": {
+    "pattern_id": "a88ed9155e20",
+    "pattern_type": "entry_signal",
+    "description": "FAILING SIGNAL: 'SOLUSDT shows bullish bias with strong technical indicators and 2:1 risk/reward' for LONG entry when SOL dropped -11.31%. Counter-trend signals fail in strong trends.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.15,
+    "sample_size": 20,
+    "confidence": 0.9,
+    "first_seen": "2026-02-01T05:13:14.095165",
+    "last_confirmed": "2026-02-01T05:13:14.095165",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "b6f21a83bf35": {
+    "pattern_id": "b6f21a83bf35",
+    "pattern_type": "entry_signal",
+    "description": "FAILING SIGNAL: 'All three timeframes (15m, 1h, 4h) confirm strong bearish trend with aligned momentum' for SHORT entry in uniform_bullish market. Used by agentic_gptoss, skill_aware_oss with 0.75-0.92 confidence. Result: -$800 to -$963 losses.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.15,
+    "sample_size": 354,
+    "confidence": 0.95,
+    "first_seen": "2026-02-02T21:10:48.209630",
+    "last_confirmed": "2026-02-02T21:10:48.209630",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "bf8dfd5af5d5": {
+    "pattern_id": "bf8dfd5af5d5",
+    "pattern_type": "entry_signal",
+    "description": "FAILING SIGNAL: 'Technical analysis shows bearish bias (MACD, SMA, RSI)' for SHORT entry when daily returns are +1.33% to +3.82%. Short-term technical bearishness is noise in strong bullish regime.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.2,
+    "sample_size": 166,
+    "confidence": 0.95,
+    "first_seen": "2026-02-02T21:10:48.209630",
+    "last_confirmed": "2026-02-02T21:10:48.209630",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "c47ce7644405": {
+    "pattern_id": "c47ce7644405",
+    "pattern_type": "entry_signal",
+    "description": "FAILING SIGNAL: 'RSI ~28-37 (oversold), bearish MACD' interpreted as SHORT continuation. In bullish markets, oversold RSI indicates bounce opportunity, not short entry. skill_aware_oss lost -$963 using this signal.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.18,
+    "sample_size": 166,
+    "confidence": 0.95,
+    "first_seen": "2026-02-02T21:10:48.209630",
+    "last_confirmed": "2026-02-02T21:10:48.209630",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "729d99a28792": {
+    "pattern_id": "729d99a28792",
+    "pattern_type": "entry_signal",
+    "description": "SUCCESSFUL: 'Negative funding rate (-0.02%) indicating crowded shorts' as LONG entry signal on SOLUSDT. SOL ended +0.86% despite intraday volatility.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.72,
+    "sample_size": 25,
+    "confidence": 0,
+    "first_seen": "2026-02-12T14:48:18.501550+00:00",
+    "last_confirmed": "2026-02-12T14:48:18.501550+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "d376cc56ac26": {
+    "pattern_id": "d376cc56ac26",
+    "pattern_type": "entry_signal",
+    "description": "FAILING: 'RSI oversold + bearish MACD + price below SMA' as SHORT continuation signal in mixed market. glm_skill_aware's ETH short lost money despite 'strongest bearish momentum' reasoning.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.3,
+    "sample_size": 15,
+    "confidence": 0,
+    "first_seen": "2026-02-12T14:48:18.501550+00:00",
+    "last_confirmed": "2026-02-12T14:48:18.501550+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "d2084f418e60": {
+    "pattern_id": "d2084f418e60",
+    "pattern_type": "entry_signal",
+    "description": "MIXED: 'Contrarian long on most oversold asset anticipating mean-reversion bounce' at 0.75 confidence. Works when funding is extreme negative, fails when trend continues.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.55,
+    "sample_size": 30,
+    "confidence": 0,
+    "first_seen": "2026-02-12T14:48:18.501550+00:00",
+    "last_confirmed": "2026-02-12T14:48:18.501550+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "df2aa98abd6b": {
+    "pattern_id": "df2aa98abd6b",
+    "pattern_type": "entry_signal",
+    "description": "SUCCESSFUL: 'MACD bearish + SMA20 down + ADX strong trend + negative funding' as SHORT entry. gptoss_simple used this combination profitably on BTC.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.8,
+    "sample_size": 10,
+    "confidence": 0,
+    "first_seen": "2026-02-16T11:07:42.458811+00:00",
+    "last_confirmed": "2026-02-16T11:07:42.458811+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "6be81c3d649c": {
+    "pattern_id": "6be81c3d649c",
+    "pattern_type": "entry_signal",
+    "description": "FAILING: 'Kronos ML forecast bearish -X% (conf: 97%)' as SHORT entry. All three predictions (BTC, ETH, BNB) were wrong direction.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.15,
+    "sample_size": 22,
+    "confidence": 0,
+    "first_seen": "2026-02-16T11:07:42.458811+00:00",
+    "last_confirmed": "2026-02-16T11:07:42.458811+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "9bbfa4527a8e": {
+    "pattern_id": "9bbfa4527a8e",
+    "pattern_type": "entry_signal",
+    "description": "FAILING: 'Bearish-to-neutral crypto regime, validated short signal, excellent 2:1 risk-reward' as SHORT entry in mixed market. gptoss_skill_aware lost -$56.43.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.3,
+    "sample_size": 15,
+    "confidence": 0,
+    "first_seen": "2026-02-16T11:07:42.458811+00:00",
+    "last_confirmed": "2026-02-16T11:07:42.458811+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "0445b365d21b": {
+    "pattern_id": "0445b365d21b",
+    "pattern_type": "entry_signal",
+    "description": "SUCCESSFUL: 'Multi-timeframe bearish alignment (15m, 1h, 4h) with momentum confirmation' as SHORT entry on BTCUSDT. gptoss_agentic used this at 0.85-0.92 confidence repeatedly and profited +$262.43. Key differentiator: agent scaled into existing positions rather than opening new ones.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.75,
+    "sample_size": 61,
+    "confidence": 0,
+    "first_seen": "2026-02-24T20:02:27.437571+00:00",
+    "last_confirmed": "2026-02-24T20:02:27.437571+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "819363bd0bc6": {
+    "pattern_id": "819363bd0bc6",
+    "pattern_type": "entry_signal",
+    "description": "SUCCESSFUL: 'Bearish MACD + positive funding rate (crowded longs)' as SHORT entry on ETHUSDT. gptoss_simple used this at 0.78 confidence selectively and profited +$72.51.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.72,
+    "sample_size": 8,
+    "confidence": 0,
+    "first_seen": "2026-02-24T20:02:27.437571+00:00",
+    "last_confirmed": "2026-02-24T20:02:27.437571+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "def41f9d3b07": {
+    "pattern_id": "def41f9d3b07",
+    "pattern_type": "entry_signal",
+    "description": "FAILING: 'RSI ~28 oversold + bearish MACD + price below SMA + uniform bearish regime' as SHORT continuation. gptoss_skill_aware used this at 0.86-0.93 confidence on ETH and BTC but lost -$376.08. RSI oversold in a mixed market signals potential reversal, not continuation.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.3,
+    "sample_size": 65,
+    "confidence": 0,
+    "first_seen": "2026-02-24T20:02:27.437571+00:00",
+    "last_confirmed": "2026-02-24T20:02:27.437571+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "93f944267bc3": {
+    "pattern_id": "93f944267bc3",
+    "pattern_type": "entry_signal",
+    "description": "FAILING: 'Multi-timeframe bearish alignment (15m, 1h, 4h) with momentum confirmation' as SHORT entry in uniformly bullish market. Used at 0.78-0.94 confidence by gptoss_skill_aware and gptoss_agentic. ETH rallied +11.81%, SOL +14.03% despite showing 'bearish' lower-timeframe signals.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.016666666666666666,
+    "sample_size": 120,
+    "confidence": 0,
+    "first_seen": "2026-02-25T11:22:18.339196+00:00",
+    "last_confirmed": "2026-02-25T20:04:20.727629+00:00",
+    "times_seen": 2,
+    "is_active": false
+  },
+  "64011c00b54d": {
+    "pattern_id": "64011c00b54d",
+    "pattern_type": "entry_signal",
+    "description": "FAILING: 'Uniform bearish regime with high confidence' as SHORT entry justification when actual market was uniformly bullish with +7-14% gains. gptoss_skill_aware cited this at 0.93-0.94 confidence for BTC, ETH, SOL shorts.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.0,
+    "sample_size": 82,
+    "confidence": 0,
+    "first_seen": "2026-02-25T11:22:18.339196+00:00",
+    "last_confirmed": "2026-02-25T20:04:20.727629+00:00",
+    "times_seen": 2,
+    "is_active": false
+  },
+  "21b072f5c1eb": {
+    "pattern_id": "21b072f5c1eb",
+    "pattern_type": "entry_signal",
+    "description": "FAILING: 'Risk calculator shows excellent 2:1 risk/reward, validation passed' as trade confirmation. Every validated short entry in this window lost money because the directional premise was wrong.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.0,
+    "sample_size": 100,
+    "confidence": 0,
+    "first_seen": "2026-02-25T11:22:18.339196+00:00",
+    "last_confirmed": "2026-02-25T11:22:18.339196+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "3948be03ebf0": {
+    "pattern_id": "3948be03ebf0",
+    "pattern_type": "entry_signal",
+    "description": "FAILING: 'RSI oversold + bearish MACD + price below SMA' interpreted as SHORT continuation. gptoss20b_simple correctly identified oversold RSI but incorrectly maintained bearish bias. In a bullish regime, oversold RSI is a LONG signal, not a short continuation.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.05,
+    "sample_size": 30,
+    "confidence": 0,
+    "first_seen": "2026-02-25T11:22:18.339196+00:00",
+    "last_confirmed": "2026-02-25T11:22:18.339196+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "3806400d1e5d": {
+    "pattern_id": "3806400d1e5d",
+    "pattern_type": "entry_signal",
+    "description": "FAILING: 'RSI oversold + bearish MACD + price below SMA + touching lower Bollinger Band' as SHORT continuation. gptoss_agentic used this on ETH at 0.80 confidence but ETH rallied +11.81%. Oversold signals in bullish regimes are LONG entry signals, not SHORT continuation.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.05,
+    "sample_size": 20,
+    "confidence": 0,
+    "first_seen": "2026-02-25T20:04:20.727629+00:00",
+    "last_confirmed": "2026-02-25T20:04:20.727629+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "bcf0d0817a00": {
+    "pattern_id": "bcf0d0817a00",
+    "pattern_type": "entry_signal",
+    "description": "MIXED: 'Validated as PROCEED, RSI neutral, trend supportive, no pattern violations, equity up 2.6%' as LONG entry on BTC. gptoss_forum_aware opened a BTC long at 0.78 confidence \u2014 one of the few correct-direction trades from this agent, but inconsistent with its dominant short bias.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.7,
+    "sample_size": 3,
+    "confidence": 0,
+    "first_seen": "2026-02-25T20:04:20.727629+00:00",
+    "last_confirmed": "2026-02-25T20:04:20.727629+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "89513f16e8f1": {
+    "pattern_id": "89513f16e8f1",
+    "pattern_type": "entry_signal",
+    "description": "NEUTRAL: Index fund systematic allocation ($2000 per asset) regardless of market conditions. 11 long entries across BTC, ETH, SOL, BNB resulted in $0 reported PnL but positions held through -1.46% to -3.88% declines.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.0,
+    "sample_size": 11,
+    "confidence": 0,
+    "first_seen": "2026-02-26T20:03:39.804040+00:00",
+    "last_confirmed": "2026-02-26T20:03:39.804040+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "4f9b0750e794": {
+    "pattern_id": "4f9b0750e794",
+    "pattern_type": "entry_signal",
+    "description": "Forum-aware selective SHORT entries in bearish market. gptoss_forum_aware's 13 trades generated +$1884.64, suggesting forum/social sentiment signals correctly identified bearish conviction and timed entries well in this window.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.85,
+    "sample_size": 13,
+    "confidence": 0,
+    "first_seen": "2026-02-27T20:04:10.757203+00:00",
+    "last_confirmed": "2026-02-27T20:04:10.757203+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "11c17e7511cc": {
+    "pattern_id": "11c17e7511cc",
+    "pattern_type": "entry_signal",
+    "description": "Simple technical signals with low frequency outperform complex multi-timeframe analysis with high frequency. gptoss_simple (+$56.31, 10 trades) vs gptoss_skill_aware (-$432.71, 46 trades).",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.7,
+    "sample_size": 56,
+    "confidence": 0,
+    "first_seen": "2026-02-27T20:04:10.757203+00:00",
+    "last_confirmed": "2026-02-27T20:04:10.757203+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "8996366b3941": {
+    "pattern_id": "8996366b3941",
+    "pattern_type": "entry_signal",
+    "description": "FAILING: High-frequency entries by gptoss_skill_aware (52 trades) in a mildly bullish market. Likely SHORT-biased entries based on regime misidentification, resulting in -$222.14 loss.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.15,
+    "sample_size": 52,
+    "confidence": 0,
+    "first_seen": "2026-02-28T20:04:18.965688+00:00",
+    "last_confirmed": "2026-02-28T20:04:18.965688+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "a39c3cee9d06": {
+    "pattern_id": "a39c3cee9d06",
+    "pattern_type": "entry_signal",
+    "description": "FAILING: gptoss_journal_aware's 69 trades (highest frequency) in a low-volatility mildly bullish market. Overtrading destroyed edge despite self-reflective capabilities, losing -$13.96.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.4,
+    "sample_size": 69,
+    "confidence": 0,
+    "first_seen": "2026-02-28T20:04:18.965688+00:00",
+    "last_confirmed": "2026-02-28T20:04:18.965688+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "5be77e86f837": {
+    "pattern_id": "5be77e86f837",
+    "pattern_type": "entry_signal",
+    "description": "Index fund systematic allocation ($2000 per asset) as passive LONG entry. index_fund opened longs on BTC at $66,463, $66,448, $66,175, $65,883; ETH at $1,983, $1,957; SOL at $85.28, $83.38; BNB at $622.77. All at confidence 1.0. Resulted in $0 reported PnL in mixed market.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.5,
+    "sample_size": 9,
+    "confidence": 0,
+    "first_seen": "2026-03-01T20:04:29.235227+00:00",
+    "last_confirmed": "2026-03-01T20:04:29.235227+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "5b09697d5cae": {
+    "pattern_id": "5b09697d5cae",
+    "pattern_type": "entry_signal",
+    "description": "FAILING: SHORT entries in a uniformly bullish market (+3.3% to +6.25% across all assets). Multiple agents likely opened shorts citing lower-timeframe bearish signals while the daily regime was strongly bullish. All agents with meaningful trade counts except gptoss_forum_aware lost money.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.15,
+    "sample_size": 52,
+    "confidence": 0,
+    "first_seen": "2026-03-02T20:05:39.555700+00:00",
+    "last_confirmed": "2026-03-02T20:05:39.555700+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "43fce310b7bf": {
+    "pattern_id": "43fce310b7bf",
+    "pattern_type": "entry_signal",
+    "description": "SUCCESSFUL: Index fund systematic allocation ($2000 per asset) as passive LONG entry. index_fund opened longs on ETH at $1,928-$1,947, SOL at $82-$83, BNB at $612-$614, BTC at $66,050. All positions should be profitable given +3.3% to +6.25% gains.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.85,
+    "sample_size": 7,
+    "confidence": 0,
+    "first_seen": "2026-03-02T20:05:39.555700+00:00",
+    "last_confirmed": "2026-03-02T20:05:39.555700+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "b1d6d97e68ff": {
+    "pattern_id": "b1d6d97e68ff",
+    "pattern_type": "entry_signal",
+    "description": "SUCCESSFUL: Forum-aware selective entries. gptoss_forum_aware's 12 trades from 85 decisions (14% action rate) generated +$40.06, suggesting social/forum sentiment correctly filtered out bad trades and identified favorable entry points.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.7,
+    "sample_size": 12,
+    "confidence": 0,
+    "first_seen": "2026-03-02T20:05:39.555700+00:00",
+    "last_confirmed": "2026-03-02T20:05:39.555700+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "03a0c6e69899": {
+    "pattern_id": "03a0c6e69899",
+    "pattern_type": "entry_signal",
+    "description": "FAILING: Active entries (likely LONG or wrong-direction) in a uniformly bearish market. ta_bot's 8 technical-signal-driven entries all contributed to -$51.45 loss. Technical signals generated trades when market conditions favored inaction.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.0,
+    "sample_size": 8,
+    "confidence": 0,
+    "first_seen": "2026-03-03T20:04:32.546113+00:00",
+    "last_confirmed": "2026-03-03T20:04:32.546113+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "b07c5b47d6dd": {
+    "pattern_id": "b07c5b47d6dd",
+    "pattern_type": "entry_signal",
+    "description": "FAILING: qwen35_skill_aware's 4 validated entries lost -$171.85. Validation frameworks ('2:1 risk-reward', 'validation passed') continue to provide false confidence on wrong-direction trades.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.0,
+    "sample_size": 4,
+    "confidence": 0,
+    "first_seen": "2026-03-03T20:04:32.546113+00:00",
+    "last_confirmed": "2026-03-03T20:04:32.546113+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "b52f918622cb": {
+    "pattern_id": "b52f918622cb",
+    "pattern_type": "entry_signal",
+    "description": "FAILING: SHORT entries in a uniformly bullish market (+5% to +16% across all assets). Multiple agents likely opened shorts citing lower-timeframe bearish signals while the daily regime was strongly bullish. gptoss_agentic and gptoss_forum_aware combined lost -$838.48.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.05,
+    "sample_size": 58,
+    "confidence": 0.4499999999999999,
+    "first_seen": "2026-03-04T20:06:28.201628+00:00",
+    "last_confirmed": "2026-03-04T20:06:28.201628+00:00",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "419ac84d77b0": {
+    "pattern_id": "419ac84d77b0",
+    "pattern_type": "entry_signal",
+    "description": "SUCCESSFUL: Selective low-frequency LONG entries aligned with bullish regime. qwen35_skill_aware's 7 trades generated +$250.52, suggesting high-conviction entries with correct directional alignment.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.8,
+    "sample_size": 7,
+    "confidence": 0.13999999999999996,
+    "first_seen": "2026-03-04T20:06:28.201628+00:00",
+    "last_confirmed": "2026-03-04T20:06:28.201628+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "198192064df1": {
+    "pattern_id": "198192064df1",
+    "pattern_type": "entry_signal",
+    "description": "NEUTRAL: Index fund systematic allocation ($2000 per asset) as passive LONG entry. index_fund opened 8 longs across BTC, ETH, SOL, BNB and reported $0 PnL despite all assets gaining 5-16%.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.5,
+    "sample_size": 8,
+    "confidence": 0.15999999999999998,
+    "first_seen": "2026-03-04T20:06:28.201628+00:00",
+    "last_confirmed": "2026-03-04T20:06:28.201628+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "f776618e6a68": {
+    "pattern_id": "f776618e6a68",
+    "pattern_type": "entry_signal",
+    "description": "FAILING: 'Multi-timeframe bearish alignment' and 'uniform bearish regime' cited as SHORT entry justification when actual market was uniformly bullish with +5-16% gains. Regime misidentification remains the #1 cause of losses.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.05,
+    "sample_size": 58,
+    "confidence": 0.4499999999999999,
+    "first_seen": "2026-03-04T20:06:28.201628+00:00",
+    "last_confirmed": "2026-03-04T20:06:28.201628+00:00",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "a3aa1866d670": {
+    "pattern_id": "a3aa1866d670",
+    "pattern_type": "entry_signal",
+    "description": "Simple model selective entries (qwen35 variants) with 13-16 trades generating positive PnL in a bearish market. Likely SHORT-biased entries aligned with the actual bearish trend, without overtrading.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.67,
+    "sample_size": 29,
+    "confidence": 0.6499999999999999,
+    "first_seen": "2026-03-05T20:07:06.671385+00:00",
+    "last_confirmed": "2026-03-05T20:07:06.671385+00:00",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "536047af9b4a": {
+    "pattern_id": "536047af9b4a",
+    "pattern_type": "entry_signal",
+    "description": "FAILING: High-confidence agentic entries (gptoss_agentic, 27 trades) with sophisticated multi-step reasoning in a bearish market. Despite likely correct SHORT bias, excessive trading and position churn destroyed edge. Average loss: -$8.49/trade.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.3,
+    "sample_size": 27,
+    "confidence": 0.6499999999999999,
+    "first_seen": "2026-03-05T20:07:06.671385+00:00",
+    "last_confirmed": "2026-03-05T20:07:06.671385+00:00",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "5752d0a1f91b": {
+    "pattern_id": "5752d0a1f91b",
+    "pattern_type": "entry_signal",
+    "description": "SHORT entries aligned with uniformly bearish regime (all 5 assets negative -3% to -5%). gptoss_journal_aware and gptoss_agentic likely used multi-timeframe bearish alignment correctly this window.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.75,
+    "sample_size": 78,
+    "confidence": 0.7999999999999999,
+    "first_seen": "2026-03-06T20:06:40.713747+00:00",
+    "last_confirmed": "2026-03-06T20:06:40.713747+00:00",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "ef694af55983": {
+    "pattern_id": "ef694af55983",
+    "pattern_type": "entry_signal",
+    "description": "LONG entries in a uniformly bearish market. Momentum and contrarian agents likely opened LONGs and lost money. Wrong-direction entries remain the primary loss driver.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.1,
+    "sample_size": 21,
+    "confidence": 0.7699999999999999,
+    "first_seen": "2026-03-06T20:06:40.713747+00:00",
+    "last_confirmed": "2026-03-06T20:06:40.713747+00:00",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "bbd621350e8d": {
+    "pattern_id": "bbd621350e8d",
+    "pattern_type": "entry_signal",
+    "description": "Index fund systematic allocation ($2000 per asset) as passive LONG entry. index_fund opened 6 longs and reported $0 PnL despite all assets declining -3% to -5%, suggesting positions are unrealized or reporting lag.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.5,
+    "sample_size": 6,
+    "confidence": 0.47,
+    "first_seen": "2026-03-06T20:06:40.713747+00:00",
+    "last_confirmed": "2026-03-06T20:06:40.713747+00:00",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "fa0e9e297f38": {
+    "pattern_id": "fa0e9e297f38",
+    "pattern_type": "entry_signal",
+    "description": "Forum/social sentiment filtering for SHORT entries in bearish markets. gptoss_forum_aware's 31 trades generated +$250.04, suggesting forum signals correctly identified bearish conviction and filtered out low-quality entries.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.75,
+    "sample_size": 31,
+    "confidence": 0.8999999999999999,
+    "first_seen": "2026-03-07T20:07:23.741119+00:00",
+    "last_confirmed": "2026-03-07T20:07:23.741119+00:00",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "9ae44efd25ca": {
+    "pattern_id": "9ae44efd25ca",
+    "pattern_type": "entry_signal",
+    "description": "Momentum-following LONG entries in a bearish market. gptoss_momentum's 23 trades lost -$78.71, suggesting momentum signals generated wrong-direction entries.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.25,
+    "sample_size": 23,
+    "confidence": 0.8999999999999999,
+    "first_seen": "2026-03-07T20:07:23.741119+00:00",
+    "last_confirmed": "2026-03-07T20:07:23.741119+00:00",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "9d1e50f0e9dc": {
+    "pattern_id": "9d1e50f0e9dc",
+    "pattern_type": "entry_signal",
+    "description": "Index fund systematic allocation ($2000 per asset) as passive LONG entry. index_fund opened 12 longs across BTC ($67,895-$68,134), ETH ($1,972-$1,984), SOL ($84.33-$84.50), BNB ($627-$630) with $0 reported PnL despite all assets declining.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.5,
+    "sample_size": 12,
+    "confidence": 0.69,
+    "first_seen": "2026-03-07T20:07:23.741119+00:00",
+    "last_confirmed": "2026-03-07T20:07:23.741119+00:00",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "dc01f87e15bb": {
+    "pattern_id": "dc01f87e15bb",
+    "pattern_type": "entry_signal",
+    "description": "Forum/social sentiment-filtered entries in mixed/low-volatility markets. gptoss_forum_aware's 24 trades from 89 decisions (27% action rate) generated +$232.17, suggesting sentiment signals correctly identified high-conviction opportunities amid noise.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.8,
+    "sample_size": 24,
+    "confidence": 0.95,
+    "first_seen": "2026-03-08T20:07:33.307957+00:00",
+    "last_confirmed": "2026-03-08T20:07:33.307957+00:00",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "6c2ae459204b": {
+    "pattern_id": "6c2ae459204b",
+    "pattern_type": "entry_signal",
+    "description": "Agentic multi-step reasoning entries with moderate frequency (30 trades) in mixed markets. gptoss_agentic achieved +$123.26, suggesting sophisticated analysis can navigate mixed regimes when trade count is controlled.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.72,
+    "sample_size": 30,
+    "confidence": 0.95,
+    "first_seen": "2026-03-08T20:07:33.307957+00:00",
+    "last_confirmed": "2026-03-08T20:07:33.307957+00:00",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "d66f6d2ced44": {
+    "pattern_id": "d66f6d2ced44",
+    "pattern_type": "entry_signal",
+    "description": "FAILING: Momentum-following entries in mixed/low-volatility markets. gptoss_momentum's 33 trades lost -$59.65, suggesting momentum signals generate false entries when daily moves are under 0.5%.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.3,
+    "sample_size": 33,
+    "confidence": 0.95,
+    "first_seen": "2026-03-08T20:07:33.307957+00:00",
+    "last_confirmed": "2026-03-08T20:07:33.307957+00:00",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "b6d1db010500": {
+    "pattern_id": "b6d1db010500",
+    "pattern_type": "entry_signal",
+    "description": "FAILING: 'Uniform bearish regime with high confidence' or 'multi-timeframe bearish alignment' as SHORT entry justification when actual market was uniformly bullish (+2.5% to +5.1%). Regime misidentification remains the primary loss driver.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.1,
+    "sample_size": 31,
+    "confidence": 0.95,
+    "first_seen": "2026-03-09T20:08:51.728213+00:00",
+    "last_confirmed": "2026-03-09T20:08:51.728213+00:00",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "656d5fff4f10": {
+    "pattern_id": "656d5fff4f10",
+    "pattern_type": "entry_signal",
+    "description": "FAILING: Momentum-following entries in a moderately bullish market. gptoss_momentum's 15 trades lost -$25.04, suggesting momentum signals may have generated entries based on intraday reversals rather than the dominant daily trend.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.35,
+    "sample_size": 15,
+    "confidence": 0.8,
+    "first_seen": "2026-03-09T20:08:51.728213+00:00",
+    "last_confirmed": "2026-03-09T20:08:51.728213+00:00",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "65c0e8603236": {
+    "pattern_id": "65c0e8603236",
+    "pattern_type": "entry_signal",
+    "description": "FAILING: Forum/social sentiment-filtered entries lost -$86.08 on 27 trades. Forum signals likely amplified bearish conviction in a bullish market.",
+    "conditions": {
+      "type": "entry"
+    },
+    "success_rate": 0.25,
+    "sample_size": 27,
+    "confidence": 0.95,
+    "first_seen": "2026-03-09T20:08:51.728213+00:00",
+    "last_confirmed": "2026-03-09T20:08:51.728213+00:00",
+    "times_seen": 1,
+    "is_active": true
+  }
+}

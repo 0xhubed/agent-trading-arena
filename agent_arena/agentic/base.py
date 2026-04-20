@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 from decimal import Decimal
 from typing import Any, Optional
 
@@ -152,22 +152,43 @@ class AgenticTrader(BaseAgent):
 
         try:
             # Run the graph
-            start_time = datetime.utcnow()
+            start_time = datetime.now(timezone.utc)
             result = await self._graph.ainvoke(initial_state)
-            latency = (datetime.utcnow() - start_time).total_seconds() * 1000
+            latency = (datetime.now(timezone.utc) - start_time).total_seconds() * 1000
 
             # Extract decision
             decision_dict = result.get("decision", {})
             if not decision_dict:
                 decision_dict = {"action": "hold", "reasoning": "No decision produced"}
 
+            # Auto-calculate size when model chose to open but omitted size.
+            # Agentic agents go through multi-step reasoning to reach an open
+            # decision — silently dropping it due to missing size is wrong.
+            action = decision_dict.get("action", "hold")
+            size_val = decision_dict.get("size")
+            if action in ("open_long", "open_short") and not size_val:
+                symbol = decision_dict.get("symbol")
+                market = context.get("market", {})
+                portfolio = context.get("portfolio", {})
+                price = float(market.get(symbol, {}).get("price", 0))
+                equity = float(portfolio.get("equity", 10000))
+                if price > 0 and equity > 0:
+                    conf = decision_dict.get("confidence", 0.5)
+                    # 10% of equity, scaled by confidence
+                    notional = equity * 0.10 * max(conf, 0.3)
+                    size_val = notional / price
+                    decision_dict["size"] = size_val
+
             # Create Decision object
+            confidence = min(
+                decision_dict.get("confidence", 0.5), self.max_confidence
+            )
             decision = Decision(
                 action=decision_dict.get("action", "hold"),
                 symbol=decision_dict.get("symbol"),
                 size=Decimal(str(decision_dict["size"])) if decision_dict.get("size") else None,
                 leverage=decision_dict.get("leverage", 1),
-                confidence=decision_dict.get("confidence", 0.5),
+                confidence=confidence,
                 reasoning=decision_dict.get("reasoning", ""),
                 metadata={
                     "model": self.model,
@@ -176,6 +197,9 @@ class AgenticTrader(BaseAgent):
                     "tool_calls_count": len(result.get("tool_results", [])),
                     "thoughts": result.get("thoughts", []),
                     "latency_ms": latency,
+                    "auto_sized": not bool(
+                        result.get("decision", {}).get("size")
+                    ),
                 },
             )
 

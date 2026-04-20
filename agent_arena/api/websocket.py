@@ -15,15 +15,24 @@ logger = logging.getLogger(__name__)
 class ConnectionManager:
     """Manages WebSocket connections and broadcasts events."""
 
+    MAX_CONNECTIONS = 50
+
     def __init__(self):
         self.active_connections: list[WebSocket] = []
         self._lock = asyncio.Lock()
 
-    async def connect(self, websocket: WebSocket) -> None:
-        """Accept a new WebSocket connection."""
+    async def connect(self, websocket: WebSocket) -> bool:
+        """Accept a new WebSocket connection. Returns False if limit reached."""
+        if len(self.active_connections) >= self.MAX_CONNECTIONS:
+            logger.warning(
+                "Rejecting WebSocket: max connections (%d) reached",
+                self.MAX_CONNECTIONS,
+            )
+            return False
         await websocket.accept()
         async with self._lock:
             self.active_connections.append(websocket)
+        return True
 
     async def disconnect(self, websocket: WebSocket) -> None:
         """Remove a WebSocket connection."""
@@ -32,10 +41,11 @@ class ConnectionManager:
                 self.active_connections.remove(websocket)
 
     async def broadcast(self, event_type: str, data: Any) -> None:
-        """Broadcast an event to all connected clients."""
+        """Broadcast an event to all connected clients concurrently."""
         if not self.active_connections:
             return
 
+        # Serialize once outside the lock
         message = json.dumps({
             "type": event_type,
             "data": data,
@@ -43,14 +53,16 @@ class ConnectionManager:
 
         async with self._lock:
             dead_connections = []
-            for connection in self.active_connections:
+
+            async def _send(ws: WebSocket) -> None:
                 try:
-                    await connection.send_text(message)
+                    await ws.send_text(message)
                 except Exception as e:
-                    # Log non-connection errors for debugging
                     if "disconnect" not in str(e).lower():
                         logger.warning(f"WebSocket send error: {e}")
-                    dead_connections.append(connection)
+                    dead_connections.append(ws)
+
+            await asyncio.gather(*[_send(ws) for ws in self.active_connections])
 
             for conn in dead_connections:
                 self.active_connections.remove(conn)

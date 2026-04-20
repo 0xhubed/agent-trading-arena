@@ -1,0 +1,57 @@
+# Experiment configuration for the self-evolving trading laboratory.
+# Used by: agent-arena experiment run
+
+experiment:
+  # Population and generations
+  population_size: 16
+  generations: 5
+  elite_count: 3
+  mutation_rate: 0.15
+
+  # Budget cap per experiment run (USD)
+  budget_limit_usd: 5.0
+
+  # Monthly budget cap (scheduler enforces)
+  monthly_budget_usd: 50.0
+
+  # Fitness weights for evolution
+  fitness_weights:
+    sharpe: 0.3
+    return: 0.3
+    win_rate: 0.2
+    drawdown: 0.2
+
+  # Validation threshold (val_fitness / train_fitness)
+  # Below this triggers overfitting warning
+  validation_threshold: 0.7
+
+  # Max promotion candidates per run
+  promotion_count: 3
+
+  # Min days between automatic experiment runs
+  min_days_between_runs: 1
+
+# Backtest settings for evolution
+backtest:
+  start: "2025-01-01"
+  end: "2025-01-14"
+  tick_interval: "4h"
+  symbols:
+    - PF_XBTUSD
+    - PF_ETHUSD
+    - PF_SOLUSD
+
+# Model/inference settings
+inference:
+  base_url: ""  # Empty = use Together AI default
+  api_key_env: "TOGETHER_API_KEY"
+  model_pool:
+    - gpt-oss-120b
+    - glm-5
+
+# Agent class pool for genome randomization
+agent_classes:
+  - agent_arena.agents.llm_trader.LLMTrader
+  - agent_arena.agents.skill_aware_llm.SkillAwareLLMTrader
+  - agent_arena.agents.forum_aware_llm.ForumAwareLLMTrader
+  - agent_arena.agents.journal_aware_llm.JournalAwareLLMTrader

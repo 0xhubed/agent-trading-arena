@@ -26,7 +26,7 @@ class SimilarSituationsInput(BaseModel):
     )
     symbol: Optional[str] = Field(
         default=None,
-        description="Filter by trading symbol (e.g., BTCUSDT)"
+        description="Filter by trading symbol (e.g., PF_XBTUSD)"
     )
 
 

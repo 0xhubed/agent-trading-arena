@@ -23,6 +23,8 @@ class ConstraintsConfig:
     max_leverage: int = 10
     max_position_pct: Decimal = Decimal("0.25")  # Max 25% of equity per position
     starting_capital: Decimal = Decimal("10000")
+    max_trades_per_window: int = 8  # Max non-hold decisions per rolling window
+    trade_window_ticks: int = 20  # Rolling window size in ticks (~5h at 15min)
 
 
 @dataclass
@@ -39,7 +41,7 @@ class CompetitionConfig:
     """Competition settings."""
 
     name: str
-    symbols: list[str] = field(default_factory=lambda: ["BTCUSDT", "ETHUSDT"])
+    symbols: list[str] = field(default_factory=lambda: ["PF_XBTUSD", "PF_ETHUSD"])
     interval_seconds: int = 1800  # 30 minutes default
     duration_seconds: Optional[int] = None  # None = run until stopped
     initial_capital: Decimal = Decimal("10000")
@@ -47,3 +49,4 @@ class CompetitionConfig:
     fees: FeeConfig = field(default_factory=FeeConfig)
     constraints: ConstraintsConfig = field(default_factory=ConstraintsConfig)
     candles: CandleConfig = field(default_factory=CandleConfig)
+    raw_config: dict = field(default_factory=dict)  # Full YAML config for extensions (M3 forum)

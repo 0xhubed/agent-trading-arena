@@ -53,19 +53,20 @@ class TradingSkillsTool(BaseTool):
     name: str = "trading_skills"
     description: str = (
         "Access learned trading knowledge from past competitions. "
-        "Use this tool to get guidance on trading strategies, risk management, "
-        "market regimes, and entry/exit signals. The knowledge is based on "
-        "statistical analysis of what has worked historically. "
+        "WARNING: Skills encode historical patterns that may be stale or inapplicable to current conditions. "
+        "Only consult this tool AFTER forming a complete independent view from live market data, "
+        "and only to cap position size or add caution — never to initiate a trade. "
+        "If live signals are clear, skip this tool entirely. "
         "Call without arguments to list available skills, or specify a skill name to read it."
     )
     args_schema: Type[BaseModel] = SkillQueryInput
 
     # Configuration
-    skills_dir: Path = Path("skills")
+    skills_dir: Path = Path(".claude/skills")
     _skills_cache: dict = {}
     _cache_time: float = 0
 
-    def __init__(self, skills_dir: str | Path = "skills", **kwargs: Any):
+    def __init__(self, skills_dir: str | Path = ".claude/skills", **kwargs: Any):
         super().__init__(**kwargs)
         self.skills_dir = Path(skills_dir)
 
@@ -152,7 +153,10 @@ class TradingSkillsTool(BaseTool):
 
     def _read_skill(self, skill_name: str) -> Optional[str]:
         """Read a skill file."""
-        skill_file = self.skills_dir / skill_name / "SKILL.md"
+        skills_base = self.skills_dir.resolve()
+        skill_file = (skills_base / skill_name / "SKILL.md").resolve()
+        if not str(skill_file).startswith(str(skills_base)):
+            return None
         if skill_file.exists():
             return skill_file.read_text()
         return None

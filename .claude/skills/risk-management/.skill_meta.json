@@ -1,0 +1,9 @@
+{
+  "name": "risk-management",
+  "version": "1.0",
+  "last_updated": "2026-03-09T20:08:51.726033+00:00",
+  "total_patterns": 176,
+  "active_patterns": 54,
+  "inactive_patterns": 122,
+  "confidence_threshold": 0.6
+}

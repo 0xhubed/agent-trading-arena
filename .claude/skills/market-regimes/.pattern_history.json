@@ -1,0 +1,1997 @@
+{
+  "025223f2688e": {
+    "pattern_id": "025223f2688e",
+    "pattern_type": "regime_strategy",
+    "description": "sideways_flat: Reduce trade frequency dramatically; passive/index strategies outperform active trading by preserving capital from transaction costs",
+    "conditions": {
+      "regime": "sideways_flat"
+    },
+    "success_rate": 0.88,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-13T11:23:59.257020",
+    "last_confirmed": "2026-01-13T11:23:59.257020",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "16696a9aa3cf": {
+    "pattern_id": "16696a9aa3cf",
+    "pattern_type": "regime_strategy",
+    "description": "low_volatility_mixed: Avoid leveraged positions; small price movements (-0.02% to +0.09%) do not justify leverage costs and risk",
+    "conditions": {
+      "regime": "low_volatility_mixed"
+    },
+    "success_rate": 0.82,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-13T11:23:59.257020",
+    "last_confirmed": "2026-01-13T11:23:59.257020",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "271f0a31b6f8": {
+    "pattern_id": "271f0a31b6f8",
+    "pattern_type": "regime_strategy",
+    "description": "sideways_flat: Mean-reversion strategies fail when there is no significant deviation to revert from; stay flat or minimal exposure",
+    "conditions": {
+      "regime": "sideways_flat"
+    },
+    "success_rate": 0.75,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-13T11:23:59.257020",
+    "last_confirmed": "2026-01-13T11:23:59.257020",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "e301e9a8b749": {
+    "pattern_id": "e301e9a8b749",
+    "pattern_type": "regime_strategy",
+    "description": "sideways_flat: Reduce trade frequency to <10 trades/day; passive index allocation outperforms active trading; avoid leveraged positions entirely; wait for clear directional breakout before engaging",
+    "conditions": {
+      "regime": "sideways_flat"
+    },
+    "success_rate": 0.92,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-13T17:50:18.246218",
+    "last_confirmed": "2026-01-13T17:50:18.246218",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "61605d110d15": {
+    "pattern_id": "61605d110d15",
+    "pattern_type": "regime_strategy",
+    "description": "low_volatility_mixed: When all assets show <0.1% absolute movement, avoid opening new positions; fee drag exceeds potential profit; technical signals (SMA, MACD, multi-timeframe alignment) produce false signals in this regime",
+    "conditions": {
+      "regime": "low_volatility_mixed"
+    },
+    "success_rate": 0.88,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-13T17:50:18.246218",
+    "last_confirmed": "2026-01-13T17:50:18.246218",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "5d2a82fce004": {
+    "pattern_id": "5d2a82fce004",
+    "pattern_type": "regime_strategy",
+    "description": "sideways_flat: Mean-reversion and momentum strategies both fail; only capital preservation strategies (hold cash, minimal index allocation) succeed",
+    "conditions": {
+      "regime": "sideways_flat"
+    },
+    "success_rate": 0.85,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-13T17:50:18.246218",
+    "last_confirmed": "2026-01-13T17:50:18.246218",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "181329373082": {
+    "pattern_id": "181329373082",
+    "pattern_type": "regime_strategy",
+    "description": "trending_up: Multi-timeframe bullish alignment WITH risk validation and position scaling works in genuine uptrends (+3-5%). Moderate trade frequency (150-200) captures moves without overtrading. Focus on strongest movers (ETH, DOGE) not laggards (SOL).",
+    "conditions": {
+      "regime": "trending_up"
+    },
+    "success_rate": 0.9,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-14T13:41:05.809644",
+    "last_confirmed": "2026-01-14T13:41:05.809644",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "c1ebc7a9515d": {
+    "pattern_id": "c1ebc7a9515d",
+    "pattern_type": "regime_strategy",
+    "description": "trending_up: Active loss management - closing losing positions quickly to free margin for winners. agentic_gptoss and gptoss_120b_simple both used this successfully.",
+    "conditions": {
+      "regime": "trending_up"
+    },
+    "success_rate": 0.85,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-14T13:41:05.809644",
+    "last_confirmed": "2026-01-14T13:41:05.809644",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "0f52056e2d1f": {
+    "pattern_id": "0f52056e2d1f",
+    "pattern_type": "regime_strategy",
+    "description": "trending_up: Asset selection matters: ETH (+4.96%) and DOGE (+4.77%) outperformed. Agents focusing on BTC (+3.14%) and SOL (+1.55%) captured less alpha.",
+    "conditions": {
+      "regime": "trending_up"
+    },
+    "success_rate": 0.88,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-14T13:41:05.809644",
+    "last_confirmed": "2026-01-14T13:41:05.809644",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "a1514da28d82": {
+    "pattern_id": "a1514da28d82",
+    "pattern_type": "regime_strategy",
+    "description": "moderate_bull: Zero-trade strategies (gpt_simple, index_fund) preserve capital but miss +3-5% opportunities. In confirmed uptrends, some participation is optimal.",
+    "conditions": {
+      "regime": "moderate_bull"
+    },
+    "success_rate": 0.8,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-14T13:41:05.809644",
+    "last_confirmed": "2026-01-14T13:41:05.809644",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "cfe2d9d618bd": {
+    "pattern_id": "cfe2d9d618bd",
+    "pattern_type": "regime_strategy",
+    "description": "trending_up: Active trading with 120-200 trades/24h, multi-timeframe bullish alignment, explicit risk validation (2% risk, 2:1 reward), and proactive position management. skill_aware_oss (+$1379.66) and agentic_gptoss (+$689.63) demonstrate this approach works when market is up 2.78-6.44% across all assets.",
+    "conditions": {
+      "regime": "trending_up"
+    },
+    "success_rate": 0.93,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-14T16:35:29.361500",
+    "last_confirmed": "2026-01-14T16:35:29.361500",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "5387d80de228": {
+    "pattern_id": "5387d80de228",
+    "pattern_type": "regime_strategy",
+    "description": "trending_up: Asset selection matters in bull markets: ETH (+6.44%) outperformed BTC (+4.14%) and SOL (+2.94%). Agents focusing on strongest performers (ETH, DOGE at +5.52%) captured more upside.",
+    "conditions": {
+      "regime": "trending_up"
+    },
+    "success_rate": 0.88,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-14T16:35:29.361500",
+    "last_confirmed": "2026-01-14T16:35:29.361500",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "1a9f1b91f6f8": {
+    "pattern_id": "1a9f1b91f6f8",
+    "pattern_type": "regime_strategy",
+    "description": "trending_up: Position sizing at 25% equity limit per position (gptoss_20b_simple reasoning) allows meaningful exposure while maintaining diversification. gptoss_20b_simple achieved +$27.88 with 124 trades using this approach.",
+    "conditions": {
+      "regime": "trending_up"
+    },
+    "success_rate": 0.85,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-14T16:35:29.361500",
+    "last_confirmed": "2026-01-14T16:35:29.361500",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "a40c5d2ede56": {
+    "pattern_id": "a40c5d2ede56",
+    "pattern_type": "regime_strategy",
+    "description": "moderate_bull: Zero-trade strategies preserve capital but miss opportunity cost. In this window with +2.78% to +6.44% gains, passive strategies underperformed active risk-managed approaches by significant margin.",
+    "conditions": {
+      "regime": "moderate_bull"
+    },
+    "success_rate": 0.82,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-14T16:35:29.361500",
+    "last_confirmed": "2026-01-14T16:35:29.361500",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "22e1d50860db": {
+    "pattern_id": "22e1d50860db",
+    "pattern_type": "regime_strategy",
+    "description": "trending_up: Active trading with 120-200 trades/24h, multi-timeframe bullish alignment WITH explicit risk validation (2% equity, 2:1 R:R), proactive position management closing losers quickly. skill_aware_oss achieved +$1236.81 with this approach in +2.5% to +6.2% market",
+    "conditions": {
+      "regime": "trending_up"
+    },
+    "success_rate": 0.95,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-14T16:48:38.211010",
+    "last_confirmed": "2026-01-14T16:49:32.283131",
+    "times_seen": 2,
+    "is_active": false
+  },
+  "bd7ad8c5a7b0": {
+    "pattern_id": "bd7ad8c5a7b0",
+    "pattern_type": "regime_strategy",
+    "description": "trending_up: Asset selection matters: ETH (+6.16%) outperformed BTC (+3.99%) and SOL (+2.88%) - agents focusing on highest momentum assets captured more gains",
+    "conditions": {
+      "regime": "trending_up"
+    },
+    "success_rate": 0.88,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-14T16:48:38.211010",
+    "last_confirmed": "2026-01-14T16:48:38.211010",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "310f2a7f8ca7": {
+    "pattern_id": "310f2a7f8ca7",
+    "pattern_type": "regime_strategy",
+    "description": "trending_up: Optimal trade frequency 120-200 trades/24h. Below 50 misses opportunities (ta_baseline -$25.88), above 240 leads to overtrading losses (llama4_scout -$18.95)",
+    "conditions": {
+      "regime": "trending_up"
+    },
+    "success_rate": 0.92,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-14T16:48:38.211010",
+    "last_confirmed": "2026-01-14T16:48:38.211010",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "51093b7841d7": {
+    "pattern_id": "51093b7841d7",
+    "pattern_type": "regime_strategy",
+    "description": "moderate_bull: Zero-trade strategies preserve capital but miss +3-6% opportunity. Active validated trading (skill_aware_oss +$1236.81) dramatically outperforms passive approaches",
+    "conditions": {
+      "regime": "moderate_bull"
+    },
+    "success_rate": 0.9,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-14T16:48:38.211010",
+    "last_confirmed": "2026-01-14T16:48:38.211010",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "51a9a84a0da6": {
+    "pattern_id": "51a9a84a0da6",
+    "pattern_type": "regime_strategy",
+    "description": "trending_up: Asset selection matters: ETH (+6.16%) significantly outperformed BTC (+3.99%) and BNB (+2.54%). Agents focusing on higher-beta assets (ETH, DOGE) captured more upside",
+    "conditions": {
+      "regime": "trending_up"
+    },
+    "success_rate": 0.9,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-14T16:49:32.283131",
+    "last_confirmed": "2026-01-14T16:49:32.283131",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "63c01ddf9806": {
+    "pattern_id": "63c01ddf9806",
+    "pattern_type": "regime_strategy",
+    "description": "trending_up: Zero-trade strategies preserve capital but miss +3-6% opportunity cost. In confirmed bull markets, active participation with risk controls outperforms passive approaches",
+    "conditions": {
+      "regime": "trending_up"
+    },
+    "success_rate": 0.88,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-14T16:49:32.283131",
+    "last_confirmed": "2026-01-14T16:49:32.283131",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "84bbaecb80ba": {
+    "pattern_id": "84bbaecb80ba",
+    "pattern_type": "regime_strategy",
+    "description": "trending_up: Position sizing at 25% equity limit per position with active monitoring and willingness to close at breakeven to redeploy capital (gptoss_20b_simple: +$27.88 with 125 trades)",
+    "conditions": {
+      "regime": "trending_up"
+    },
+    "success_rate": 0.85,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-14T16:49:32.283131",
+    "last_confirmed": "2026-01-14T16:49:32.283131",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "66ff7e237976": {
+    "pattern_id": "66ff7e237976",
+    "pattern_type": "regime_strategy",
+    "description": "moderate_bearish: Reduce trade frequency dramatically or avoid trading entirely. Zero-trade strategies ($0 PnL) outperformed active trading strategies (avg -$66 PnL). Only agentic_gptoss profited by actively managing shorts and closing positions to lock gains.",
+    "conditions": {
+      "regime": "moderate_bearish"
+    },
+    "success_rate": 0.85,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-16T15:51:30.864993",
+    "last_confirmed": "2026-01-16T15:51:30.864993",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "c6e2892d5d4f": {
+    "pattern_id": "c6e2892d5d4f",
+    "pattern_type": "regime_strategy",
+    "description": "moderate_bearish: Short positions with active profit-taking outperform long positions. agentic_gptoss (+$34.30) succeeded by opening shorts and closing when 'position is already in profit' rather than holding.",
+    "conditions": {
+      "regime": "moderate_bearish"
+    },
+    "success_rate": 0.82,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-16T15:51:30.864993",
+    "last_confirmed": "2026-01-16T15:51:30.864993",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "e765df2d7c4e": {
+    "pattern_id": "e765df2d7c4e",
+    "pattern_type": "regime_strategy",
+    "description": "moderate_bearish: Asset selection matters: DOGE (-3%) showed highest volatility/decline, making it best short target. BNB (-0.61%) showed relative strength, making it worst short target.",
+    "conditions": {
+      "regime": "moderate_bearish"
+    },
+    "success_rate": 0.8,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-16T15:51:30.864993",
+    "last_confirmed": "2026-01-16T15:51:30.864993",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "529173208bf0": {
+    "pattern_id": "529173208bf0",
+    "pattern_type": "regime_strategy",
+    "description": "moderate_bearish: Trade frequency inversely correlates with performance: 0-10 trades = $0 to -$30 loss; 76-103 trades = -$44 to -$180 loss. Optimal is <20 trades or pure capital preservation.",
+    "conditions": {
+      "regime": "moderate_bearish"
+    },
+    "success_rate": 0.88,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-16T15:51:30.864993",
+    "last_confirmed": "2026-01-16T15:51:30.864993",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "3d2f80a5fcae": {
+    "pattern_id": "3d2f80a5fcae",
+    "pattern_type": "regime_strategy",
+    "description": "mixed_choppy: Reduce or eliminate trading. In mixed markets (BNB +0.93%, SOL +1.65%, BTC -0.08%, ETH -0.03%, DOGE -1.19%), zero-trade strategies ($0 PnL) outperformed all active traders (all negative PnL). Trade frequency inversely correlates with performance: 0 trades = $0, 2 trades = -$0.29, 160 trades = -$17.96, 201 trades = -$360.24.",
+    "conditions": {
+      "regime": "mixed_choppy"
+    },
+    "success_rate": 0.93,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-17T05:09:21.357593",
+    "last_confirmed": "2026-01-17T05:09:21.357593",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "821b09058738": {
+    "pattern_id": "821b09058738",
+    "pattern_type": "regime_strategy",
+    "description": "mixed_choppy: If trading, prefer assets showing clear directional movement (SOL +1.65%, BNB +0.93%) over flat assets (BTC -0.08%, ETH -0.03%). Avoid shorting in mixed regimes even with bearish technical signals.",
+    "conditions": {
+      "regime": "mixed_choppy"
+    },
+    "success_rate": 0.85,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-17T05:09:21.357593",
+    "last_confirmed": "2026-01-17T05:09:21.357593",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "9f7b54bbe224": {
+    "pattern_id": "9f7b54bbe224",
+    "pattern_type": "regime_strategy",
+    "description": "mixed_choppy: Technical analysis signals (multi-timeframe alignment, MACD, SMA crossovers) generate false signals in mixed markets. Both bullish and bearish aligned trades lost money.",
+    "conditions": {
+      "regime": "mixed_choppy"
+    },
+    "success_rate": 0.88,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-17T05:09:21.357593",
+    "last_confirmed": "2026-01-17T05:09:21.357593",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "3df112a75fba": {
+    "pattern_id": "3df112a75fba",
+    "pattern_type": "regime_strategy",
+    "description": "moderate_bull: Zero trading or very low frequency (<30 trades/24h) with long-only bias. Market up +0.63% to +2.15% across all assets - passive strategies outperformed all active traders. Only skill_only_oss with 89 trades and selective longs achieved positive PnL.",
+    "conditions": {
+      "regime": "moderate_bull"
+    },
+    "success_rate": 0.92,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-17T16:36:23.112250",
+    "last_confirmed": "2026-01-17T16:36:23.112250",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "9432a4f77ff5": {
+    "pattern_id": "9432a4f77ff5",
+    "pattern_type": "regime_strategy",
+    "description": "moderate_bull: Avoid shorting entirely. All short-biased strategies lost money despite 'bearish' technical signals. Technical indicators gave false bearish readings in a bullish regime.",
+    "conditions": {
+      "regime": "moderate_bull"
+    },
+    "success_rate": 0.9,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-17T16:36:23.112250",
+    "last_confirmed": "2026-01-17T16:36:23.112250",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "3ed5d51204d4": {
+    "pattern_id": "3ed5d51204d4",
+    "pattern_type": "regime_strategy",
+    "description": "moderate_bull: Asset selection: BNB (+2.15%) significantly outperformed BTC (+0.63%). Long positions in higher-beta assets would have captured more upside.",
+    "conditions": {
+      "regime": "moderate_bull"
+    },
+    "success_rate": 0.85,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-17T16:36:23.112250",
+    "last_confirmed": "2026-01-17T16:36:23.112250",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "881589d0571d": {
+    "pattern_id": "881589d0571d",
+    "pattern_type": "regime_strategy",
+    "description": "moderate_bull: Zero trading or extremely low frequency (<25 trades/24h). Market showed BNB +2.03%, ETH +1.02%, DOGE +1.07%, BTC +0.24% but all active traders lost money. Only non-traders preserved capital. If trading, long-only on strongest performers (BNB).",
+    "conditions": {
+      "regime": "moderate_bull"
+    },
+    "success_rate": 0.93,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-17T20:31:30.965569",
+    "last_confirmed": "2026-01-17T20:31:30.965569",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "289fba29d27f": {
+    "pattern_id": "289fba29d27f",
+    "pattern_type": "regime_strategy",
+    "description": "moderate_bull: Avoid shorting entirely. skill_aware_oss lost $-167.78 with 171 trades including BTCUSDT shorts despite 'bearish alignment' signals. Market direction trumps technical signals.",
+    "conditions": {
+      "regime": "moderate_bull"
+    },
+    "success_rate": 0.9,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-17T20:31:30.965569",
+    "last_confirmed": "2026-01-17T20:31:30.965569",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "18c1ea64eb08": {
+    "pattern_id": "18c1ea64eb08",
+    "pattern_type": "regime_strategy",
+    "description": "moderate_bull: Asset selection critical: BNB (+2.03%) significantly outperformed SOL (-0.09%). Agents focusing on SOL longs (llama4_scout) lost heavily despite 'uptrend' reasoning.",
+    "conditions": {
+      "regime": "moderate_bull"
+    },
+    "success_rate": 0.88,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-17T20:31:30.965569",
+    "last_confirmed": "2026-01-17T20:31:30.965569",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "4823a485e95b": {
+    "pattern_id": "4823a485e95b",
+    "pattern_type": "regime_strategy",
+    "description": "moderate_bull: Technical analysis signals (multi-timeframe alignment, MACD, RSI) are unreliable for direction. Both bullish and bearish technical signals led to losses.",
+    "conditions": {
+      "regime": "moderate_bull"
+    },
+    "success_rate": 0.85,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-17T20:31:30.965569",
+    "last_confirmed": "2026-01-17T20:31:30.965569",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "290c38a637cf": {
+    "pattern_id": "290c38a637cf",
+    "pattern_type": "regime_strategy",
+    "description": "flat_low_volatility: Zero trading or extremely low frequency (<5 trades/24h). Only ta_baseline (+$3.49 with 19 trades) was profitable. All high-frequency traders lost money. Transaction costs dominate in flat markets.",
+    "conditions": {
+      "regime": "flat_low_volatility"
+    },
+    "success_rate": 0.95,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-18T19:53:59.813786",
+    "last_confirmed": "2026-01-18T19:53:59.813786",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "26c8af3acab5": {
+    "pattern_id": "26c8af3acab5",
+    "pattern_type": "regime_strategy",
+    "description": "flat_low_volatility: Avoid shorting entirely. skill_aware_oss lost -$183.75 shorting BTC despite 'bearish alignment' signals. Market ended slightly positive, invalidating short thesis.",
+    "conditions": {
+      "regime": "flat_low_volatility"
+    },
+    "success_rate": 0.93,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-18T19:53:59.813786",
+    "last_confirmed": "2026-01-18T19:53:59.813786",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "3b79df854ce7": {
+    "pattern_id": "3b79df854ce7",
+    "pattern_type": "regime_strategy",
+    "description": "flat_low_volatility: Technical analysis signals (multi-timeframe alignment, MACD, SMA crossovers) are UNRELIABLE in flat markets. Both bullish and bearish signals generated losses.",
+    "conditions": {
+      "regime": "flat_low_volatility"
+    },
+    "success_rate": 0.9,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-18T19:53:59.813786",
+    "last_confirmed": "2026-01-18T19:53:59.813786",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "4de9a02f9095": {
+    "pattern_id": "4de9a02f9095",
+    "pattern_type": "regime_strategy",
+    "description": "flat_low_volatility: Passive index allocation outperforms active trading. index_fund achieved $0.00 vs. average active trader loss of -$96.81.",
+    "conditions": {
+      "regime": "flat_low_volatility"
+    },
+    "success_rate": 0.88,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-18T19:53:59.813786",
+    "last_confirmed": "2026-01-18T19:53:59.813786",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "92151f493f52": {
+    "pattern_id": "92151f493f52",
+    "pattern_type": "regime_strategy",
+    "description": "moderate_bearish: Zero trading or extremely low frequency (0-5 trades/24h). All assets down 2-6%, no long positions should be opened regardless of technical signals. Passive strategies (index_fund, gpt_simple) with 0 trades preserved capital perfectly.",
+    "conditions": {
+      "regime": "moderate_bearish"
+    },
+    "success_rate": 0.98,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-19T17:56:45.693797",
+    "last_confirmed": "2026-01-19T17:56:45.693797",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "156bd84ddfbc": {
+    "pattern_id": "156bd84ddfbc",
+    "pattern_type": "regime_strategy",
+    "description": "moderate_bearish: Avoid longs entirely. Every agent that opened long positions lost money. llama4_scout's repeated ETHUSDT longs citing 'uptrend' and 'positive momentum' resulted in -$488.86 loss.",
+    "conditions": {
+      "regime": "moderate_bearish"
+    },
+    "success_rate": 0.96,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-19T17:56:45.693797",
+    "last_confirmed": "2026-01-19T17:56:45.693797",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "1ce96b100bee": {
+    "pattern_id": "1ce96b100bee",
+    "pattern_type": "regime_strategy",
+    "description": "moderate_bearish: If trading at all, short positions only with strict profit-taking. Market showed consistent negative returns across all assets (BTC -2.12%, ETH -3.59%, SOL -5.69%, DOGE -5.63%, BNB -2.48%).",
+    "conditions": {
+      "regime": "moderate_bearish"
+    },
+    "success_rate": 0.9,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-19T17:56:45.693797",
+    "last_confirmed": "2026-01-19T17:56:45.693797",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "625a74701e75": {
+    "pattern_id": "625a74701e75",
+    "pattern_type": "regime_strategy",
+    "description": "moderate_bearish: Technical analysis signals (multi-timeframe alignment, RSI, MACD, SMA) are unreliable for direction in bearish regime. High-confidence technical signals (0.85-0.92) led to largest losses.",
+    "conditions": {
+      "regime": "moderate_bearish"
+    },
+    "success_rate": 0.93,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-19T17:56:45.693797",
+    "last_confirmed": "2026-01-19T17:56:45.693797",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "d413f4fd4a72": {
+    "pattern_id": "d413f4fd4a72",
+    "pattern_type": "regime_strategy",
+    "description": "moderate_bearish: Trade frequency inversely correlates with performance: 0 trades = $0 loss, 2 trades = -$0.25 to -$1.81, 24-65 trades = -$38 to -$81, 150+ trades = -$120 to -$545.",
+    "conditions": {
+      "regime": "moderate_bearish"
+    },
+    "success_rate": 0.97,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-19T17:56:45.693797",
+    "last_confirmed": "2026-01-19T17:56:45.693797",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "2c1cff642668": {
+    "pattern_id": "2c1cff642668",
+    "pattern_type": "regime_strategy",
+    "description": "strong_bearish: SHORT-only positions with multi-timeframe bearish confirmation. Trade frequency 100-180 trades optimal. Zero trading also acceptable. Avoid ALL long positions regardless of perceived 'breakout' signals.",
+    "conditions": {
+      "regime": "strong_bearish"
+    },
+    "success_rate": 0.93,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-21T04:44:37.101465",
+    "last_confirmed": "2026-01-21T04:44:37.101465",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "dd53e7a6b641": {
+    "pattern_id": "dd53e7a6b641",
+    "pattern_type": "regime_strategy",
+    "description": "strong_bearish: Prioritize shorting highest-beta assets (ETH, SOL) over lower-volatility assets (DOGE). skill_aware_oss correctly shorted ETH and BTC for maximum gains.",
+    "conditions": {
+      "regime": "strong_bearish"
+    },
+    "success_rate": 0.9,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-21T04:44:37.101465",
+    "last_confirmed": "2026-01-21T04:44:37.101465",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "19949c8de2bd": {
+    "pattern_id": "19949c8de2bd",
+    "pattern_type": "regime_strategy",
+    "description": "strong_bearish: Sweet spot is 100-180 trades with correct directional bias (SHORT). 0 trades preserves capital. 198+ trades with wrong bias (LONG) causes catastrophic losses.",
+    "conditions": {
+      "regime": "strong_bearish"
+    },
+    "success_rate": 0.92,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-21T04:44:37.101465",
+    "last_confirmed": "2026-01-21T04:44:37.101465",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "aa89a1d87686": {
+    "pattern_id": "aa89a1d87686",
+    "pattern_type": "regime_strategy",
+    "description": "moderate_bearish: Trade frequency sweet spot is 100-130 trades/24h with disciplined closing of losing positions. Zero trading or very low frequency (2-6 trades) also works. Avoid 150+ trades/24h. gptoss_20b_simple (+$92.40, 128 trades) outperformed both inactive agents and hyperactive traders.",
+    "conditions": {
+      "regime": "moderate_bearish"
+    },
+    "success_rate": 0.92,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-22T20:29:54.563108",
+    "last_confirmed": "2026-01-22T20:29:54.563108",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "750916be7269": {
+    "pattern_id": "750916be7269",
+    "pattern_type": "regime_strategy",
+    "description": "moderate_bearish: Closing losing positions quickly with explicit margin management reasoning ('frees margin', 'locks the loss') outperforms holding. gptoss_20b_simple closed BTC short at -$4.22 loss with 0.92 confidence, preventing further drawdown.",
+    "conditions": {
+      "regime": "moderate_bearish"
+    },
+    "success_rate": 0.9,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-22T20:29:54.563108",
+    "last_confirmed": "2026-01-22T20:29:54.563108",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "b66c6c6bbc0f": {
+    "pattern_id": "b66c6c6bbc0f",
+    "pattern_type": "regime_strategy",
+    "description": "moderate_bearish: Avoid long positions entirely on assets showing intraday positive momentum when daily returns are negative. SOLUSDT showed +2.5% intraday moves but ended -1.20% daily. Long entries failed consistently.",
+    "conditions": {
+      "regime": "moderate_bearish"
+    },
+    "success_rate": 0.95,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-22T20:29:54.563108",
+    "last_confirmed": "2026-01-22T20:29:54.563108",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "426cbcc9031b": {
+    "pattern_id": "426cbcc9031b",
+    "pattern_type": "regime_strategy",
+    "description": "moderate_bearish: BNB (+0.13%) was the only positive asset. Selective exposure to relative strength assets while avoiding broad market shorts may preserve capital.",
+    "conditions": {
+      "regime": "moderate_bearish"
+    },
+    "success_rate": 0.78,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-22T20:29:54.563108",
+    "last_confirmed": "2026-01-22T20:29:54.563108",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "2162dad0655a": {
+    "pattern_id": "2162dad0655a",
+    "pattern_type": "regime_strategy",
+    "description": "mixed_slightly_bullish: Zero trading or extremely low frequency (<10 trades/24h). All active traders lost money. Passive strategies preserved capital perfectly.",
+    "conditions": {
+      "regime": "mixed_slightly_bullish"
+    },
+    "success_rate": 0.95,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-24T13:39:32.978246",
+    "last_confirmed": "2026-01-24T13:39:32.978246",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "605b34edab12": {
+    "pattern_id": "605b34edab12",
+    "pattern_type": "regime_strategy",
+    "description": "mixed_slightly_bullish: Ignore technical signals entirely. Transaction costs and whipsaws destroy any edge. index_fund ($0.00) beat all technical traders.",
+    "conditions": {
+      "regime": "mixed_slightly_bullish"
+    },
+    "success_rate": 0.9,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-24T13:39:32.978246",
+    "last_confirmed": "2026-01-24T13:39:32.978246",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "d066fa0113d6": {
+    "pattern_id": "d066fa0113d6",
+    "pattern_type": "regime_strategy",
+    "description": "mixed_slightly_bullish: Stay flat. skill_aware_oss shorted aggressively (-$730), llama4_scout went long aggressively (-$127). Both wrong.",
+    "conditions": {
+      "regime": "mixed_slightly_bullish"
+    },
+    "success_rate": 0.92,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-24T13:39:32.978246",
+    "last_confirmed": "2026-01-24T13:39:32.978246",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "8b4cc8e50202": {
+    "pattern_id": "8b4cc8e50202",
+    "pattern_type": "regime_strategy",
+    "description": "mixed_slightly_bullish: If trading at all, focus on strongest momentum asset (ETH) with minimal position size and tight stops.",
+    "conditions": {
+      "regime": "mixed_slightly_bullish"
+    },
+    "success_rate": 0.75,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-24T13:39:32.978246",
+    "last_confirmed": "2026-01-24T13:39:32.978246",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "b9d722ac4c83": {
+    "pattern_id": "b9d722ac4c83",
+    "pattern_type": "regime_strategy",
+    "description": "mixed_slightly_bullish: Moderate trade frequency (100-160 trades) with balanced long/short exposure OR zero trading. Avoid aggressive shorting despite BTC weakness. Winners: gptoss_20b_simple (+$161.80), skill_aware_oss (+$85.56), ta_baseline (+$55.23). Losers: aggressive shorters.",
+    "conditions": {
+      "regime": "mixed_slightly_bullish"
+    },
+    "success_rate": 0.88,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-26T18:07:01.492540",
+    "last_confirmed": "2026-01-26T18:07:01.492540",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "4829d5191a09": {
+    "pattern_id": "4829d5191a09",
+    "pattern_type": "regime_strategy",
+    "description": "mixed_slightly_bullish: Technical analysis baseline outperforms LLM-based multi-timeframe analysis. ta_baseline's 24 trades beat most agents with 150+ trades.",
+    "conditions": {
+      "regime": "mixed_slightly_bullish"
+    },
+    "success_rate": 0.82,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-26T18:07:01.492540",
+    "last_confirmed": "2026-01-26T18:07:01.492540",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "2e027c8a2fbd": {
+    "pattern_id": "2e027c8a2fbd",
+    "pattern_type": "regime_strategy",
+    "description": "mixed_slightly_bullish: If shorting, focus ONLY on the weakest asset (BTC -0.16%) and avoid shorting positive momentum assets (SOL, DOGE, ETH).",
+    "conditions": {
+      "regime": "mixed_slightly_bullish"
+    },
+    "success_rate": 0.85,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-01-26T18:07:01.492540",
+    "last_confirmed": "2026-01-26T18:07:01.492540",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "46d7215077bb": {
+    "pattern_id": "46d7215077bb",
+    "pattern_type": "regime_strategy",
+    "description": "mixed_slightly_bullish: Technical analysis baseline with moderate frequency (40 trades/24h) or zero trading. ta_baseline was the ONLY profitable agent (+$183.43). LLM-based multi-timeframe analysis consistently fails in this regime.",
+    "conditions": {
+      "regime": "mixed_slightly_bullish"
+    },
+    "success_rate": 0.92,
+    "sample_size": 0,
+    "confidence": 0.21999999999999997,
+    "first_seen": "2026-01-27T18:17:34.631969",
+    "last_confirmed": "2026-01-27T18:17:34.631969",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "bd656e6389c3": {
+    "pattern_id": "bd656e6389c3",
+    "pattern_type": "regime_strategy",
+    "description": "mixed_slightly_bullish: Focus on strongest momentum asset (BNB +1.64%) rather than diversifying across all assets. Agents that traded BTC (-0.25%) heavily underperformed.",
+    "conditions": {
+      "regime": "mixed_slightly_bullish"
+    },
+    "success_rate": 0.85,
+    "sample_size": 0,
+    "confidence": 0.1499999999999999,
+    "first_seen": "2026-01-27T18:17:34.631969",
+    "last_confirmed": "2026-01-27T18:17:34.631969",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "53f1db1639c2": {
+    "pattern_id": "53f1db1639c2",
+    "pattern_type": "regime_strategy",
+    "description": "mixed_slightly_bullish: Trade frequency sweet spot is 6-40 trades/24h. Below 6 preserves capital, above 40 transaction costs and whipsaws erode returns. 165+ trades guarantees losses.",
+    "conditions": {
+      "regime": "mixed_slightly_bullish"
+    },
+    "success_rate": 0.9,
+    "sample_size": 0,
+    "confidence": 0.19999999999999996,
+    "first_seen": "2026-01-27T18:17:34.631969",
+    "last_confirmed": "2026-01-27T18:17:34.631969",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "1cb8839ba301": {
+    "pattern_id": "1cb8839ba301",
+    "pattern_type": "regime_strategy",
+    "description": "uniform_bullish: Passive index fund allocation or zero trading. When ALL assets are positive (BNB +1.23%, BTC +1.49%, ETH +1.08%, SOL +0.22%, DOGE +0.26%), active trading destroys value through transaction costs. index_fund achieved $0.00 vs -$134.51 for most active trader",
+    "conditions": {
+      "regime": "uniform_bullish"
+    },
+    "success_rate": 0.92,
+    "sample_size": 0,
+    "confidence": 0.47000000000000003,
+    "first_seen": "2026-01-28T18:15:38.094357",
+    "last_confirmed": "2026-01-28T18:15:38.094357",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "95c54689d443": {
+    "pattern_id": "95c54689d443",
+    "pattern_type": "regime_strategy",
+    "description": "uniform_bullish: If trading, use extremely low frequency (<10 trades/24h) and hold positions longer. The 8 trades from index_fund vs 166 from agentic_gptoss shows 20x frequency difference with $134.51 performance gap",
+    "conditions": {
+      "regime": "uniform_bullish"
+    },
+    "success_rate": 0.9,
+    "sample_size": 0,
+    "confidence": 0.45,
+    "first_seen": "2026-01-28T18:15:38.094357",
+    "last_confirmed": "2026-01-28T18:15:38.094357",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "8085752022b6": {
+    "pattern_id": "8085752022b6",
+    "pattern_type": "regime_strategy",
+    "description": "uniform_bullish: Focus on strongest momentum asset (BTC +1.49%) with single entry and hold, rather than multi-asset rotation. Transaction costs compound with each trade",
+    "conditions": {
+      "regime": "uniform_bullish"
+    },
+    "success_rate": 0.85,
+    "sample_size": 0,
+    "confidence": 0.39999999999999997,
+    "first_seen": "2026-01-28T18:15:38.094357",
+    "last_confirmed": "2026-01-28T18:15:38.094357",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "33e013447a2d": {
+    "pattern_id": "33e013447a2d",
+    "pattern_type": "regime_strategy",
+    "description": "mixed_slightly_bullish: Technical analysis baseline with moderate frequency (30-40 trades/24h) outperforms LLM-based multi-timeframe analysis. ta_baseline lost only $45.95 vs $134.51 for agentic_gptoss",
+    "conditions": {
+      "regime": "mixed_slightly_bullish"
+    },
+    "success_rate": 0.88,
+    "sample_size": 0,
+    "confidence": 0.43,
+    "first_seen": "2026-01-28T18:15:38.094357",
+    "last_confirmed": "2026-01-28T18:15:38.094357",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "ee490b5bd888": {
+    "pattern_id": "ee490b5bd888",
+    "pattern_type": "regime_strategy",
+    "description": "uniform_bearish: SHORT-biased strategy with 45-55 trades/24h. Use RSI oversold + bearish MACD + price below SMA as entry confirmation. skill_aware_oss achieved +$691.44 vs index_fund $0.",
+    "conditions": {
+      "regime": "uniform_bearish"
+    },
+    "success_rate": 0.9,
+    "sample_size": 0,
+    "confidence": 0.8,
+    "first_seen": "2026-01-30T05:51:21.855407",
+    "last_confirmed": "2026-01-30T05:51:21.855407",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "9c2d3b100fa1": {
+    "pattern_id": "9c2d3b100fa1",
+    "pattern_type": "regime_strategy",
+    "description": "uniform_bearish: Avoid LONG positions entirely. index_fund's long-only allocation with 1.0 confidence failed to generate returns despite 'conviction'. Market direction trumps allocation strategy.",
+    "conditions": {
+      "regime": "uniform_bearish"
+    },
+    "success_rate": 0.88,
+    "sample_size": 0,
+    "confidence": 0.78,
+    "first_seen": "2026-01-30T05:51:21.855407",
+    "last_confirmed": "2026-01-30T05:51:21.855407",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "b79729dfce1f": {
+    "pattern_id": "b79729dfce1f",
+    "pattern_type": "regime_strategy",
+    "description": "uniform_bearish: Trade frequency sweet spot is 48-63 trades/24h. Below 10 trades misses opportunities (gpt_simple -$73.60, ta_baseline $0). Above 60 trades shows diminishing returns (agentic_gptoss only +$79.87 with 63 trades).",
+    "conditions": {
+      "regime": "uniform_bearish"
+    },
+    "success_rate": 0.85,
+    "sample_size": 0,
+    "confidence": 0.75,
+    "first_seen": "2026-01-30T05:51:21.855407",
+    "last_confirmed": "2026-01-30T05:51:21.855407",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "586d8ce4bd20": {
+    "pattern_id": "586d8ce4bd20",
+    "pattern_type": "regime_strategy",
+    "description": "uniform_bearish: Focus shorts on highest-volatility losers: ETHUSDT (-2.31%) offered best short opportunity vs SOLUSDT (-1.31%). Volatility creates profit potential.",
+    "conditions": {
+      "regime": "uniform_bearish"
+    },
+    "success_rate": 0.75,
+    "sample_size": 0,
+    "confidence": 0.65,
+    "first_seen": "2026-01-30T05:51:21.855407",
+    "last_confirmed": "2026-01-30T05:51:21.855407",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "1164adf36a78": {
+    "pattern_id": "1164adf36a78",
+    "pattern_type": "regime_strategy",
+    "description": "mixed_mostly_bullish: SHORT-biased strategy ONLY works when agent has strong conviction and holds through noise. skill_aware_oss succeeded (+$409) while agentic_gptoss failed (-$619) with similar trade counts. Key differentiator: skill_aware_oss maintained position discipline.",
+    "conditions": {
+      "regime": "mixed_mostly_bullish"
+    },
+    "success_rate": 0.88,
+    "sample_size": 0,
+    "confidence": 0.83,
+    "first_seen": "2026-01-31T06:49:58.442377",
+    "last_confirmed": "2026-01-31T06:49:58.442377",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "3cb04f16e227": {
+    "pattern_id": "3cb04f16e227",
+    "pattern_type": "regime_strategy",
+    "description": "mixed_mostly_bullish: Trade frequency sweet spot is 36-172 trades/24h. Below 36 (gpt_simple: 7) limits upside. Above 165 with poor discipline (agentic_gptoss) creates excessive churn.",
+    "conditions": {
+      "regime": "mixed_mostly_bullish"
+    },
+    "success_rate": 0.82,
+    "sample_size": 0,
+    "confidence": 0.7699999999999999,
+    "first_seen": "2026-01-31T06:49:58.442377",
+    "last_confirmed": "2026-01-31T06:49:58.442377",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "4b4579e0ccb8": {
+    "pattern_id": "4b4579e0ccb8",
+    "pattern_type": "regime_strategy",
+    "description": "mixed_mostly_bullish: Focus shorts on the ONE bearish asset (ETHUSDT -0.99%) rather than fighting bullish momentum on BTC/SOL. Agents shorting BTC (+1.57%) and SOL (+3.90%) suffered.",
+    "conditions": {
+      "regime": "mixed_mostly_bullish"
+    },
+    "success_rate": 0.85,
+    "sample_size": 0,
+    "confidence": 0.7999999999999999,
+    "first_seen": "2026-01-31T06:49:58.442377",
+    "last_confirmed": "2026-01-31T06:49:58.442377",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "0e612d4b933d": {
+    "pattern_id": "0e612d4b933d",
+    "pattern_type": "regime_strategy",
+    "description": "mixed_mostly_bullish: index_fund's $0 PnL with 0 trades is suboptimal when 4/5 assets are positive. Passive long exposure would have captured +1.45% average gain.",
+    "conditions": {
+      "regime": "mixed_mostly_bullish"
+    },
+    "success_rate": 0.8,
+    "sample_size": 0,
+    "confidence": 0.75,
+    "first_seen": "2026-01-31T06:49:58.442377",
+    "last_confirmed": "2026-01-31T06:49:58.442377",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "7dc74aeacaa6": {
+    "pattern_id": "7dc74aeacaa6",
+    "pattern_type": "regime_strategy",
+    "description": "uniform_bearish: SHORT-biased strategy with 150-183 trades/24h is optimal IF position management focuses on 'locking in profits' rather than 'cutting losses to free margin'. skill_aware_oss: +$1682.05 with 183 trades. Focus shorts on highest-volatility losers: ETHUSDT (-16.34%), DOGEUSDT (-15.79%), SOLUSDT (-14.28%).",
+    "conditions": {
+      "regime": "uniform_bearish"
+    },
+    "success_rate": 0.92,
+    "sample_size": 0,
+    "confidence": 0.87,
+    "first_seen": "2026-01-31T18:46:18.204938",
+    "last_confirmed": "2026-01-31T18:46:18.204938",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "377c42b45fa7": {
+    "pattern_id": "377c42b45fa7",
+    "pattern_type": "regime_strategy",
+    "description": "uniform_bearish: Low trade frequency (20 trades) with simple technical signals (SMA crossover, ROE targets) provides consistent positive returns. ta_baseline: +$20.54. Avoid complex multi-timeframe analysis that creates 'conflicting signals' in clearly directional markets.",
+    "conditions": {
+      "regime": "uniform_bearish"
+    },
+    "success_rate": 0.85,
+    "sample_size": 0,
+    "confidence": 0.7999999999999999,
+    "first_seen": "2026-01-31T18:46:18.204938",
+    "last_confirmed": "2026-01-31T18:46:18.204938",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "c504515f595b": {
+    "pattern_id": "c504515f595b",
+    "pattern_type": "regime_strategy",
+    "description": "uniform_bearish: index_fund's $0 PnL with 0 trades is suboptimal when all assets decline 7-16%. Any SHORT exposure would have been profitable. Passive long-only allocation fails in bearish regimes.",
+    "conditions": {
+      "regime": "uniform_bearish"
+    },
+    "success_rate": 0.88,
+    "sample_size": 0,
+    "confidence": 0.83,
+    "first_seen": "2026-01-31T18:46:18.204938",
+    "last_confirmed": "2026-01-31T18:46:18.204938",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "c2d24452a91d": {
+    "pattern_id": "c2d24452a91d",
+    "pattern_type": "regime_strategy",
+    "description": "uniform_bearish: Avoid LONG positions entirely. agentic_gptoss opened BTC long with 0.93 confidence during -7.95% BTC decline, contributing to -$246.40 loss. Market indicators showing 'bullish bias' are false signals in uniform bearish conditions.",
+    "conditions": {
+      "regime": "uniform_bearish"
+    },
+    "success_rate": 0.9,
+    "sample_size": 0,
+    "confidence": 0.85,
+    "first_seen": "2026-01-31T18:46:18.204938",
+    "last_confirmed": "2026-01-31T18:46:18.204938",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "1513f5731d21": {
+    "pattern_id": "1513f5731d21",
+    "pattern_type": "regime_strategy",
+    "description": "uniform_bearish: HIGH-frequency SHORT-biased strategy (150-200 trades/24h) with multi-timeframe bearish confirmation. skill_aware_oss achieved +$2911.52 with 200 trades. Focus on highest-volatility losers: SOLUSDT (-11.31%), ETHUSDT (-9.62%).",
+    "conditions": {
+      "regime": "uniform_bearish"
+    },
+    "success_rate": 0.95,
+    "sample_size": 0,
+    "confidence": 0.95,
+    "first_seen": "2026-02-01T05:13:14.088642",
+    "last_confirmed": "2026-02-01T05:13:14.088642",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "b7c538abcbcd": {
+    "pattern_id": "b7c538abcbcd",
+    "pattern_type": "regime_strategy",
+    "description": "uniform_bearish: Avoid LONG positions entirely regardless of oversold signals. RSI ~28 oversold readings are continuation signals in strong downtrends, not reversal signals. skill_aware_oss correctly used oversold RSI as SHORT confirmation.",
+    "conditions": {
+      "regime": "uniform_bearish"
+    },
+    "success_rate": 0.92,
+    "sample_size": 0,
+    "confidence": 0.92,
+    "first_seen": "2026-02-01T05:13:14.088642",
+    "last_confirmed": "2026-02-01T05:13:14.088642",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "1ac6327e1d72": {
+    "pattern_id": "1ac6327e1d72",
+    "pattern_type": "regime_strategy",
+    "description": "uniform_bearish: Trade frequency sweet spot is 149-200 trades/24h. Below 20 trades (ta_baseline: -$99, gpt_simple: -$163) fails to capture momentum. Zero trades (index_fund) misses directional opportunity entirely.",
+    "conditions": {
+      "regime": "uniform_bearish"
+    },
+    "success_rate": 0.9,
+    "sample_size": 0,
+    "confidence": 0.9,
+    "first_seen": "2026-02-01T05:13:14.088642",
+    "last_confirmed": "2026-02-01T05:13:14.088642",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "8c74154f50ba": {
+    "pattern_id": "8c74154f50ba",
+    "pattern_type": "regime_strategy",
+    "description": "uniform_bearish: Position sizing at 2% equity risk with 2:1 reward ratio SUCCEEDS when combined with trend-aligned entries. skill_aware_oss consistently cited this framework in high-confidence decisions.",
+    "conditions": {
+      "regime": "uniform_bearish"
+    },
+    "success_rate": 0.88,
+    "sample_size": 0,
+    "confidence": 0.88,
+    "first_seen": "2026-02-01T05:13:14.088642",
+    "last_confirmed": "2026-02-01T05:13:14.088642",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "87576f394f1a": {
+    "pattern_id": "87576f394f1a",
+    "pattern_type": "regime_strategy",
+    "description": "uniform_bullish: ZERO trading or passive LONG-only allocation. When ALL assets gain (+1.33% to +3.82%), any SHORT-biased strategy loses. index_fund's $0 PnL beats all active agents. If must trade, use <20 trades/24h with LONG bias only.",
+    "conditions": {
+      "regime": "uniform_bullish"
+    },
+    "success_rate": 0.92,
+    "sample_size": 0,
+    "confidence": 0.92,
+    "first_seen": "2026-02-02T21:10:48.202556",
+    "last_confirmed": "2026-02-02T21:10:48.202556",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "30992166d405": {
+    "pattern_id": "30992166d405",
+    "pattern_type": "regime_strategy",
+    "description": "uniform_bullish: Technical analysis baseline with LOW frequency (38 trades/24h) minimizes losses when agent bias conflicts with market direction. ta_baseline lost only -$120 vs -$963 for high-frequency SHORT agents.",
+    "conditions": {
+      "regime": "uniform_bullish"
+    },
+    "success_rate": 0.88,
+    "sample_size": 0,
+    "confidence": 0.88,
+    "first_seen": "2026-02-02T21:10:48.202556",
+    "last_confirmed": "2026-02-02T21:10:48.202556",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "a9a98d76ddc8": {
+    "pattern_id": "a9a98d76ddc8",
+    "pattern_type": "regime_strategy",
+    "description": "uniform_bullish: CRITICAL: Multi-timeframe bearish alignment on lower timeframes (15m, 1h, 4h) does NOT override daily/weekly bullish regime. Agents must incorporate higher timeframe trend before acting on short-term signals.",
+    "conditions": {
+      "regime": "uniform_bullish"
+    },
+    "success_rate": 0.9,
+    "sample_size": 0,
+    "confidence": 0.9,
+    "first_seen": "2026-02-02T21:10:48.202556",
+    "last_confirmed": "2026-02-02T21:10:48.202556",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "27ab2ebb3e2a": {
+    "pattern_id": "27ab2ebb3e2a",
+    "pattern_type": "regime_strategy",
+    "description": "uniform_bullish: Focus LONG positions on highest momentum assets: DOGEUSDT (+3.82%) and SOLUSDT (+3.38%) outperformed BTC/ETH. Momentum leaders in bull markets offer best risk/reward.",
+    "conditions": {
+      "regime": "uniform_bullish"
+    },
+    "success_rate": 0.8,
+    "sample_size": 0,
+    "confidence": 0.8,
+    "first_seen": "2026-02-02T21:10:48.202556",
+    "last_confirmed": "2026-02-02T21:10:48.202556",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "4b2d616c6d99": {
+    "pattern_id": "4b2d616c6d99",
+    "pattern_type": "regime_strategy",
+    "description": "mixed_slightly_bullish: High-frequency mean-reversion LONG on most oversold assets (SOL with -0.02% funding). Avoid SHORT-biased strategies even when lower timeframes show bearish signals. Focus on assets with extreme negative funding for contrarian longs.",
+    "conditions": {
+      "regime": "mixed_slightly_bullish"
+    },
+    "success_rate": 0.82,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-02-12T14:48:18.494649+00:00",
+    "last_confirmed": "2026-02-12T14:48:18.494649+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "bc792ddd3ba1": {
+    "pattern_id": "bc792ddd3ba1",
+    "pattern_type": "regime_strategy",
+    "description": "mixed_slightly_bullish: Low-frequency selective trading (8-19 trades/24h) preserves capital better than high-frequency SHORT strategies (38 trades with losses). ta_bot's 19 trades beat glm_skill_aware's 38 trades.",
+    "conditions": {
+      "regime": "mixed_slightly_bullish"
+    },
+    "success_rate": 0.78,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-02-12T14:48:18.494649+00:00",
+    "last_confirmed": "2026-02-12T14:48:18.494649+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "60b204aea97b": {
+    "pattern_id": "60b204aea97b",
+    "pattern_type": "regime_strategy",
+    "description": "mixed_slightly_bullish: Contrarian funding rate plays work: SOL had most negative funding (-0.02%) and ended +0.86%. DOGE had positive momentum and ended +2.24%. Follow funding rate extremes for mean reversion.",
+    "conditions": {
+      "regime": "mixed_slightly_bullish"
+    },
+    "success_rate": 0.8,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-02-12T14:48:18.494649+00:00",
+    "last_confirmed": "2026-02-12T14:48:18.494649+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "93daead8f1d7": {
+    "pattern_id": "93daead8f1d7",
+    "pattern_type": "regime_strategy",
+    "description": "mixed_slightly_bullish: Medium-frequency (15-20 trades/24h) with contrarian funding rate plays. Use negative funding as LONG signal, positive funding as SHORT signal. Avoid pure directional bias.",
+    "conditions": {
+      "regime": "mixed_slightly_bullish"
+    },
+    "success_rate": 0.82,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-02-16T11:07:42.451513+00:00",
+    "last_confirmed": "2026-02-16T11:07:42.451513+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "ca94beffd80e": {
+    "pattern_id": "ca94beffd80e",
+    "pattern_type": "regime_strategy",
+    "description": "mixed_slightly_bullish: Low-frequency selective trading (4-5 trades/24h) outperforms high-frequency SHORT strategies. glm5_simple's 4 trades (+$40.81) beat gptoss_skill_aware's 15 trades (-$56.43).",
+    "conditions": {
+      "regime": "mixed_slightly_bullish"
+    },
+    "success_rate": 0.8,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-02-16T11:07:42.451513+00:00",
+    "last_confirmed": "2026-02-16T11:07:42.451513+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "fbb8c31f699f": {
+    "pattern_id": "fbb8c31f699f",
+    "pattern_type": "regime_strategy",
+    "description": "mixed_slightly_bullish: Passive index allocation yields zero alpha. index_fund's 5 trades resulted in $0 PnL despite underlying assets moving +0.06% to +0.64%.",
+    "conditions": {
+      "regime": "mixed_slightly_bullish"
+    },
+    "success_rate": 0.75,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-02-16T11:07:42.451513+00:00",
+    "last_confirmed": "2026-02-16T11:07:42.451513+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "26412ab77d1d": {
+    "pattern_id": "26412ab77d1d",
+    "pattern_type": "regime_strategy",
+    "description": "mixed_slightly_bearish: Medium-to-high frequency SHORT-biased trading (36-61 trades/24h) with journal/self-reflective position management. The market was mixed (BTC +0.22%, ETH -0.17%, SOL -0.05%) with BNB -0.70% and DOGE -1.05% as clear losers. Agents that traded actively but with self-awareness of overtrading (journal_aware) or multi-timeframe validation (agentic) profited. Agents that blindly applied 'uniform bearish' label and over-concentrated lost heavily.",
+    "conditions": {
+      "regime": "mixed_slightly_bearish"
+    },
+    "success_rate": 0.78,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-02-24T20:02:27.430263+00:00",
+    "last_confirmed": "2026-02-24T20:02:27.430263+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "e6f11f5c5323": {
+    "pattern_id": "e6f11f5c5323",
+    "pattern_type": "regime_strategy",
+    "description": "mixed_slightly_bearish: Avoid labeling mixed markets as 'uniform bearish'. When 2/5 assets are slightly positive and 2/5 are slightly negative, selective asset-level directional trades outperform blanket short bias. Focus shorts on clearly weak assets (DOGE -1.05%, BNB -0.70%) and avoid fighting BTC's slight uptrend.",
+    "conditions": {
+      "regime": "mixed_slightly_bearish"
+    },
+    "success_rate": 0.8,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-02-24T20:02:27.430263+00:00",
+    "last_confirmed": "2026-02-24T20:02:27.430263+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "0276ea246198": {
+    "pattern_id": "0276ea246198",
+    "pattern_type": "regime_strategy",
+    "description": "mixed_slightly_bearish: Trade frequency sweet spot shifts to 36-61 trades/24h in mixed-bearish markets, higher than the 4-20 range optimal for mixed-bullish markets. The slight bearish bias creates more short-term momentum opportunities that reward active trading.",
+    "conditions": {
+      "regime": "mixed_slightly_bearish"
+    },
+    "success_rate": 0.72,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-02-24T20:02:27.430263+00:00",
+    "last_confirmed": "2026-02-24T20:02:27.430263+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "cb9d738225b1": {
+    "pattern_id": "cb9d738225b1",
+    "pattern_type": "regime_strategy",
+    "description": "uniform_bullish: ZERO active shorting. Passive LONG allocation or ultra-low frequency selective LONG entries only. gptoss_simple's 4 trades (+$42) and index_fund's 0 active trades ($0) vastly outperformed all SHORT-biased agents (-$500 to -$1160). When ALL 5 assets are positive by +2.7% to +7.5%, any short strategy is catastrophic.",
+    "conditions": {
+      "regime": "uniform_bullish"
+    },
+    "success_rate": 0.95,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-02-25T11:22:18.331948+00:00",
+    "last_confirmed": "2026-02-25T11:22:18.331948+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "d65c7d1f8270": {
+    "pattern_id": "d65c7d1f8270",
+    "pattern_type": "regime_strategy",
+    "description": "uniform_bullish: Lower timeframe bearish signals (15m, 1h, 4h MACD bearish, RSI oversold, price below SMA) are TRAPS in a uniformly bullish daily regime. These are pullback signals within an uptrend, not trend reversal signals. Agents must check higher timeframe direction before acting on lower timeframe bearish signals.",
+    "conditions": {
+      "regime": "uniform_bullish"
+    },
+    "success_rate": 0.93,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-02-25T11:22:18.331948+00:00",
+    "last_confirmed": "2026-02-25T11:22:18.331948+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "23e879bbaac9": {
+    "pattern_id": "23e879bbaac9",
+    "pattern_type": "regime_strategy",
+    "description": "uniform_bullish: Trade frequency inversely correlates with performance when bias is wrong: 4 trades = +$42, 18 trades = -$31, 37 trades = -$502, 51 trades = -$1160. Each additional wrong-direction trade compounds losses.",
+    "conditions": {
+      "regime": "uniform_bullish"
+    },
+    "success_rate": 0.92,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-02-25T11:22:18.331948+00:00",
+    "last_confirmed": "2026-02-25T11:22:18.331948+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "10451bab962f": {
+    "pattern_id": "10451bab962f",
+    "pattern_type": "regime_strategy",
+    "description": "uniform_bullish: Focus LONG positions on highest momentum assets. SOL gained +7.54% (best performer), ETH +5.03%, BTC +3.47%. Momentum ranking would have identified SOL as the top opportunity.",
+    "conditions": {
+      "regime": "uniform_bullish"
+    },
+    "success_rate": 0.8,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-02-25T11:22:18.331948+00:00",
+    "last_confirmed": "2026-02-25T11:22:18.331948+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "d5a492ac7737": {
+    "pattern_id": "d5a492ac7737",
+    "pattern_type": "regime_strategy",
+    "description": "uniform_bullish_strong: ZERO shorting. This window saw the strongest uniform bullish move yet (BNB +7.50%, BTC +7.18%, ETH +11.81%, SOL +14.03%, DOGE +12.38%). Only agents that avoided shorting (gptoss_simple $0, gptoss20b_simple +$39.68) or had self-reflective exits (gptoss_journal_aware +$187.76) survived. Every short-biased agent lost $433-$754. Passive long allocation or zero trading is optimal.",
+    "conditions": {
+      "regime": "uniform_bullish_strong"
+    },
+    "success_rate": 0.95,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-02-25T20:04:20.720008+00:00",
+    "last_confirmed": "2026-02-25T20:04:20.720008+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "b2f249bc5eb9": {
+    "pattern_id": "b2f249bc5eb9",
+    "pattern_type": "regime_strategy",
+    "description": "uniform_bullish_strong: Trade frequency inversely correlates with losses when bias is wrong: 0 trades = $0, 5 trades = +$40, 42 trades = -$754, 46 trades = -$434, 53 trades = -$720. Each additional wrong-direction trade compounds losses through spread/fees and adverse price movement.",
+    "conditions": {
+      "regime": "uniform_bullish_strong"
+    },
+    "success_rate": 0.95,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-02-25T20:04:20.720008+00:00",
+    "last_confirmed": "2026-02-25T20:04:20.720008+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "207e29cb1a70": {
+    "pattern_id": "207e29cb1a70",
+    "pattern_type": "regime_strategy",
+    "description": "uniform_bullish_strong: Lower timeframe bearish signals (RSI 38, MACD bearish, price below SMA, Bollinger Band touch) are TRAPS \u2014 they represent intraday pullbacks within a massive daily uptrend. SOL rallied +14.03% despite showing 'bearish' signals on 15m/1h/4h timeframes.",
+    "conditions": {
+      "regime": "uniform_bullish_strong"
+    },
+    "success_rate": 0.93,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-02-25T20:04:20.720008+00:00",
+    "last_confirmed": "2026-02-25T20:04:20.720008+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "692fb24bc4b4": {
+    "pattern_id": "692fb24bc4b4",
+    "pattern_type": "regime_strategy",
+    "description": "uniform_bullish_strong: Self-reflective journal-aware agents that recognize 'we are overtrading' and close positions to reduce exposure can still profit (+$187.76) even when initial directional bias is partially wrong. Meta-cognitive awareness is the strongest edge in regime-misidentified environments.",
+    "conditions": {
+      "regime": "uniform_bullish_strong"
+    },
+    "success_rate": 0.85,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-02-25T20:04:20.720008+00:00",
+    "last_confirmed": "2026-02-25T20:04:20.720008+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "6d439d8ccb69": {
+    "pattern_id": "6d439d8ccb69",
+    "pattern_type": "regime_strategy",
+    "description": "uniform_bearish_moderate: Market was uniformly bearish (BNB -1.46%, BTC -2.01%, ETH -2.20%, SOL -3.88%, DOGE -6.88%). The winning agents (journal_aware +$920.88, agentic +$282.25) likely captured early intraday long moves before the decline or correctly shorted. Ultra-low frequency or zero trading preserved capital. Agents citing 'bullish alignment' from prior momentum were caught in the reversal.",
+    "conditions": {
+      "regime": "uniform_bearish_moderate"
+    },
+    "success_rate": 0.82,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-02-26T20:03:39.796184+00:00",
+    "last_confirmed": "2026-02-26T20:03:39.796184+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "088df97094e9": {
+    "pattern_id": "088df97094e9",
+    "pattern_type": "regime_strategy",
+    "description": "uniform_bearish_moderate: Self-reflective agents that can recognize when their initial thesis is wrong and close positions quickly outperform mechanical rule-followers. Journal-aware's +$920.88 suggests active management with quick profit-taking on intraday moves.",
+    "conditions": {
+      "regime": "uniform_bearish_moderate"
+    },
+    "success_rate": 0.8,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-02-26T20:03:39.796184+00:00",
+    "last_confirmed": "2026-02-26T20:03:39.796184+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "59f2be5f3a30": {
+    "pattern_id": "59f2be5f3a30",
+    "pattern_type": "regime_strategy",
+    "description": "uniform_bearish_moderate: DOGE was the worst performer (-6.88%) after being cited as having 'strong bullish trend with high momentum and price up 13% in 24h' \u2014 extreme prior momentum can signal reversal risk, not continuation. Lagging momentum indicators are dangerous at regime transitions.",
+    "conditions": {
+      "regime": "uniform_bearish_moderate"
+    },
+    "success_rate": 0.78,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-02-26T20:03:39.796184+00:00",
+    "last_confirmed": "2026-02-26T20:03:39.796184+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "3081c5970aa6": {
+    "pattern_id": "3081c5970aa6",
+    "pattern_type": "regime_strategy",
+    "description": "uniform_bearish_moderate: Ultra-low frequency trading (10-13 trades/24h) with SHORT bias aligned to the actual bearish trend. gptoss_forum_aware's 13 trades yielded +$1884.64 while gptoss_simple's 10 trades yielded +$56.31. High-frequency agents (40-46 trades) lost $430-$444 despite the market moving in a direction that should have been profitable for SHORT-biased strategies. The key differentiator is SELECTIVITY, not direction.",
+    "conditions": {
+      "regime": "uniform_bearish_moderate"
+    },
+    "success_rate": 0.85,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-02-27T20:04:10.749255+00:00",
+    "last_confirmed": "2026-02-27T20:04:10.749255+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "62afe417b1d8": {
+    "pattern_id": "62afe417b1d8",
+    "pattern_type": "regime_strategy",
+    "description": "uniform_bearish_moderate: In moderate bearish markets (BNB -2.38%, BTC -3.25%, ETH -5.38%, SOL -5.70%, DOGE -4.44%), position churn destroys edge even when directional bias is correct. Agents that traded less but held positions longer captured the trend move. High-frequency agents likely got whipsawed by intraday volatility within the broader downtrend.",
+    "conditions": {
+      "regime": "uniform_bearish_moderate"
+    },
+    "success_rate": 0.82,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-02-27T20:04:10.749255+00:00",
+    "last_confirmed": "2026-02-27T20:04:10.749255+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "e64222f5722b": {
+    "pattern_id": "e64222f5722b",
+    "pattern_type": "regime_strategy",
+    "description": "uniform_bearish_moderate: Focus SHORT entries on highest-beta assets. ETH (-5.38%) and SOL (-5.70%) had the largest declines, offering the most profit potential for correctly-timed shorts. DOGE (-4.44%) and BTC (-3.25%) were moderate. BNB (-2.38%) had the smallest decline.",
+    "conditions": {
+      "regime": "uniform_bearish_moderate"
+    },
+    "success_rate": 0.78,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-02-27T20:04:10.749255+00:00",
+    "last_confirmed": "2026-02-27T20:04:10.749255+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "bcafdb284f2c": {
+    "pattern_id": "bcafdb284f2c",
+    "pattern_type": "regime_strategy",
+    "description": "mixed_slightly_bullish: Ultra-low frequency or zero trading. Market moved BTC +1.62%, ETH +1.34%, SOL +0.78%, BNB +0.50%, DOGE -0.11% \u2014 a mildly bullish environment with small moves. Agents that stayed out preserved capital; the only profitable active agent (ta_bot) made just 8 highly selective trades. Avoid SHORT-biased strategies entirely.",
+    "conditions": {
+      "regime": "mixed_slightly_bullish"
+    },
+    "success_rate": 0.88,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-02-28T20:04:18.957410+00:00",
+    "last_confirmed": "2026-02-28T20:04:18.957410+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "e7daf1610064": {
+    "pattern_id": "e7daf1610064",
+    "pattern_type": "regime_strategy",
+    "description": "low_volatility_mixed: When daily moves are small (+/- 0.1% to 1.6%), high-frequency trading destroys edge through spread/fees. Only trade when conviction is very high and expected move exceeds transaction costs significantly.",
+    "conditions": {
+      "regime": "low_volatility_mixed"
+    },
+    "success_rate": 0.82,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-02-28T20:04:18.957410+00:00",
+    "last_confirmed": "2026-02-28T20:04:18.957410+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "398b8ef2d22a": {
+    "pattern_id": "398b8ef2d22a",
+    "pattern_type": "regime_strategy",
+    "description": "mixed_low_volatility: Zero or ultra-low frequency trading. Market was mixed (BNB +1.21%, BTC -0.50%, ETH +0.63%, SOL +1.36%, DOGE -0.93%) with small daily moves. 6 agents with 0-1 trades preserved capital at $0. The only profitable active agent (journal_aware, +$237.32) used self-reflective position management to navigate the chop. Agents without self-reflection that traded actively lost money.",
+    "conditions": {
+      "regime": "mixed_low_volatility"
+    },
+    "success_rate": 0.8,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-03-01T20:04:29.226656+00:00",
+    "last_confirmed": "2026-03-01T20:04:29.226656+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "e194e88daa96": {
+    "pattern_id": "e194e88daa96",
+    "pattern_type": "regime_strategy",
+    "description": "mixed_low_volatility: If trading actively, self-reflective position management (recognizing overtrading, closing to reduce exposure) is essential. journal_aware's 69 trades yielded +$237.32 while agentic's 9 trades yielded -$27.39 and forum_aware's 7 trades yielded -$38.01. The difference is meta-cognitive awareness of position management.",
+    "conditions": {
+      "regime": "mixed_low_volatility"
+    },
+    "success_rate": 0.75,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-03-01T20:04:29.226656+00:00",
+    "last_confirmed": "2026-03-01T20:04:29.226656+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "8570cd612fc1": {
+    "pattern_id": "8570cd612fc1",
+    "pattern_type": "regime_strategy",
+    "description": "uniform_bullish_moderate: Zero trading or ultra-low frequency LONG-only entries. Market was uniformly bullish (BNB +3.31%, BTC +2.68%, ETH +3.90%, SOL +5.07%, DOGE +2.46%). Only journal-aware with self-reflective management profited (+$55.48). All other active agents lost money, suggesting most were SHORT-biased. SOL was the best performer (+5.07%), making it the top LONG target.",
+    "conditions": {
+      "regime": "uniform_bullish_moderate"
+    },
+    "success_rate": 0.82,
+    "sample_size": 0,
+    "confidence": 0.12999999999999995,
+    "first_seen": "2026-03-02T20:05:39.547563+00:00",
+    "last_confirmed": "2026-03-09T20:08:51.719362+00:00",
+    "times_seen": 2,
+    "is_active": true
+  },
+  "da493c410991": {
+    "pattern_id": "da493c410991",
+    "pattern_type": "regime_strategy",
+    "description": "uniform_bullish_moderate: Trade frequency inversely correlates with losses when directional bias is wrong: 0 trades = $0, 6 trades = -$22.72, 15 trades = -$25.04, 27 trades = -$86 to +$55, 30-31 trades = -$97 to -$341. Each additional wrong-direction trade costs approximately $3-11.",
+    "conditions": {
+      "regime": "uniform_bullish_moderate"
+    },
+    "success_rate": 0.8,
+    "sample_size": 0,
+    "confidence": 0.14999999999999997,
+    "first_seen": "2026-03-02T20:05:39.547563+00:00",
+    "last_confirmed": "2026-03-09T20:08:51.719362+00:00",
+    "times_seen": 2,
+    "is_active": true
+  },
+  "033f4832bd8f": {
+    "pattern_id": "033f4832bd8f",
+    "pattern_type": "regime_strategy",
+    "description": "uniform_bullish_moderate: SOL was the best performer (+6.25%) followed by ETH (+5.59%) and BTC (+5.35%). Momentum ranking would have identified SOL as the top LONG opportunity. Focus LONG entries on highest-beta assets in uniformly bullish regimes.",
+    "conditions": {
+      "regime": "uniform_bullish_moderate"
+    },
+    "success_rate": 0.8,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-03-02T20:05:39.547563+00:00",
+    "last_confirmed": "2026-03-02T20:05:39.547563+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "4a7470fedc45": {
+    "pattern_id": "4a7470fedc45",
+    "pattern_type": "regime_strategy",
+    "description": "uniform_bearish_moderate: Zero trading or ultra-low frequency. Market was uniformly bearish (BNB -0.38%, BTC -0.67%, ETH -2.63%, SOL -2.72%, DOGE -6.22%). 6/8 agents correctly stayed out. The 2 active agents both lost money. In moderate bearish conditions without extreme moves, inaction is optimal unless SHORT conviction is very high.",
+    "conditions": {
+      "regime": "uniform_bearish_moderate"
+    },
+    "success_rate": 0.9,
+    "sample_size": 0,
+    "confidence": 0.14999999999999997,
+    "first_seen": "2026-03-03T20:04:32.537832+00:00",
+    "last_confirmed": "2026-03-03T20:04:32.537832+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "669d9da54560": {
+    "pattern_id": "669d9da54560",
+    "pattern_type": "regime_strategy",
+    "description": "uniform_bearish_moderate: If trading, focus SHORT entries on highest-beta assets (DOGE -6.22%, SOL -2.72%) rather than lower-volatility assets. DOGE had 2-3x the decline of BTC/BNB, offering the most profit potential for correctly-timed shorts.",
+    "conditions": {
+      "regime": "uniform_bearish_moderate"
+    },
+    "success_rate": 0.75,
+    "sample_size": 0,
+    "confidence": 0,
+    "first_seen": "2026-03-03T20:04:32.537832+00:00",
+    "last_confirmed": "2026-03-03T20:04:32.537832+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "48a4d37c175f": {
+    "pattern_id": "48a4d37c175f",
+    "pattern_type": "regime_strategy",
+    "description": "uniform_bearish_moderate: Trade frequency cap of 4 trades/24h maximum. qwen35_skill_aware's 4 trades lost -$171.85 while ta_bot's 8 trades lost -$51.45. Even very low frequency can lose significantly if position sizing is wrong.",
+    "conditions": {
+      "regime": "uniform_bearish_moderate"
+    },
+    "success_rate": 0.82,
+    "sample_size": 0,
+    "confidence": 0.0699999999999999,
+    "first_seen": "2026-03-03T20:04:32.537832+00:00",
+    "last_confirmed": "2026-03-03T20:04:32.537832+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "a992bcd20007": {
+    "pattern_id": "a992bcd20007",
+    "pattern_type": "regime_strategy",
+    "description": "uniform_bullish_strong: Ultra-low frequency LONG-only entries or zero trading. Market was uniformly bullish with massive gains (BNB +5.18%, BTC +7.85%, ETH +10.06%, SOL +10.38%, DOGE +16.30%). Best performer qwen35_skill_aware made only 7 trades (+$250.52). Worst performers gptoss_agentic (-$435.19) and gptoss_forum_aware (-$403.29) likely shorted aggressively. DOGE was the top performer at +16.30%, followed by SOL +10.38%.",
+    "conditions": {
+      "regime": "uniform_bullish_strong"
+    },
+    "success_rate": 0.9,
+    "sample_size": 0,
+    "confidence": 0.39999999999999997,
+    "first_seen": "2026-03-04T20:06:28.191571+00:00",
+    "last_confirmed": "2026-03-04T20:06:28.191571+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "0abbb5af566b": {
+    "pattern_id": "0abbb5af566b",
+    "pattern_type": "regime_strategy",
+    "description": "uniform_bullish_strong: ZERO shorting rule. When ALL 5 assets gain >5% in 24h, any short position is catastrophic. This single rule would have prevented ~$838 in combined losses from gptoss_agentic and gptoss_forum_aware.",
+    "conditions": {
+      "regime": "uniform_bullish_strong"
+    },
+    "success_rate": 0.95,
+    "sample_size": 0,
+    "confidence": 0.4499999999999999,
+    "first_seen": "2026-03-04T20:06:28.191571+00:00",
+    "last_confirmed": "2026-03-04T20:06:28.191571+00:00",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "cab6a2d230fc": {
+    "pattern_id": "cab6a2d230fc",
+    "pattern_type": "regime_strategy",
+    "description": "uniform_bullish_strong: Focus LONG entries on highest-momentum assets. DOGE (+16.30%) and SOL (+10.38%) were the top performers. Momentum ranking would have identified the best opportunities. Even passive index allocation captured gains.",
+    "conditions": {
+      "regime": "uniform_bullish_strong"
+    },
+    "success_rate": 0.85,
+    "sample_size": 0,
+    "confidence": 0.3499999999999999,
+    "first_seen": "2026-03-04T20:06:28.191571+00:00",
+    "last_confirmed": "2026-03-04T20:06:28.191571+00:00",
+    "times_seen": 1,
+    "is_active": false
+  },
+  "bc805112ebe2": {
+    "pattern_id": "bc805112ebe2",
+    "pattern_type": "regime_strategy",
+    "description": "uniform_bearish_moderate: Ultra-low frequency trading (13-16 trades/24h) with simple strategies. Market was uniformly bearish (BNB -1.70%, BTC -3.47%, ETH -4.63%, SOL -4.70%, DOGE -8.71%). Only qwen35 simple models profited. Zero trading also preserved capital. Avoid high-frequency trading (27-62 trades) which amplified losses. DOGE had the largest decline (-8.71%), making it the highest-beta SHORT target.",
+    "conditions": {
+      "regime": "uniform_bearish_moderate"
+    },
+    "success_rate": 0.85,
+    "sample_size": 0,
+    "confidence": 0.5499999999999999,
+    "first_seen": "2026-03-05T20:07:06.662255+00:00",
+    "last_confirmed": "2026-03-05T20:07:06.662255+00:00",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "259ae5b5c2a9": {
+    "pattern_id": "259ae5b5c2a9",
+    "pattern_type": "regime_strategy",
+    "description": "uniform_bearish_moderate: If trading actively, cap at 16 trades/24h maximum. qwen35_122b_simple's 16 trades (+$50.27) was the sweet spot. Above 20 trades, all agents lost money. The relationship: 0 trades = $0, 13-16 trades = +$35-50, 14 trades (ta_bot) = -$64, 24 trades = -$6, 27 trades = -$229, 62 trades = -$71.",
+    "conditions": {
+      "regime": "uniform_bearish_moderate"
+    },
+    "success_rate": 0.82,
+    "sample_size": 0,
+    "confidence": 0.5199999999999999,
+    "first_seen": "2026-03-05T20:07:06.662255+00:00",
+    "last_confirmed": "2026-03-05T20:07:06.662255+00:00",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "7e6d51149f90": {
+    "pattern_id": "7e6d51149f90",
+    "pattern_type": "regime_strategy",
+    "description": "uniform_bearish_moderate: Focus SHORT entries on highest-beta assets. DOGE (-8.71%) had nearly 5x the decline of BNB (-1.70%). SOL (-4.70%) and ETH (-4.63%) were also strong SHORT candidates. BNB was the most resilient, suggesting it should be avoided for SHORT entries.",
+    "conditions": {
+      "regime": "uniform_bearish_moderate"
+    },
+    "success_rate": 0.78,
+    "sample_size": 0,
+    "confidence": 0.48,
+    "first_seen": "2026-03-05T20:07:06.662255+00:00",
+    "last_confirmed": "2026-03-05T20:07:06.662255+00:00",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "68a61b9718c8": {
+    "pattern_id": "68a61b9718c8",
+    "pattern_type": "regime_strategy",
+    "description": "uniform_bearish_moderate: HIGH-frequency SHORT-biased trading with self-reflective position management (30-48 trades/24h). Journal-aware's 48 trades (+$296.01) and agentic's 30 trades (+$193.68) both profited by aligning with the bearish trend. Self-reflective exits helped capture profits and limit drawdowns. This CONTRADICTS prior patterns suggesting ultra-low frequency is optimal in bearish markets \u2014 when agents correctly identify the bearish regime, higher frequency with SHORT bias is profitable.",
+    "conditions": {
+      "regime": "uniform_bearish_moderate"
+    },
+    "success_rate": 0.8,
+    "sample_size": 0,
+    "confidence": 0.65,
+    "first_seen": "2026-03-06T20:06:40.704990+00:00",
+    "last_confirmed": "2026-03-06T20:06:40.704990+00:00",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "9e527d53af13": {
+    "pattern_id": "9e527d53af13",
+    "pattern_type": "regime_strategy",
+    "description": "uniform_bearish_moderate: Avoid LONG-biased strategies entirely. Momentum (+8 trades, -$34.40) and contrarian (+9 trades, -$15.04) strategies that likely entered LONGs all lost money. Even low-frequency LONG entries (qwen35_simple, 4 trades, -$99.44) suffered large losses.",
+    "conditions": {
+      "regime": "uniform_bearish_moderate"
+    },
+    "success_rate": 0.88,
+    "sample_size": 0,
+    "confidence": 0.73,
+    "first_seen": "2026-03-06T20:06:40.704990+00:00",
+    "last_confirmed": "2026-03-06T20:06:40.704990+00:00",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "33ed8d16c1a7": {
+    "pattern_id": "33ed8d16c1a7",
+    "pattern_type": "regime_strategy",
+    "description": "uniform_bearish_moderate: Focus SHORT entries on highest-beta assets. ETHUSDT (-4.72%) and SOLUSDT (-4.40%) had the largest declines, offering the most profit potential. BTCUSDT (-4.29%) was also a strong SHORT candidate. BNBUSDT (-2.99%) had the smallest decline.",
+    "conditions": {
+      "regime": "uniform_bearish_moderate"
+    },
+    "success_rate": 0.75,
+    "sample_size": 0,
+    "confidence": 0.6,
+    "first_seen": "2026-03-06T20:06:40.704990+00:00",
+    "last_confirmed": "2026-03-06T20:06:40.704990+00:00",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "578521d979fd": {
+    "pattern_id": "578521d979fd",
+    "pattern_type": "regime_strategy",
+    "description": "uniform_bearish_mild: Market was uniformly bearish but with mild declines (BNB -1.50%, BTC -1.18%, ETH -0.78%, SOL -2.53%, DOGE -0.81%). Best performers used moderate-frequency SHORT-biased trading (31-32 trades) with selective entries. Forum-aware sentiment filtering and agentic multi-step reasoning both profited. Momentum and contrarian strategies lost money. Zero trading preserved capital perfectly.",
+    "conditions": {
+      "regime": "uniform_bearish_mild"
+    },
+    "success_rate": 0.8,
+    "sample_size": 0,
+    "confidence": 0.75,
+    "first_seen": "2026-03-07T20:07:23.731766+00:00",
+    "last_confirmed": "2026-03-07T20:07:23.731766+00:00",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "0c039ffa9fa2": {
+    "pattern_id": "0c039ffa9fa2",
+    "pattern_type": "regime_strategy",
+    "description": "uniform_bearish_mild: Trade frequency sweet spot in this mild bearish window was 31-32 trades/24h. Below that (11 trades contrarian) still lost money due to wrong direction. Above that is not represented. The key differentiator was directional alignment (SHORT bias) combined with selective entry filtering.",
+    "conditions": {
+      "regime": "uniform_bearish_mild"
+    },
+    "success_rate": 0.75,
+    "sample_size": 0,
+    "confidence": 0.7,
+    "first_seen": "2026-03-07T20:07:23.731766+00:00",
+    "last_confirmed": "2026-03-07T20:07:23.731766+00:00",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "8ffec160f57a": {
+    "pattern_id": "8ffec160f57a",
+    "pattern_type": "regime_strategy",
+    "description": "uniform_bearish_mild: SOL was the worst performer (-2.53%) and BNB second worst (-1.50%), making them the best SHORT targets. ETH had the smallest decline (-0.78%), making it the worst SHORT target. Focus SHORT entries on highest-beta assets.",
+    "conditions": {
+      "regime": "uniform_bearish_mild"
+    },
+    "success_rate": 0.78,
+    "sample_size": 0,
+    "confidence": 0.73,
+    "first_seen": "2026-03-07T20:07:23.731766+00:00",
+    "last_confirmed": "2026-03-07T20:07:23.731766+00:00",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "c41ea9349202": {
+    "pattern_id": "c41ea9349202",
+    "pattern_type": "regime_strategy",
+    "description": "mixed_low_volatility: Market was mixed with small daily moves (BNB -0.23%, BTC +0.30%, ETH +0.36%, SOL -0.30%, DOGE -0.48%). Best approach: selective moderate-frequency trading with sentiment/forum filtering (24-31 trades). Forum-aware's +$232.17 dominated. Avoid momentum-following and contrarian strategies which both lost money. Zero trading is safe but suboptimal when forum-aware can extract alpha.",
+    "conditions": {
+      "regime": "mixed_low_volatility"
+    },
+    "success_rate": 0.75,
+    "sample_size": 0,
+    "confidence": 0.75,
+    "first_seen": "2026-03-08T20:07:33.298958+00:00",
+    "last_confirmed": "2026-03-08T20:07:33.298958+00:00",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "2dc292c7a986": {
+    "pattern_id": "2dc292c7a986",
+    "pattern_type": "regime_strategy",
+    "description": "mixed_low_volatility: In low-volatility mixed markets, trade frequency sweet spot is 24-31 trades/24h. Below that (2-16 trades) either breaks even or loses small amounts. Above that (33 trades for momentum) loses more. The key differentiator is signal quality, not frequency.",
+    "conditions": {
+      "regime": "mixed_low_volatility"
+    },
+    "success_rate": 0.7,
+    "sample_size": 0,
+    "confidence": 0.7,
+    "first_seen": "2026-03-08T20:07:33.298958+00:00",
+    "last_confirmed": "2026-03-08T20:07:33.298958+00:00",
+    "times_seen": 1,
+    "is_active": true
+  },
+  "88a1152e8eb9": {
+    "pattern_id": "88a1152e8eb9",
+    "pattern_type": "regime_strategy",
+    "description": "uniform_bullish_moderate: Self-reflective position management (journal-aware) is the ONLY approach that profited among active agents. Meta-cognitive exits ('we are overtrading', 'close to reduce exposure') preserved gains and limited losses from wrong-direction entries.",
+    "conditions": {
+      "regime": "uniform_bullish_moderate"
+    },
+    "success_rate": 0.75,
+    "sample_size": 0,
+    "confidence": 0.75,
+    "first_seen": "2026-03-09T20:08:51.719362+00:00",
+    "last_confirmed": "2026-03-09T20:08:51.719362+00:00",
+    "times_seen": 1,
+    "is_active": true
+  }
+}

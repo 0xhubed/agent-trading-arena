@@ -1,12 +1,22 @@
-"""Binance Futures market data provider."""
+"""Binance Futures market data provider.
+
+DEACTIVATED — the active provider is KrakenProvider (see `kraken.py`).
+Preserved for reference and potential multi-exchange support. To reactivate,
+restore the imports in api/app.py, cli.py, core/runner.py, and api/routes.py,
+and switch config symbols back to Binance USDT format.
+"""
 
 from __future__ import annotations
 
+import asyncio
+import logging
 from decimal import Decimal
 
 import httpx
 
 from agent_arena.providers.base import DataProvider
+
+logger = logging.getLogger(__name__)
 
 
 class BinanceProvider(DataProvider):
@@ -40,9 +50,11 @@ class BinanceProvider(DataProvider):
             self._client = httpx.AsyncClient(timeout=30.0)
 
         # Fetch all data concurrently
-        prices = await self._get_prices(symbols)
-        stats = await self._get_24h_stats(symbols)
-        funding = await self._get_funding_rates(symbols)
+        prices, stats, funding = await asyncio.gather(
+            self._get_prices(symbols),
+            self._get_24h_stats(symbols),
+            self._get_funding_rates(symbols),
+        )
 
         market = {}
         for symbol in symbols:
@@ -74,6 +86,7 @@ class BinanceProvider(DataProvider):
                 if item["symbol"] in symbols
             }
         except Exception:
+            logger.warning("Failed to fetch prices", exc_info=True)
             return {}
 
     async def _get_24h_stats(self, symbols: list[str]) -> dict[str, dict]:
@@ -93,6 +106,7 @@ class BinanceProvider(DataProvider):
                 if item["symbol"] in symbols
             }
         except Exception:
+            logger.warning("Failed to fetch 24h stats", exc_info=True)
             return {}
 
     async def _get_funding_rates(self, symbols: list[str]) -> dict[str, Decimal]:
@@ -107,6 +121,7 @@ class BinanceProvider(DataProvider):
                 if item["symbol"] in symbols
             }
         except Exception:
+            logger.warning("Failed to fetch funding rates", exc_info=True)
             return {}
 
     async def get_candles(
@@ -156,6 +171,7 @@ class BinanceProvider(DataProvider):
                 })
             return candles
         except Exception:
+            logger.warning("Failed to fetch candles for %s", symbol, exc_info=True)
             return []
 
     async def get_candles_multi(
@@ -177,8 +193,6 @@ class BinanceProvider(DataProvider):
         """
         if intervals is None:
             intervals = ["1h", "15m"]
-
-        import asyncio
 
         async def fetch_one(symbol: str, interval: str) -> tuple[str, str, list[dict]]:
             candles = await self.get_candles(symbol, interval, limit)

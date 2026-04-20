@@ -2,14 +2,17 @@
 
 from __future__ import annotations
 
-import json
-import re
-from datetime import datetime
+from datetime import datetime, timezone
 from decimal import Decimal
 from typing import Optional
 
 import httpx
 
+from agent_arena.agents.prompt_utils import (
+    format_market,
+    format_positions,
+    parse_json_response,
+)
 from agent_arena.core.agent import BaseAgent
 from agent_arena.core.models import Decision
 
@@ -25,30 +28,35 @@ class OllamaTrader(BaseAgent):
         self.model = config.get("model", "qwen2.5:7b") if config else "qwen2.5:7b"
         self.base_url = config.get("ollama_url", "http://localhost:11434") if config else "http://localhost:11434"
         self.character = config.get("character", "") if config else ""
+        self._client: httpx.AsyncClient | None = None
+
+    def _get_client(self) -> httpx.AsyncClient:
+        if self._client is None:
+            self._client = httpx.AsyncClient(timeout=120.0)
+        return self._client
 
     async def decide(self, context: dict) -> Decision:
         """Make a trading decision based on market context."""
         prompt = self._build_prompt(context)
 
-        start = datetime.utcnow()
+        start = datetime.now(timezone.utc)
         try:
-            async with httpx.AsyncClient(timeout=120.0) as client:
-                response = await client.post(
-                    f"{self.base_url}/api/generate",
-                    json={
-                        "model": self.model,
-                        "prompt": prompt,
-                        "stream": False,
-                        "options": {
-                            "temperature": 0.7,
-                            "num_predict": 1024,
-                        },
+            client = self._get_client()
+            response = await client.post(
+                f"{self.base_url}/api/generate",
+                json={
+                    "model": self.model,
+                    "prompt": prompt,
+                    "stream": False,
+                    "options": {
+                        "temperature": 0.7,
+                        "num_predict": 1024,
                     },
-                )
-                response.raise_for_status()
-                result = response.json()
-
-            latency = (datetime.utcnow() - start).total_seconds() * 1000
+                },
+            )
+            response.raise_for_status()
+            result = response.json()
+            latency = (datetime.now(timezone.utc) - start).total_seconds() * 1000
 
             raw_text = result.get("response", "")
             parsed = self._parse_response(raw_text)
@@ -86,8 +94,8 @@ class OllamaTrader(BaseAgent):
         portfolio = context.get("portfolio", {})
         tick = context.get("tick", 0)
 
-        market_str = self._format_market(market)
-        positions_str = self._format_positions(portfolio.get("positions", []))
+        market_str = format_market(market)
+        positions_str = format_positions(portfolio.get("positions", []))
 
         character_section = ""
         if self.character:
@@ -124,7 +132,7 @@ AVAILABLE ACTIONS:
 Respond with JSON only, no other text:
 {{
     "action": "hold",
-    "symbol": "BTCUSDT",
+    "symbol": "PF_XBTUSD",
     "size": 0.01,
     "leverage": 2,
     "confidence": 0.75,
@@ -133,61 +141,6 @@ Respond with JSON only, no other text:
 
 Your JSON response:"""
 
-    def _format_market(self, market: dict) -> str:
-        """Format market data for the prompt."""
-        if not market:
-            return "No market data available"
-
-        lines = []
-        for symbol, data in market.items():
-            price = data.get("price", 0)
-            change = data.get("change_24h", 0)
-            funding = data.get("funding_rate")
-
-            line = f"{symbol}: ${float(price):,.2f} ({change:+.2f}%)"
-            if funding is not None:
-                line += f" | Funding: {float(funding)*100:.4f}%"
-            lines.append(line)
-
-        return "\n".join(lines)
-
-    def _format_positions(self, positions: list) -> str:
-        """Format positions for the prompt."""
-        if not positions:
-            return "No open positions"
-
-        lines = []
-        for pos in positions:
-            pnl = pos.get("unrealized_pnl", 0)
-            roe = pos.get("roe_percent", 0)
-            lines.append(
-                f"  {pos['symbol']} {pos['side'].upper()} "
-                f"Size: {pos['size']} @ {pos['leverage']}x | "
-                f"Entry: ${pos['entry_price']:,.2f} | "
-                f"P&L: ${pnl:+,.2f} ({roe:+.2f}%)"
-            )
-
-        return "\n".join(lines)
-
     def _parse_response(self, text: str) -> dict:
         """Extract JSON from response."""
-        try:
-            return json.loads(text.strip())
-        except json.JSONDecodeError:
-            pass
-
-        match = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", text, re.DOTALL)
-        if match:
-            try:
-                return json.loads(match.group(1))
-            except json.JSONDecodeError:
-                pass
-
-        match = re.search(r"\{[^{}]*\}", text, re.DOTALL)
-        if match:
-            try:
-                return json.loads(match.group())
-            except json.JSONDecodeError:
-                pass
-
-        return {"action": "hold", "reasoning": "Failed to parse response"}
+        return parse_json_response(text)

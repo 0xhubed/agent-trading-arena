@@ -2,16 +2,80 @@
 
 from __future__ import annotations
 
+import asyncio
+import hmac
+import logging
+import os
 from typing import Any, Optional
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, Header, HTTPException
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
+
+# Admin key for protected operations (observer, etc.)
+ADMIN_KEY = os.getenv("ARENA_ADMIN_KEY", os.getenv("BACKTEST_ADMIN_KEY", ""))
+
+
+def _key_matches(provided: Optional[str]) -> bool:
+    """Constant-time comparison of admin key to prevent timing oracle."""
+    if not ADMIN_KEY or not provided:
+        return False
+    return hmac.compare_digest(provided, ADMIN_KEY)
+
+
+def check_admin_access(
+    x_admin_key: Optional[str] = Header(None, alias="X-Admin-Key"),
+):
+    """
+    Check if request has admin access.
+
+    Returns True if admin key matches, False otherwise.
+    Doesn't block - just returns access level for endpoints to decide.
+    """
+    return _key_matches(x_admin_key)
+
+
+def require_admin_access(
+    x_admin_key: Optional[str] = Header(None, alias="X-Admin-Key"),
+):
+    """
+    Require admin access for protected endpoints.
+
+    Raises 403 if admin key doesn't match or is not configured.
+    """
+    if not ADMIN_KEY:
+        raise HTTPException(
+            status_code=403,
+            detail="Admin access not configured.",
+        )
+    if _key_matches(x_admin_key):
+        return True
+    raise HTTPException(
+        status_code=403,
+        detail="Admin access required.",
+    )
+
+@router.get("/admin/access")
+async def get_admin_access(
+    x_admin_key: Optional[str] = Header(None, alias="X-Admin-Key"),
+) -> dict:
+    """Check if admin key is valid. Used by frontend login."""
+    if _key_matches(x_admin_key):
+        return {"readonly": False, "message": "Admin access granted."}
+    return {"readonly": True, "message": "Admin access required."}
+
 
 # These will be set by the app on startup
 _storage = None
 _arena = None
 _runner = None
+
+# Agent metadata cache — survives competition stop/reset so the
+# frontend can display agent info (model, character, type) even
+# when the competition isn't running.
+_agent_meta_cache: dict[str, dict] = {}
 
 
 def set_dependencies(storage: Any, arena: Any, runner: Any) -> None:
@@ -20,6 +84,24 @@ def set_dependencies(storage: Any, arena: Any, runner: Any) -> None:
     _storage = storage
     _arena = arena
     _runner = runner
+    # Snapshot agent metadata so it survives stop/reset
+    if runner:
+        for aid, agent in runner.agents.items():
+            _agent_meta_cache[aid] = {
+                "name": agent.name,
+                "model": getattr(agent, "model", "unknown"),
+                "agent_type": agent.agent_type,
+                "agent_type_description": agent.agent_type_description,
+                "character": getattr(agent, "character", ""),
+            }
+
+
+MAX_QUERY_LIMIT = 500
+
+
+def _clamp_limit(limit: int, max_val: int = MAX_QUERY_LIMIT) -> int:
+    """Clamp limit parameter to safe range."""
+    return max(1, min(limit, max_val))
 
 
 @router.get("/status")
@@ -59,35 +141,9 @@ async def get_leaderboard(extended: bool = False) -> list[dict]:
     if not _arena:
         return []
 
-    leaderboard = _arena.get_leaderboard()
-
     if extended:
-        # Add analytics data to each entry
-        all_analytics = _arena.get_all_analytics()
-        for entry in leaderboard:
-            agent_id = entry.get("agent_id")
-            analytics = all_analytics.get(agent_id)
-            if analytics:
-                entry["total_trades"] = analytics.total_trades
-                entry["closed_trades"] = analytics.closed_trades
-                # Only show win rate, profit factor, expectancy if there are closed trades
-                if analytics.closed_trades > 0:
-                    entry["win_rate"] = round(analytics.win_rate * 100, 1)
-                    pf = analytics.profit_factor
-                    entry["profit_factor"] = round(pf, 2) if pf != float('inf') else None
-                    entry["expectancy"] = round(float(analytics.expectancy), 2)
-                else:
-                    entry["win_rate"] = None
-                    entry["profit_factor"] = None
-                    entry["expectancy"] = None
-                # Sharpe ratio is None if 0 (insufficient data)
-                if analytics.sharpe_ratio != 0:
-                    entry["sharpe_ratio"] = round(analytics.sharpe_ratio, 2)
-                else:
-                    entry["sharpe_ratio"] = None
-                entry["max_drawdown"] = round(analytics.max_drawdown * 100, 1)
-
-    return leaderboard
+        return _arena.get_extended_leaderboard()
+    return _arena.get_leaderboard()
 
 
 @router.get("/agents")
@@ -145,14 +201,23 @@ async def get_agent(agent_id: str) -> dict:
     if not decisions and not trades:
         raise HTTPException(status_code=404, detail="Agent not found (competition not running)")
 
-    # Return basic info from historical data
+    # Use cached metadata, falling back to decision metadata for model
+    meta = _agent_meta_cache.get(agent_id, {})
+    model = meta.get("model", "unknown")
+    if model == "unknown" and decisions:
+        for d in decisions:
+            m = (d.get("metadata") or {}).get("model")
+            if m:
+                model = m
+                break
+
     return {
         "id": agent_id,
-        "name": agent_id,  # Use ID as name when competition not running
-        "model": "unknown",
-        "agent_type": "unknown",
-        "agent_type_description": "",
-        "character": "",
+        "name": meta.get("name", agent_id),
+        "model": model,
+        "agent_type": meta.get("agent_type", "unknown"),
+        "agent_type_description": meta.get("agent_type_description", ""),
+        "character": meta.get("character", ""),
         "portfolio": None,
         "recent_decisions": decisions,
         "trades": trades,
@@ -162,6 +227,7 @@ async def get_agent(agent_id: str) -> dict:
 @router.get("/history/leaderboard")
 async def get_leaderboard_history(limit: int = 100) -> list[dict]:
     """Get historical leaderboard data for charts."""
+    limit = _clamp_limit(limit)
     if not _storage:
         return []
     return await _storage.get_leaderboard_history(limit=limit)
@@ -170,6 +236,7 @@ async def get_leaderboard_history(limit: int = 100) -> list[dict]:
 @router.get("/history/decisions")
 async def get_decisions_history(agent_id: Optional[str] = None, limit: int = 50) -> list[dict]:
     """Get historical decisions."""
+    limit = _clamp_limit(limit)
     if not _storage:
         return []
 
@@ -201,6 +268,19 @@ async def get_market_data() -> dict:
     }
 
 
+@router.get("/fear-greed")
+async def get_fear_greed() -> dict:
+    """Get current Crypto Fear & Greed Index."""
+    from agent_arena.providers.fear_greed import (
+        get_fear_greed as fetch_fear_greed,
+    )
+
+    result = await fetch_fear_greed()
+    if result:
+        return result
+    return {"value": None, "classification": "unavailable"}
+
+
 @router.get("/market/history")
 async def get_market_history(
     symbol: Optional[str] = None,
@@ -211,7 +291,7 @@ async def get_market_history(
     Get historical candle data for market symbols.
 
     Args:
-        symbol: Specific symbol (e.g., BTCUSDT). If None, returns all configured symbols.
+        symbol: Specific symbol (e.g., PF_XBTUSD). If None, returns all configured symbols.
         interval: Candle interval (1m, 5m, 15m, 1h, 4h, 1d). Default: 1h
         limit: Number of candles to fetch (max 200). Default: 100
 
@@ -222,29 +302,29 @@ async def get_market_history(
     if not _runner:
         return {"error": "Competition not running", "candles": {}}
 
-    # Find the Binance provider
-    binance_provider = None
+    # Find the Kraken provider
+    kraken_provider = None
     for provider in _runner.providers:
-        if provider.name == "binance":
-            binance_provider = provider
+        if provider.name == "kraken":
+            kraken_provider = provider
             break
 
-    if not binance_provider:
-        return {"error": "Binance provider not available", "candles": {}}
+    if not kraken_provider:
+        return {"error": "Kraken provider not available", "candles": {}}
 
     # Determine symbols to fetch
     symbols = [symbol] if symbol else _runner.config.symbols
 
     # Validate interval
-    valid_intervals = ["1m", "5m", "15m", "30m", "1h", "2h", "4h", "1d"]
+    valid_intervals = ["1m", "5m", "15m", "30m", "1h", "4h", "1d"]
     if interval not in valid_intervals:
         return {"error": f"Invalid interval. Use one of: {valid_intervals}", "candles": {}}
 
     # Limit the number of candles
-    limit = min(limit, 200)
+    limit = _clamp_limit(limit, 200)
 
     try:
-        candles = await binance_provider.get_candles_multi(
+        candles = await kraken_provider.get_candles_multi(
             symbols=symbols,
             intervals=[interval],
             limit=limit,
@@ -261,12 +341,14 @@ async def get_market_history(
         return {"interval": interval, "limit": limit, "candles": result}
 
     except Exception as e:
-        return {"error": str(e), "candles": {}}
+        logger.error("Failed to fetch market history: %s", e)
+        return {"error": "Failed to fetch market history", "candles": {}}
 
 
 @router.get("/funding")
 async def get_funding_history(agent_id: Optional[str] = None, limit: int = 100) -> list[dict]:
     """Get funding payment history."""
+    limit = _clamp_limit(limit)
     if not _storage:
         return []
     return await _storage.get_funding_history(agent_id=agent_id, limit=limit)
@@ -278,6 +360,7 @@ async def get_liquidations_history(
     limit: int = 100,
 ) -> list[dict]:
     """Get liquidation history."""
+    limit = _clamp_limit(limit)
     if not _storage:
         return []
     return await _storage.get_liquidation_history(agent_id=agent_id, limit=limit)
@@ -305,34 +388,24 @@ async def get_agent_stats(agent_id: str) -> dict:
     # Calculate analytics
     analytics = _arena.get_analytics(agent_id)
 
-    # Get trade counts from storage
-    trades = []
+    # Get aggregated stats from storage
+    trade_count = 0
     funding_summary = {"paid": 0.0, "received": 0.0, "net": 0.0}
     liquidation_count = 0
 
     if _storage:
-        trades = await _storage.get_agent_trades(agent_id, limit=1000)
-
-        # Get funding summary
-        funding_history = await _storage.get_funding_history(agent_id=agent_id, limit=1000)
-        for f in funding_history:
-            amount = float(f.get("amount", 0))
-            if f.get("direction") == "paid":
-                funding_summary["paid"] += abs(amount)
-            else:
-                funding_summary["received"] += abs(amount)
-        funding_summary["net"] = funding_summary["received"] - funding_summary["paid"]
-
-        # Get liquidation count
-        liquidations = await _storage.get_liquidation_history(agent_id=agent_id, limit=1000)
-        liquidation_count = len(liquidations)
+        trade_count, funding_summary, liquidation_count = await asyncio.gather(
+            _storage.get_agent_trade_count(agent_id),
+            _storage.get_agent_funding_summary(agent_id),
+            _storage.get_agent_liquidation_count(agent_id),
+        )
 
     return {
         "agent_id": agent_id,
         "name": agent.name,
         "portfolio": portfolio.to_context(),
         "analytics": analytics.to_dict() if analytics else None,
-        "trade_count": len(trades),
+        "trade_count": trade_count,
         "funding": funding_summary,
         "liquidations": liquidation_count,
     }
@@ -386,23 +459,17 @@ async def get_agent_full(agent_id: str) -> dict:
     liquidation_count = 0
 
     if _storage:
-        decisions = await _storage.get_recent_decisions(agent_id, limit=50)
-        trades = await _storage.get_agent_trades(agent_id, limit=100)
-        behavioral = await _storage.get_agent_behavioral_stats(agent_id)
-
-        # Get funding summary
-        funding_history = await _storage.get_funding_history(agent_id=agent_id, limit=1000)
-        for f in funding_history:
-            amount = float(f.get("amount", 0))
-            if f.get("direction") == "paid":
-                funding_summary["paid"] += abs(amount)
-            else:
-                funding_summary["received"] += abs(amount)
-        funding_summary["net"] = funding_summary["received"] - funding_summary["paid"]
-
-        # Get liquidation count
-        liquidations = await _storage.get_liquidation_history(agent_id=agent_id, limit=1000)
-        liquidation_count = len(liquidations)
+        try:
+            (decisions, trades, behavioral,
+             funding_summary, liquidation_count) = await asyncio.gather(
+                _storage.get_recent_decisions(agent_id, limit=50),
+                _storage.get_agent_trades(agent_id, limit=100),
+                _storage.get_agent_behavioral_stats(agent_id),
+                _storage.get_agent_funding_summary(agent_id),
+                _storage.get_agent_liquidation_count(agent_id),
+            )
+        except (RuntimeError, AttributeError) as e:
+            logger.warning("Storage unavailable for agent %s: %s", agent_id, e)
 
     # If competition is running, get live data
     if _runner and _arena:
@@ -433,14 +500,23 @@ async def get_agent_full(agent_id: str) -> dict:
     if not decisions and not trades:
         raise HTTPException(status_code=404, detail="Agent not found (competition not running)")
 
-    # Return historical data without live portfolio/analytics
+    # Use cached metadata, falling back to decision metadata for model
+    meta = _agent_meta_cache.get(agent_id, {})
+    model = meta.get("model", "unknown")
+    if model == "unknown" and decisions:
+        for d in decisions:
+            m = (d.get("metadata") or {}).get("model")
+            if m:
+                model = m
+                break
+
     return {
         "id": agent_id,
-        "name": agent_id,
-        "model": "unknown",
-        "agent_type": "unknown",
-        "agent_type_description": "",
-        "character": "",
+        "name": meta.get("name", agent_id),
+        "model": model,
+        "agent_type": meta.get("agent_type", "unknown"),
+        "agent_type_description": meta.get("agent_type_description", ""),
+        "character": meta.get("character", ""),
         "portfolio": None,
         "analytics": None,
         "behavioral": behavioral,
@@ -496,7 +572,7 @@ async def get_agent_learning(agent_id: str) -> dict:
             "patterns": patterns[:10],  # Top 10 patterns
         }
     except Exception as e:
-        # Return empty data if storage doesn't support learning features
+        logger.error("Failed to fetch learning stats for %s: %s", agent_id, e)
         return {
             "agent_id": agent_id,
             "is_learning_agent": is_learning_agent,
@@ -508,7 +584,7 @@ async def get_agent_learning(agent_id: str) -> dict:
             },
             "learning_curve": [],
             "patterns": [],
-            "error": str(e) if not is_learning_agent else None,
+            "error": "Failed to fetch learning stats" if not is_learning_agent else None,
         }
 
 
@@ -552,6 +628,7 @@ async def get_similar_situations(
     If decision_id is provided, uses that decision's context.
     Otherwise, uses the latest decision context.
     """
+    limit = _clamp_limit(limit, 50)
     if not _storage:
         raise HTTPException(status_code=503, detail="Storage not available")
 
@@ -592,10 +669,11 @@ async def get_similar_situations(
         }
 
     except Exception as e:
+        logger.error("Failed to fetch similar situations: %s", e)
         return {
             "current_context": None,
             "situations": [],
-            "error": str(e),
+            "error": "Failed to fetch similar situations",
         }
 
 
@@ -643,12 +721,13 @@ async def get_meta_analysis(agent_id: str) -> dict:
         }
 
     except Exception as e:
+        logger.error("Failed to fetch meta-analysis: %s", e)
         return {
             "current_regime": regime,
             "top_performers": [],
             "this_agent": None,
             "this_agent_rank": None,
-            "error": str(e),
+            "error": "Failed to fetch meta-analysis",
         }
 
 
@@ -662,6 +741,7 @@ async def get_learning_events(
 
     Events include pattern discoveries, reflections, strategy shifts, etc.
     """
+    limit = _clamp_limit(limit)
     if not _storage:
         return []
 
@@ -760,7 +840,10 @@ def _generate_regime_insight(
 
 
 @router.post("/reset")
-async def reset_database(confirm: bool = False) -> dict:
+async def reset_database(
+    confirm: bool = False,
+    _auth=Depends(require_admin_access),
+) -> dict:
     """
     Reset the database to clean state.
 
@@ -842,9 +925,10 @@ async def reset_database(confirm: bool = False) -> dict:
         }
 
     except Exception as e:
+        logger.error("Reset failed: %s", e)
         raise HTTPException(
             status_code=500,
-            detail=f"Reset failed: {str(e)}"
+            detail="Reset failed"
         )
 
 
@@ -861,9 +945,12 @@ async def run_observer_analysis(
     lookback_hours: int = 24,
     min_confidence: float = 0.6,
     min_sample_size: int = 10,
+    _admin: bool = Depends(require_admin_access),
 ) -> dict:
     """
     Run the Observer Agent to analyze competition data and update skills.
+
+    Requires admin access (X-Admin-Key header).
 
     This triggers the daily learning cycle:
     1. Collect decisions, trades, outcomes from the past N hours
@@ -890,7 +977,7 @@ async def run_observer_analysis(
     if _observer is None:
         _observer = ObserverAgent(
             storage=_storage,
-            skills_dir="skills",
+            skills_dir=".claude/skills",
             min_confidence=min_confidence,
             min_sample_size=min_sample_size,
         )
@@ -899,9 +986,61 @@ async def run_observer_analysis(
         result = await _observer.run_daily_analysis(lookback_hours=lookback_hours)
         return result
     except Exception as e:
+        logger.error("Observer analysis failed: %s", e)
         raise HTTPException(
             status_code=500,
-            detail=f"Observer analysis failed: {str(e)}"
+            detail="Observer analysis failed"
+        )
+
+
+@router.post("/observer/analyze-backtest/{run_id}")
+async def run_observer_backtest_analysis(
+    run_id: str,
+    min_confidence: float = 0.6,
+    min_sample_size: int = 5,
+    _admin: bool = Depends(require_admin_access),
+) -> dict:
+    """
+    Run the Observer Agent on a specific backtest run.
+
+    Requires admin access (X-Admin-Key header).
+
+    Analyzes backtest results to extract patterns and update skills
+    with historically-validated insights.
+
+    Args:
+        run_id: The backtest run ID to analyze
+        min_confidence: Minimum confidence for pattern inclusion (default: 0.6)
+        min_sample_size: Minimum sample size for statistical significance (default: 5)
+
+    Returns:
+        Analysis summary with patterns found and skills updated
+    """
+    global _observer
+
+    if not _storage:
+        raise HTTPException(status_code=503, detail="Storage not available")
+
+    # Import here to avoid circular imports
+    from agent_arena.agents.observer_agent import ObserverAgent
+
+    # Create or reuse observer
+    if _observer is None:
+        _observer = ObserverAgent(
+            storage=_storage,
+            skills_dir=".claude/skills",
+            min_confidence=min_confidence,
+            min_sample_size=min_sample_size,
+        )
+
+    try:
+        result = await _observer.analyze_backtest_run(run_id=run_id)
+        return result
+    except Exception as e:
+        logger.error("Observer backtest analysis failed: %s", e)
+        raise HTTPException(
+            status_code=500,
+            detail="Observer backtest analysis failed"
         )
 
 
@@ -916,10 +1055,10 @@ async def list_skills() -> dict:
     - Pattern count
     - Confidence threshold
     """
-    from pathlib import Path
     import json
+    from pathlib import Path
 
-    skills_dir = Path("skills")
+    skills_dir = Path(".claude/skills")
     skills = []
 
     if skills_dir.exists():
@@ -973,13 +1112,16 @@ async def get_skill(skill_name: str) -> dict:
     Returns:
         Skill content and metadata
     """
-    from pathlib import Path
     import json
+    from pathlib import Path
 
-    skill_file = Path(f"skills/{skill_name}/SKILL.md")
+    skills_base = Path(".claude/skills").resolve()
+    skill_file = (skills_base / skill_name / "SKILL.md").resolve()
+    if not str(skill_file).startswith(str(skills_base)):
+        raise HTTPException(status_code=400, detail="Invalid skill name")
 
     if not skill_file.exists():
-        raise HTTPException(status_code=404, detail=f"Skill '{skill_name}' not found")
+        raise HTTPException(status_code=404, detail="Skill not found")
 
     content = skill_file.read_text()
 

@@ -22,6 +22,10 @@ class BaseAgent(ABC):
     _TYPE_MAP = {
         # Learning agents (RAG-based)
         "LearningTrader": ("Learning", "RAG + Pattern Matching + Meta-Learning"),
+        # Journal-aware agents (must be before ForumAware)
+        "JournalAware": ("Journal-Aware", "Skills + Forum Witness + Journal + Tools"),
+        # Forum-aware agents (must be before SkillAware and LLMTrader)
+        "ForumAware": ("Forum-Aware", "Skills + Forum Witness + Tools"),
         # Skill-based agents
         "SkillOnly": ("Skill-Only", "Pure Skill Guidance"),
         "SkillAware": ("Skill-Aware", "Learned Skills + Tools"),
@@ -34,12 +38,12 @@ class BaseAgent(ABC):
         # Simple LLM agents
         "ClaudeTrader": ("LLM", "Claude API"),
         "GPTTrader": ("LLM", "OpenAI API"),
-        "TogetherTrader": ("LLM", "Together AI API"),
+        "LLMTrader": ("LLM", "OpenAI-Compatible API"),
         "OllamaTrader": ("LLM", "Local Ollama"),
         # Fallbacks (less specific)
         "Claude": ("LLM", "Claude API"),
         "GPT": ("LLM", "OpenAI API"),
-        "Together": ("LLM", "Together AI API"),
+        "Together": ("LLM", "OpenAI-Compatible API"),
         "Ollama": ("LLM", "Local Inference"),
     }
 
@@ -47,6 +51,7 @@ class BaseAgent(ABC):
         self.agent_id = agent_id
         self.name = name
         self.config = config or {}
+        self.max_confidence = self.config.get("max_confidence", 1.0)
 
     @property
     def agent_type(self) -> str:

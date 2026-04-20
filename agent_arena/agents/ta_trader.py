@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections import defaultdict
-from datetime import datetime
+from datetime import datetime, timezone
 from decimal import Decimal
 from typing import Optional
 
@@ -109,7 +109,7 @@ class TATrader(BaseAgent):
                     symbol=symbol,
                     confidence=min(score / 100, 1.0),
                     reasoning=reasoning,
-                    timestamp=datetime.utcnow(),
+                    timestamp=datetime.now(timezone.utc),
                 )
 
             # Calculate position size
@@ -123,7 +123,7 @@ class TATrader(BaseAgent):
                 leverage=self.leverage,
                 confidence=min(score / 100, 1.0),
                 reasoning=reasoning,
-                timestamp=datetime.utcnow(),
+                timestamp=datetime.now(timezone.utc),
             )
 
         # No signal - hold
@@ -131,7 +131,7 @@ class TATrader(BaseAgent):
             action="hold",
             confidence=0.5,
             reasoning="No strong TA signals detected. Waiting for setup.",
-            timestamp=datetime.utcnow(),
+            timestamp=datetime.now(timezone.utc),
         )
 
     def _calculate_rsi(self, prices: list[float], period: int = None) -> float:

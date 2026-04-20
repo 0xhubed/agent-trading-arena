@@ -1,37 +1,48 @@
 import { useState } from 'react';
 import { useCompetitionStore } from '../stores/competition';
-
-// Admin password - set via environment variable VITE_ADMIN_PASSWORD
-const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || 'change-me-in-env';
+import { useAdminStore } from '../stores/admin';
+import { MAINTENANCE_MODE } from '../config';
 
 export default function Header() {
   const { status, tick, connected } = useCompetitionStore();
+  const { adminKey, isAuthenticated, setAdminKey, setAuthenticated } = useAdminStore();
   const [showAdmin, setShowAdmin] = useState(false);
-  const [showInfo, setShowInfo] = useState(false);
-  const [password, setPassword] = useState('');
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [adminError, setAdminError] = useState('');
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [analysisResult, setAnalysisResult] = useState<string | null>(null);
+  const [journalResult, setJournalResult] = useState<string | null>(null);
 
-  const handleAdminAuth = () => {
-    if (password === ADMIN_PASSWORD) {
-      setIsAuthenticated(true);
-      setAdminError('');
-    } else {
-      setAdminError('Invalid password');
+  const handleAdminAuth = async () => {
+    try {
+      const res = await fetch('/api/admin/access', {
+        headers: { 'X-Admin-Key': adminKey },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (!data.readonly) {
+          setAuthenticated(true);
+          setAdminError('');
+        } else {
+          setAdminError('Invalid admin key');
+        }
+      } else {
+        setAdminError('Invalid admin key');
+      }
+    } catch {
+      setAdminError('Failed to verify admin key');
     }
   };
 
   const handleAdminAction = async (action: 'start' | 'stop' | 'reset') => {
     setActionLoading(action);
+    const headers: Record<string, string> = { 'X-Admin-Key': adminKey };
     try {
       if (action === 'reset') {
-        await fetch('/api/stop', { method: 'POST' });
-        await fetch('/api/reset?confirm=true', { method: 'POST' });
-        await fetch('/api/start', { method: 'POST' });
+        await fetch('/api/stop', { method: 'POST', headers });
+        await fetch('/api/reset?confirm=true', { method: 'POST', headers });
+        await fetch('/api/start', { method: 'POST', headers });
       } else {
-        await fetch(`/api/${action}`, { method: 'POST' });
+        await fetch(`/api/${action}`, { method: 'POST', headers });
       }
       window.location.reload();
     } catch (err) {
@@ -41,11 +52,37 @@ export default function Header() {
     }
   };
 
+  const handleGenerateJournal = async () => {
+    setActionLoading('journal');
+    setJournalResult(null);
+    try {
+      const response = await fetch('/api/journal/generate', {
+        method: 'POST',
+        headers: { 'X-Admin-Key': adminKey },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        if (data.status === 'in_progress') {
+          setJournalResult('Journal generation already in progress');
+        } else {
+          setJournalResult(`Journal generated for ${data.entry_id || 'today'}`);
+        }
+      } else {
+        setJournalResult('Journal generation failed');
+      }
+    } catch (err) {
+      console.error('Journal generation failed:', err);
+      setJournalResult('Journal generation failed');
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
   const handleRunAnalysis = async () => {
     setActionLoading('analysis');
     setAnalysisResult(null);
     try {
-      const response = await fetch('/api/observer/analyze', { method: 'POST' });
+      const response = await fetch('/api/observer/analyze', { method: 'POST', headers: { 'X-Admin-Key': adminKey } });
       if (response.ok) {
         const data = await response.json();
         setAnalysisResult(`Found ${data.patterns_found || 0} patterns, updated ${data.skills_updated?.length || 0} skills`);
@@ -83,41 +120,41 @@ export default function Header() {
                   Built for research and entertainment. Not financial advice!
                 </span>
               </div>
-              <button
-                onClick={() => setShowInfo(true)}
-                className="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-neutral hover:text-white transition-all"
-                title="About Agent Arena"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </button>
             </div>
 
             {/* Status indicators */}
             <div className="flex items-center gap-4 sm:gap-6">
               {/* Live indicator */}
               <div className="flex items-center gap-2">
-                {status === 'running' && connected && (
-                  <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-profit/10 border border-profit/20">
-                    <span className="relative flex h-2.5 w-2.5">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-profit opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-profit"></span>
-                    </span>
-                    <span className="text-profit font-medium text-sm text-glow-profit">LIVE</span>
+                {MAINTENANCE_MODE ? (
+                  <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20">
+                    <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
+                    <span className="text-amber-400 font-medium text-sm">UPGRADING</span>
                   </div>
-                )}
-                {status === 'stopped' && (
-                  <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-neutral/10 border border-neutral/20">
-                    <span className="w-2.5 h-2.5 rounded-full bg-neutral"></span>
-                    <span className="text-neutral font-medium text-sm">STOPPED</span>
-                  </div>
-                )}
-                {status === 'not_started' && (
-                  <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-neutral/10 border border-neutral/20">
-                    <span className="w-2.5 h-2.5 rounded-full bg-neutral animate-pulse"></span>
-                    <span className="text-neutral font-medium text-sm">WAITING</span>
-                  </div>
+                ) : (
+                  <>
+                    {status === 'running' && connected && (
+                      <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-profit/10 border border-profit/20">
+                        <span className="relative flex h-2.5 w-2.5">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-profit opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-profit"></span>
+                        </span>
+                        <span className="text-profit font-medium text-sm text-glow-profit">LIVE</span>
+                      </div>
+                    )}
+                    {status === 'stopped' && (
+                      <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-neutral/10 border border-neutral/20">
+                        <span className="w-2.5 h-2.5 rounded-full bg-neutral"></span>
+                        <span className="text-neutral font-medium text-sm">STOPPED</span>
+                      </div>
+                    )}
+                    {status === 'not_started' && (
+                      <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-neutral/10 border border-neutral/20">
+                        <span className="w-2.5 h-2.5 rounded-full bg-neutral animate-pulse"></span>
+                        <span className="text-neutral font-medium text-sm">WAITING</span>
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
 
@@ -130,82 +167,6 @@ export default function Header() {
           </div>
         </div>
       </header>
-
-      {/* Info Modal */}
-      {showInfo && (
-        <div
-          className="fixed inset-0 bg-black/90 flex items-center justify-center"
-          style={{ zIndex: 9999 }}
-          onClick={() => setShowInfo(false)}
-        >
-          <div
-            className="bg-[#1a1a2e] border border-white/20 rounded-xl p-6 max-w-lg w-full mx-4 shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-accent/20 flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-              </div>
-              <h2 className="text-xl font-bold text-white">Agent Arena</h2>
-            </div>
-
-            <p className="text-neutral mb-4">
-              A self-improving AI platform. An Observer Agent watches AI traders compete, figures out what works, and writes down the winning patterns as reusable skills.
-            </p>
-
-            <div className="space-y-3 text-sm">
-              <div className="flex items-start gap-3">
-                <span className="text-accent">1.</span>
-                <p className="text-white/80">
-                  <strong className="text-white">Observer Agent</strong> - Analyzes thousands of trading decisions, correlates with outcomes, and writes structured skills with statistical confidence.
-                </p>
-              </div>
-              <div className="flex items-start gap-3">
-                <span className="text-accent">2.</span>
-                <p className="text-white/80">
-                  <strong className="text-white">Skill Evolution</strong> - Patterns are versioned, confirmed or contradicted over time, and refined as more data arrives.
-                </p>
-              </div>
-              <div className="flex items-start gap-3">
-                <span className="text-accent">3.</span>
-                <p className="text-white/80">
-                  <strong className="text-white">Data Generation</strong> - LLM traders (Claude, GPT-4, Llama) compete on live Binance futures, providing continuous decision/outcome data.
-                </p>
-              </div>
-              <div className="flex items-start gap-3">
-                <span className="text-accent">4.</span>
-                <p className="text-white/80">
-                  <strong className="text-white">The Lab</strong> - Real market data, 10x leverage, funding rates, and liquidations create a realistic environment for learning.
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-4 p-3 bg-accent/10 border border-accent/20 rounded-lg">
-              <p className="text-xs text-accent/90 italic">
-                "The trading arena is the lab; the Observer Agent is the scientist."
-              </p>
-            </div>
-
-            <div className="mt-6 pt-4 border-t border-white/10">
-              <p className="text-xs text-neutral text-center">
-                Built for research and entertainment. Not financial advice!
-              </p>
-              <p className="text-xs text-neutral/60 text-center mt-2">
-                Created by Daniel Huber
-              </p>
-            </div>
-
-            <button
-              onClick={() => setShowInfo(false)}
-              className="mt-4 w-full px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-white/70 font-medium transition-colors"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
 
       {/* Admin Panel Modal */}
       {showAdmin && (
@@ -223,9 +184,9 @@ export default function Header() {
               <div>
                 <input
                   type="password"
-                  placeholder="Enter admin password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter admin key (ARENA_ADMIN_KEY)"
+                  value={adminKey}
+                  onChange={(e) => setAdminKey(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleAdminAuth()}
                   className="w-full px-3 py-2 bg-black/50 border border-white/20 rounded-lg text-white mb-3 focus:outline-none focus:border-accent"
                   autoFocus
@@ -272,18 +233,41 @@ export default function Header() {
                   {analysisResult && (
                     <p className="text-xs text-purple-300 mt-2 text-center">{analysisResult}</p>
                   )}
+                  <button
+                    onClick={handleGenerateJournal}
+                    disabled={actionLoading !== null}
+                    className="w-full mt-2 px-4 py-2 bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 rounded-lg text-blue-400 font-medium disabled:opacity-50 transition-colors"
+                  >
+                    {actionLoading === 'journal' ? 'Generating...' : 'Generate Journal'}
+                  </button>
+                  {journalResult && (
+                    <p className="text-xs text-blue-300 mt-2 text-center">{journalResult}</p>
+                  )}
                 </div>
-                <button
-                  onClick={() => {
-                    setShowAdmin(false);
-                    setIsAuthenticated(false);
-                    setPassword('');
-                    setAnalysisResult(null);
-                  }}
-                  className="w-full px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-white/70 font-medium transition-colors"
-                >
-                  Close
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => {
+                      setShowAdmin(false);
+                      setAnalysisResult(null);
+                      setJournalResult(null);
+                    }}
+                    className="flex-1 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-white/70 font-medium transition-colors"
+                  >
+                    Close
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowAdmin(false);
+                      setAuthenticated(false);
+                      setAdminKey('');
+                      setAnalysisResult(null);
+                      setJournalResult(null);
+                    }}
+                    className="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 rounded-lg text-red-400/70 text-sm font-medium transition-colors"
+                  >
+                    Logout
+                  </button>
+                </div>
               </div>
             )}
           </div>

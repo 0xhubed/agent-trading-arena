@@ -120,6 +120,27 @@ class TradingArena:
                 order.take_profit_price = Decimal(str(order_data["take_profit_price"]))
             portfolio.pending_orders.append(order)
 
+        # Restore trade history so analytics (total_trades, win_rate, etc.) survive resume
+        for trade_data in state.get("trades", []):
+            trade = Trade(
+                id=trade_data["id"],
+                agent_id=agent_id,
+                symbol=trade_data["symbol"],
+                side=Side(trade_data["side"]),
+                size=Decimal(str(trade_data["size"])),
+                price=Decimal(str(trade_data["price"])),
+                leverage=trade_data["leverage"],
+                fee=Decimal(str(trade_data["fee"])),
+                realized_pnl=(
+                    Decimal(str(trade_data["realized_pnl"]))
+                    if trade_data.get("realized_pnl") is not None
+                    else None
+                ),
+                timestamp=trade_data["timestamp"],
+                decision_id=trade_data.get("decision_id"),
+            )
+            portfolio.trades.append(trade)
+
         self.portfolios[agent_id] = portfolio
 
         # Restore funding tracking
@@ -679,6 +700,18 @@ class TradingArena:
         """Get current standings."""
         standings = []
         for agent_id, portfolio in self.portfolios.items():
+            open_positions = []
+            for sym, pos in portfolio.positions.items():
+                open_positions.append({
+                    "symbol": sym,
+                    "side": pos.side.value,
+                    "size": float(pos.size),
+                    "entry_price": float(pos.entry_price),
+                    "mark_price": float(pos.mark_price),
+                    "unrealized_pnl": float(pos.unrealized_pnl),
+                    "leverage": pos.leverage,
+                    "roe_pct": round(pos.roe_percent, 2),
+                })
             standings.append({
                 "agent_id": agent_id,
                 "equity": float(portfolio.equity),
@@ -686,8 +719,39 @@ class TradingArena:
                 "pnl_percent": portfolio.equity_percent,
                 "positions": len(portfolio.positions),
                 "trades": len(portfolio.trades),
+                "unrealized_pnl": float(portfolio.unrealized_pnl),
+                "realized_pnl": float(portfolio.realized_pnl),
+                "open_positions": open_positions,
             })
         return sorted(standings, key=lambda x: x["equity"], reverse=True)
+
+    def get_extended_leaderboard(self) -> list[dict]:
+        """Get leaderboard with analytics metrics (win rate, Sharpe, etc.)."""
+        leaderboard = self.get_leaderboard()
+        all_analytics = self.get_all_analytics()
+        for entry in leaderboard:
+            analytics = all_analytics.get(entry["agent_id"])
+            if not analytics:
+                continue
+            entry["total_trades"] = analytics.total_trades
+            entry["closed_trades"] = analytics.closed_trades
+            if analytics.closed_trades > 0:
+                entry["win_rate"] = round(analytics.win_rate * 100, 1)
+                pf = analytics.profit_factor
+                entry["profit_factor"] = (
+                    round(pf, 2) if pf != float("inf") else None
+                )
+                entry["expectancy"] = round(float(analytics.expectancy), 2)
+            else:
+                entry["win_rate"] = None
+                entry["profit_factor"] = None
+                entry["expectancy"] = None
+            if analytics.sharpe_ratio != 0:
+                entry["sharpe_ratio"] = round(analytics.sharpe_ratio, 2)
+            else:
+                entry["sharpe_ratio"] = None
+            entry["max_drawdown"] = round(analytics.max_drawdown * 100, 1)
+        return leaderboard
 
     def get_portfolio(self, agent_id: str) -> Optional[Portfolio]:
         """Get portfolio for an agent."""

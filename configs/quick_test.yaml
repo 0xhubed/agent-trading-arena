@@ -1,0 +1,17 @@
+name: "Quick Test"
+symbols: [PF_XBTUSD]
+interval_seconds: 30
+duration_seconds: 300  # 5 minutes
+
+agents:
+  - id: ollama_gpt
+    name: "GPT-OSS Local"
+    class: agent_arena.agents.ollama_trader.OllamaTrader
+    config:
+      model: gpt-oss:20b
+      character: "Aggressive momentum trader"
+
+  - id: index_fund
+    name: "Index Fund"
+    class: agent_arena.agents.index_fund.IndexFundAgent
+    config: {}

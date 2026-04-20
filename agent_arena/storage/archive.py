@@ -15,8 +15,9 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
 from dataclasses import dataclass, field
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from decimal import Decimal
 from pathlib import Path
 from typing import Any, Optional
@@ -27,6 +28,8 @@ try:
 except ImportError:
     OPENAI_AVAILABLE = False
     AsyncOpenAI = None
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -115,7 +118,7 @@ class ArchiveService:
     def __init__(
         self,
         storage: Any,
-        skills_dir: str | Path = "skills",
+        skills_dir: str | Path = ".claude/skills",
         generate_embeddings: bool = False,
         embedding_model: str = "text-embedding-3-small",
     ):
@@ -143,7 +146,7 @@ class ArchiveService:
     async def initialize(self, session_id: str, name: str, config: dict) -> None:
         """Initialize a new archive session."""
         self.session_id = session_id
-        self.session_started = datetime.utcnow()
+        self.session_started = datetime.now(timezone.utc)
         self._current_date = self.session_started.date()
 
         # Start session in database
@@ -195,7 +198,7 @@ class ArchiveService:
 
     def init_agent_daily_stats(self, agent_id: str, starting_equity: float) -> None:
         """Initialize daily stats for an agent."""
-        today = datetime.utcnow().date()
+        today = datetime.now(timezone.utc).date()
 
         # Check if we need to flush previous day
         if self._current_date and today != self._current_date:
@@ -306,7 +309,7 @@ class ArchiveService:
 
             return archive_id
         except Exception as e:
-            print(f"Failed to archive decision: {e}")
+            logger.error("Failed to archive decision: %s", e)
             return None
 
     async def _generate_context_embedding(
@@ -341,7 +344,7 @@ class ArchiveService:
 
             return response.data[0].embedding
         except Exception as e:
-            print(f"Failed to generate embedding: {e}")
+            logger.error("Failed to generate embedding: %s", e)
             return None
 
     async def update_decision_outcome(
@@ -355,7 +358,7 @@ class ArchiveService:
             # Remove from pending
             self._pending_decisions.pop(archive_id, None)
         except Exception as e:
-            print(f"Failed to update decision outcome: {e}")
+            logger.error("Failed to update decision outcome: %s", e)
 
     async def flush_daily_snapshots(self) -> list[int]:
         """Flush accumulated daily stats to PostgreSQL."""
@@ -366,7 +369,7 @@ class ArchiveService:
                 snapshot_id = await self.storage.save_daily_snapshot(stats.to_dict())
                 saved_ids.append(snapshot_id)
             except Exception as e:
-                print(f"Failed to save daily snapshot for {agent_id}: {e}")
+                logger.error("Failed to save daily snapshot for %s: %s", agent_id, e)
 
         return saved_ids
 
@@ -376,7 +379,7 @@ class ArchiveService:
         await self.flush_daily_snapshots()
 
         # Get current date before reset
-        today = datetime.utcnow().date()
+        today = datetime.now(timezone.utc).date()
 
         # Reset for next day
         self._daily_stats.clear()

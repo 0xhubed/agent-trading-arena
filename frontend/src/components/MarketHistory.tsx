@@ -29,12 +29,22 @@ interface MarketHistoryData {
 
 const INTERVALS = ['15m', '1h', '4h', '1d'];
 
-export default function MarketHistory() {
+interface MarketHistoryProps {
+  defaultExpanded?: boolean;
+  collapsible?: boolean;
+  chartHeight?: string;
+}
+
+export default function MarketHistory({
+  defaultExpanded = false,
+  collapsible = true,
+  chartHeight = 'h-48',
+}: MarketHistoryProps) {
   const [data, setData] = useState<MarketHistoryData | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedSymbol, setSelectedSymbol] = useState<string | null>(null);
   const [interval, setInterval] = useState('1h');
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(defaultExpanded);
 
   useEffect(() => {
     fetchData();
@@ -117,49 +127,65 @@ export default function MarketHistory() {
   return (
     <div className="glass-strong rounded-xl overflow-hidden">
       {/* Header - always visible */}
-      <button
-        onClick={() => setExpanded(!expanded)}
-        className="w-full p-4 flex items-center justify-between hover:bg-surface/30 transition-colors"
-      >
-        <div className="flex items-center gap-3">
+      {collapsible ? (
+        <button
+          onClick={() => setExpanded(!expanded)}
+          className="w-full p-4 flex items-center justify-between hover:bg-surface/30 transition-colors"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-highlight/20 flex items-center justify-center">
+              <svg className="w-4 h-4 text-highlight" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+              </svg>
+            </div>
+            <div className="text-left">
+              <h3 className="text-sm font-semibold text-white">Market Data</h3>
+              <p className="text-xs text-neutral">
+                {loading ? 'Loading...' : `${symbols.length} symbols`}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            {selectedSymbol && symbolStats[selectedSymbol] && (
+              <span className={clsx(
+                'text-xs font-mono-numbers',
+                symbolStats[selectedSymbol].change >= 0 ? 'text-profit' : 'text-loss'
+              )}>
+                {symbolStats[selectedSymbol].change >= 0 ? '+' : ''}
+                {symbolStats[selectedSymbol].change.toFixed(2)}%
+              </span>
+            )}
+            <svg
+              className={clsx(
+                'w-4 h-4 text-neutral transition-transform',
+                expanded && 'rotate-180'
+              )}
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+        </button>
+      ) : (
+        <div className="p-4 flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-highlight/20 flex items-center justify-center">
             <svg className="w-4 h-4 text-highlight" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
             </svg>
           </div>
-          <div className="text-left">
+          <div>
             <h3 className="text-sm font-semibold text-white">Market Data</h3>
             <p className="text-xs text-neutral">
               {loading ? 'Loading...' : `${symbols.length} symbols`}
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-3">
-          {selectedSymbol && symbolStats[selectedSymbol] && (
-            <span className={clsx(
-              'text-xs font-mono-numbers',
-              symbolStats[selectedSymbol].change >= 0 ? 'text-profit' : 'text-loss'
-            )}>
-              {symbolStats[selectedSymbol].change >= 0 ? '+' : ''}
-              {symbolStats[selectedSymbol].change.toFixed(2)}%
-            </span>
-          )}
-          <svg
-            className={clsx(
-              'w-4 h-4 text-neutral transition-transform',
-              expanded && 'rotate-180'
-            )}
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-          </svg>
-        </div>
-      </button>
+      )}
 
       {/* Expanded content */}
-      {expanded && (
+      {(expanded || !collapsible) && (
         <div className="border-t border-white/5 p-4 space-y-4">
           {/* Symbol selector */}
           <div className="flex flex-wrap gap-2">
@@ -208,18 +234,18 @@ export default function MarketHistory() {
 
           {/* Chart */}
           {loading ? (
-            <div className="h-48 flex items-center justify-center text-neutral">
+            <div className={`${chartHeight} flex items-center justify-center text-neutral`}>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 border-2 border-accent border-t-transparent rounded-full animate-spin" />
                 Loading chart...
               </div>
             </div>
           ) : chartData.length === 0 ? (
-            <div className="h-48 flex items-center justify-center text-neutral">
+            <div className={`${chartHeight} flex items-center justify-center text-neutral`}>
               No data available
             </div>
           ) : (
-            <div className="h-48">
+            <div className={chartHeight}>
               <ResponsiveContainer width="100%" height="100%">
                 <ComposedChart
                   data={chartData}

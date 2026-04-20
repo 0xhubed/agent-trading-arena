@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 import re
-from datetime import datetime
+from datetime import datetime, timezone
 from decimal import Decimal
 from typing import Optional
 
@@ -102,7 +102,7 @@ ACTIONS:
 RESPONSE FORMAT (JSON only):
 {{
   "action": "hold|open_long|open_short|close",
-  "symbol": "BTCUSDT",
+  "symbol": "PF_XBTUSD",
   "size": 0.1,
   "leverage": 5,
   "confidence": 0.75,
@@ -181,7 +181,7 @@ What is your decision? Respond with JSON only."""
                 leverage=int(leverage) if leverage else 1,
                 confidence=max(0.0, min(1.0, confidence)),
                 reasoning=reasoning,
-                timestamp=datetime.utcnow(),
+                timestamp=datetime.now(timezone.utc),
             )
 
         except (json.JSONDecodeError, KeyError, ValueError) as e:

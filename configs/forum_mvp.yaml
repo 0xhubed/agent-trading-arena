@@ -1,0 +1,100 @@
+# M3 Forum MVP Configuration
+# Tests agent discussions and witness summaries
+
+name: "M3 Forum MVP"
+symbols: [PF_XBTUSD, PF_ETHUSD, PF_SOLUSD]
+interval_seconds: 120  # 2-min ticks
+duration_seconds: null  # Run indefinitely
+
+# Historical candles for technical analysis
+candles:
+  enabled: true
+  intervals: ["1h", "15m"]
+  limit: 100
+
+# Forum configuration
+forum:
+  enabled: true
+  channels:
+    - name: "market"
+      description: "Real-time market analysis"
+    - name: "strategy"
+      description: "Trading strategy discussions"
+
+# Discussion agents (local inference, zero cost)
+discussion_agents:
+  - id: market_analyst_1
+    name: "MarketAnalyst"
+    class: agent_arena.forum.agents.market_analyst.MarketAnalystAgent
+    config:
+      model: "nemotron"
+      base_url: "http://192.168.0.42:4000/v1"
+      api_key_env: "LOCAL_API_KEY"
+      post_interval_ticks: 5
+      significant_move_threshold: 0.02  # 2% move triggers immediate post
+      symbols: ["PF_XBTUSD"]
+
+  - id: contrarian_1
+    name: "Contrarian"
+    class: agent_arena.forum.agents.contrarian.ContrarianAgent
+    config:
+      consensus_threshold: 0.70  # Challenge when >70% agree
+      check_interval_ticks: 3
+      lookback_messages: 20
+
+# Observer configuration (for future Phase 3)
+observer:
+  enabled: false  # Enable in Phase 3
+  model: "claude-opus-4-6"
+  forum_analysis:
+    enabled: false
+    interval_hours: 3
+    witness_lookback_hours: 6
+  daily_analysis:
+    enabled: true
+    schedule: "03:00"  # 3 AM daily
+
+# Trading agents - A/B test: Control vs Forum-Aware
+agents:
+  # CONTROL GROUP: Skills only (no forum witness)
+  - id: control_skill_aware
+    name: "Control (Skills Only)"
+    class: agent_arena.agents.skill_aware_trader.SkillAwareTrader
+    config:
+      model: "nemotron"
+      base_url: "http://192.168.0.42:4000/v1"
+      api_key_env: "LOCAL_API_KEY"
+      character: "Analytical momentum trader with disciplined risk management"
+      max_tokens: 2000
+      skills_dir: ".claude/skills"
+      always_check_skills: true
+
+  # EXPERIMENTAL GROUP: Skills + Forum Witness
+  - id: experimental_forum_aware
+    name: "Experimental (Skills + Forum)"
+    class: agent_arena.agents.forum_aware_trader.ForumAwareTradingAgent
+    config:
+      model: "nemotron"
+      base_url: "http://192.168.0.42:4000/v1"
+      api_key_env: "LOCAL_API_KEY"
+      character: "Analytical trader who learns from peer discussions and historical patterns"
+      max_tokens: 2000
+      skills_dir: ".claude/skills"
+      always_check_skills: true
+      witness_lookback_hours: 6
+      min_witness_confidence: 0.6
+      post_to_forum: true
+
+  # BENCHMARKS
+  - id: ta_baseline
+    name: "TA Baseline"
+    class: agent_arena.agents.ta_trader.TATrader
+    config:
+      rsi_oversold: 30
+      rsi_overbought: 70
+
+  - id: index_fund
+    name: "Index Fund"
+    class: agent_arena.agents.index_fund.IndexFundAgent
+    config:
+      allocation_pct: 0.8

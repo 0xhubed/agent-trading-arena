@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Optional
 
 from langchain_anthropic import ChatAnthropic
@@ -65,7 +65,7 @@ class LearningTraderAgent(AgenticTrader):
 
         # Initialize context builder
         self._context_builder = ContextBuilder(
-            primary_symbol=config.get("primary_symbol", "BTCUSDT")
+            primary_symbol=config.get("primary_symbol", "PF_XBTUSD")
         )
 
         # Learning-specific tools (added to inherited tools)
@@ -155,7 +155,7 @@ has worked before making your decision."""
             candles=context.get("candles", {}),
             portfolio=context.get("portfolio", {}),
             tick=context.get("tick", 0),
-            timestamp=context.get("timestamp", datetime.utcnow()),
+            timestamp=context.get("timestamp", datetime.now(timezone.utc)),
         )
 
         # Add enriched data to context for tools

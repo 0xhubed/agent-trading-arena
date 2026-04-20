@@ -14,7 +14,7 @@ class TradeValidationInput(BaseModel):
     proposed_action: str = Field(
         description="The action being considered: open_long, open_short, close, hold"
     )
-    symbol: str = Field(description="Trading symbol (e.g., BTCUSDT)")
+    symbol: str = Field(description="Trading symbol (e.g., PF_XBTUSD)")
 
 
 class TradeRulesTool(TradingTool):
@@ -87,16 +87,109 @@ Input: proposed_action (required), symbol (required)."""
                     "severity": "MEDIUM",
                 })
 
+        return self._validate_market_and_portfolio(
+            proposed_action, symbol, tick, portfolio, market,
+            violations, warnings, all_recent,
+        )
+
+    def _get_recent_trades(
+        self, agent_id: str, symbol: Optional[str], limit: int
+    ) -> list:
+        """Get recent trades from context."""
+        trades = self._context.get("trade_history", [])
+        if symbol:
+            trades = [t for t in trades if t.get("symbol") == symbol]
+        return trades[:limit]
+
+    async def _aget_recent_trades(
+        self, agent_id: str, symbol: Optional[str], limit: int
+    ) -> list:
+        """Get recent trades, with async storage fallback."""
+        trades = self._get_recent_trades(agent_id, symbol, limit)
+        if trades or not self._storage:
+            return trades
+        try:
+            return await self._storage.get_trades(
+                agent_id=agent_id, symbol=symbol, limit=limit,
+            )
+        except Exception:
+            return []
+
+    async def _arun(
+        self, proposed_action: str, symbol: str,
+    ) -> str:
+        """Async trade validation with storage access."""
+        context = self._context
+        violations = []
+        warnings = []
+
+        tick = context.get("tick", 0)
+        portfolio = context.get("portfolio", {})
+        market = context.get("market", {})
+        agent_id = context.get("agent_id", "")
+
+        recent_trades = await self._aget_recent_trades(
+            agent_id, symbol, limit=5
+        )
+        if recent_trades:
+            last_trade_tick = recent_trades[0].get("tick", 0)
+            ticks_since = tick - last_trade_tick
+            if ticks_since < 3:
+                violations.append({
+                    "rule": "HOLD_PERIOD",
+                    "message": (
+                        f"Traded {symbol} only {ticks_since} tick(s) ago. "
+                        "Minimum 3 ticks required."
+                    ),
+                    "severity": "HIGH",
+                })
+
+        all_recent = await self._aget_recent_trades(
+            agent_id, None, limit=10
+        )
+        if len(all_recent) >= 5:
+            losses = sum(
+                1 for t in all_recent if float(t.get("pnl", 0)) < 0
+            )
+            loss_rate = losses / len(all_recent)
+            if loss_rate > 0.6:
+                warnings.append({
+                    "rule": "LOSS_STREAK",
+                    "message": (
+                        f"{int(loss_rate*100)}% of last "
+                        f"{len(all_recent)} trades "
+                        "were losses. Consider reducing size or waiting."
+                    ),
+                    "severity": "MEDIUM",
+                })
+
+        # Reuse sync logic for the rest (market checks, portfolio checks)
+        return self._validate_market_and_portfolio(
+            proposed_action, symbol, tick, portfolio, market,
+            violations, warnings, all_recent,
+        )
+
+    def _validate_market_and_portfolio(
+        self,
+        proposed_action: str,
+        symbol: str,
+        tick: int,
+        portfolio: dict,
+        market: dict,
+        violations: list,
+        warnings: list,
+        all_recent: list,
+    ) -> str:
+        """Validate market conditions and portfolio state."""
         # Rule 3: Trend alignment
         if symbol in market:
             change_24h = float(market[symbol].get("change_24h", 0))
-
             if proposed_action == "open_short" and change_24h > 3:
                 warnings.append({
                     "rule": "COUNTER_TREND",
                     "message": (
-                        f"Opening short against +{change_24h:.1f}% uptrend. "
-                        "Strong trends tend to continue."
+                        f"Opening short against +{change_24h:.1f}% "
+                        "uptrend. Strong trends tend to continue."
                     ),
                     "severity": "MEDIUM",
                 })
@@ -104,16 +197,17 @@ Input: proposed_action (required), symbol (required)."""
                 warnings.append({
                     "rule": "COUNTER_TREND",
                     "message": (
-                        f"Opening long against {change_24h:.1f}% downtrend. "
-                        "Consider waiting for reversal confirmation."
+                        f"Opening long against {change_24h:.1f}% "
+                        "downtrend. Consider waiting for reversal."
                     ),
                     "severity": "MEDIUM",
                 })
 
         # Rule 4: Symbol concentration
         positions = portfolio.get("positions", [])
-        symbol_positions = [p for p in positions if p.get("symbol") == symbol]
-
+        symbol_positions = [
+            p for p in positions if p.get("symbol") == symbol
+        ]
         if len(symbol_positions) >= 1 and proposed_action.startswith("open"):
             warnings.append({
                 "rule": "CONCENTRATION",
@@ -128,7 +222,7 @@ Input: proposed_action (required), symbol (required)."""
         if proposed_action == "close":
             for pos in symbol_positions:
                 roe = float(pos.get("roe_percent", 0))
-                if 0 < roe < 2:  # Small profit
+                if 0 < roe < 2:
                     warnings.append({
                         "rule": "EARLY_EXIT",
                         "message": (
@@ -138,7 +232,6 @@ Input: proposed_action (required), symbol (required)."""
                         "severity": "LOW",
                     })
 
-        # Determine recommendation
         if violations:
             recommendation = "REJECT"
         elif warnings:
@@ -152,39 +245,10 @@ Input: proposed_action (required), symbol (required)."""
             "can_proceed": len(violations) == 0,
             "violations": violations,
             "warnings": warnings,
-            "summary": self._get_summary(recommendation, violations, warnings),
+            "summary": self._get_summary(
+                recommendation, violations, warnings
+            ),
         }, indent=2)
-
-    def _get_recent_trades(
-        self, agent_id: str, symbol: Optional[str], limit: int
-    ) -> list:
-        """Query recent trades from storage."""
-        if not self._storage:
-            return []
-
-        try:
-            # Use storage to get recent trades
-            import asyncio
-
-            async def fetch():
-                return await self._storage.get_trades(
-                    agent_id=agent_id,
-                    symbol=symbol,
-                    limit=limit,
-                )
-
-            # Try to get event loop
-            try:
-                loop = asyncio.get_event_loop()
-                if loop.is_running():
-                    # We're in async context, can't use run_until_complete
-                    # Return empty for now - will be populated from context
-                    return []
-                return loop.run_until_complete(fetch())
-            except RuntimeError:
-                return []
-        except Exception:
-            return []
 
     def _get_summary(
         self, recommendation: str, violations: list, warnings: list

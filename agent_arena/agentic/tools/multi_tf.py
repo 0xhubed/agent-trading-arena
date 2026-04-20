@@ -10,7 +10,7 @@ from agent_arena.agentic.tools.base import TradingTool
 class MultiTimeframeInput(BaseModel):
     """Input schema for multi-timeframe analysis."""
 
-    symbol: str = Field(description="Trading symbol to analyze (e.g., BTCUSDT)")
+    symbol: str = Field(description="Trading symbol to analyze (e.g., PF_XBTUSD)")
 
 
 class MultiTimeframeTool(TradingTool):

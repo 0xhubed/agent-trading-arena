@@ -1,0 +1,346 @@
+# Agent Arena — Production Configuration
+#
+# All-GPT-OSS-120B fleet via Ollama Cloud ($20/mo flat) + Claude Opus 4.6 Observer
+#
+# Models:
+#   gpt-oss:120b-cloud — GPT-OSS-120B (Ollama Cloud) — $20/mo flat subscription
+#
+# Agent roster (6 LLM trading + 4 forum + 2 benchmarks + observer):
+#   Tier 1: 2 simple traders — Momentum + Contrarian archetypes
+#   Tier 2: 1 agentic trader — Swing trader (low-frequency, tool-confirmed)
+#   Tier 3: 1 skill-aware trader — Regime-first, skill-filtered
+#   Tier 3b: 1 forum-aware trader — Multi-source signal integrator
+#   Tier 3c: 1 journal-aware trader — Self-improving via Observer feedback
+#   Tier 4: 2 free benchmarks (TA bot, index fund)
+#   Forum:  2x MarketAnalyst + 2x Contrarian (all GPT-OSS-120B on Ollama Cloud)
+#   Observer: Claude Opus 4.6 (runs separately)
+#
+# Cost estimate (15-min ticks = 96 decisions/day):
+#   Ollama Cloud:     ~$0.67/day ($20/mo flat — all 6 traders + 4 forum agents)
+#   Observer:         ~$1.50/day (1 daily + 8 forum analyses via Opus 4.6)
+#   Total:            ~$2.17/day (~$65/month)
+
+name: "Production Competition"
+description: "All-GPT-OSS-120B fleet (Ollama Cloud $20/mo flat) with forum + observer"
+
+# Trading configuration
+symbols: [PF_XBTUSD, PF_ETHUSD, PF_SOLUSD, PF_DOGEUSD, PF_XRPUSD]
+interval_seconds: 900            # 15-min ticks
+duration_seconds: null           # Run indefinitely
+agent_timeout_seconds: 120       # Together AI is fast, 2 min is plenty
+
+# Fee configuration
+fees:
+  taker_fee: 0.0004              # 0.04% for market orders
+  maker_fee: 0.0002              # 0.02% for limit orders
+  liquidation_fee: 0.005         # 0.5% liquidation penalty
+
+# Trading constraints
+constraints:
+  max_leverage: 10
+  max_position_pct: 0.25         # Max 25% of equity per position
+  starting_capital: 10000
+  max_trades_per_window: 4       # Max opens per rolling window (closes exempt since 2026-02-27)
+  trade_window_ticks: 20         # Rolling window = 20 ticks (~5h at 15min)
+
+# Historical candles for technical analysis
+candles:
+  enabled: true
+  intervals: ["1h", "15m", "4h"]
+  limit: 200
+
+# Storage
+storage:
+  backend: postgres               # Required for observer memory
+
+# Forum configuration
+forum:
+  enabled: true
+  channels:
+    - name: "market"
+      description: "Real-time market analysis"
+    - name: "strategy"
+      description: "Trading strategy discussions"
+
+# Discussion agents (all Ollama Cloud GPT-OSS-120B — $20/mo flat)
+discussion_agents:
+  - id: market_analyst_1
+    name: "MarketAnalyst-1 (GPT-OSS)"
+    class: agent_arena.forum.agents.market_analyst.MarketAnalystAgent
+    config:
+      model: "gpt-oss:120b-cloud"
+      base_url: "https://ollama.com/v1"
+      api_key_env: "OLLAMA_API_KEY"
+      max_tokens: 1024
+      post_interval_ticks: 5       # Every 5 ticks = every 75 min
+      significant_move_threshold: 0.02
+
+  - id: market_analyst_2
+    name: "MarketAnalyst-2 (GPT-OSS)"
+    class: agent_arena.forum.agents.market_analyst.MarketAnalystAgent
+    config:
+      model: "gpt-oss:120b-cloud"
+      base_url: "https://ollama.com/v1"
+      api_key_env: "OLLAMA_API_KEY"
+      max_tokens: 1024
+      post_interval_ticks: 5       # Same cadence, offset naturally by start tick
+      significant_move_threshold: 0.02
+
+  - id: contrarian_1
+    name: "Contrarian-1 (GPT-OSS)"
+    class: agent_arena.forum.agents.contrarian.ContrarianAgent
+    config:
+      model: "gpt-oss:120b-cloud"
+      base_url: "https://ollama.com/v1"
+      api_key_env: "OLLAMA_API_KEY"
+      max_tokens: 1024
+      consensus_threshold: 0.60    # Challenge when >60% agree (lowered — echo chamber HIGH 2026-02-25)
+      check_interval_ticks: 2      # Every 2 ticks = every 30 min
+      lookback_messages: 20
+
+  - id: contrarian_2
+    name: "Contrarian-2 (GPT-OSS)"
+    class: agent_arena.forum.agents.contrarian.ContrarianAgent
+    config:
+      model: "gpt-oss:120b-cloud"
+      base_url: "https://ollama.com/v1"
+      api_key_env: "OLLAMA_API_KEY"
+      max_tokens: 1024
+      consensus_threshold: 0.55    # Lower threshold — more aggressive pushback
+      check_interval_ticks: 3      # Every 3 ticks = every 45 min
+      lookback_messages: 20
+
+
+# Observer configuration
+observer:
+  enabled: true
+  model: "claude-opus-4-6"
+  forum_analysis:
+    enabled: true
+    interval_hours: 3
+    witness_lookback_hours: 6
+  daily_analysis:
+    enabled: true
+    schedule: "03:00"              # 3 AM daily
+
+# ==========================================================================
+# TRADING AGENTS
+# ==========================================================================
+
+agents:
+  # ------------------------------------------------------------------------
+  # TIER 1: Simple Traders (single LLM call per tick)
+  #
+  # Two contrasting strategy archetypes on the same model.
+  # Momentum rides trends; Contrarian fades extremes.
+  # Both receive: market data, TA indicators, position advisories,
+  # decision history, and trade performance — no tools needed.
+  # ------------------------------------------------------------------------
+
+  - id: gptoss_momentum
+    name: "Momentum GPT-OSS"
+    class: agent_arena.agents.llm_trader.LLMTrader
+    config:
+      model: gpt-oss:120b-cloud
+      base_url: https://ollama.com/v1
+      api_key_env: OLLAMA_API_KEY
+      max_tokens: 1024
+      max_confidence: 0.65
+      character: |
+        Momentum trader. Ride trends, never fight the tape.
+        If ADX > 25 and MACD confirms direction, go with the trend.
+        Cut losers at -2% ROE. Let winners run past +5% ROE — only
+        close on clear trend reversal. Prefer BTC, ETH, SOL for
+        liquidity and trend clarity. Size: 10% of equity, 3x max
+        leverage. If no clear trend exists, HOLD. 2-3 trades/day max.
+
+  - id: gptoss_contrarian
+    name: "Contrarian GPT-OSS"
+    class: agent_arena.agents.llm_trader.LLMTrader
+    config:
+      model: gpt-oss:120b-cloud
+      base_url: https://ollama.com/v1
+      api_key_env: OLLAMA_API_KEY
+      max_tokens: 1024
+      max_confidence: 0.60
+      character: |
+        Mean-reversion contrarian. You fade extremes and profit from
+        overcrowded trades snapping back. Buy when RSI < 30 near lower
+        Bollinger Band. Short when RSI > 70 near upper Bollinger Band.
+        Best setups: after 5%+ daily moves that look exhausted.
+        Tight stops at -2% ROE. Take profit at +4% ROE. Use funding
+        rates as edge — extreme positive funding = short, extreme
+        negative = long. Size: 8% of equity, 2x max leverage.
+        If nothing is extreme, HOLD. Max 2 trades per day.
+
+  # ------------------------------------------------------------------------
+  # TIER 2: Agentic Trader (ReAct loop with tools)
+  #
+  # Swing trader: uses tools for high-conviction setups, holds longer.
+  # Tests whether tool-confirmed patience beats simple frequency.
+  # ------------------------------------------------------------------------
+
+  - id: gptoss_agentic
+    name: "Swing GPT-OSS"
+    class: agent_arena.agents.agentic_llm.AgenticLLMTrader
+    config:
+      model: gpt-oss:120b-cloud
+      base_url: https://ollama.com/v1
+      api_key_env: OLLAMA_API_KEY
+      max_tokens: 2048
+      max_iterations: 3
+      max_confidence: 0.55
+      character: |
+        Patient swing trader. Use tools to find high-conviction setups
+        and hold positions for multiple ticks. Run the risk calculator
+        before every entry. Require ALL of: RSI, MACD, and Bollinger
+        Band agreement before opening. Set stop-loss and take-profit
+        on every position. Default is HOLD. Max 1-2 trades per day.
+        Patience is your edge — fewer trades, bigger winners.
+
+  # ------------------------------------------------------------------------
+  # TIER 3: Skill-Aware Trader
+  #
+  # Regime-first: Observer-generated skills dictate allowed directions.
+  # Tests whether systematic skill filtering adds alpha.
+  # ------------------------------------------------------------------------
+
+  - id: gptoss_skill_aware
+    name: "Regime GPT-OSS"
+    class: agent_arena.agents.skill_aware_llm.SkillAwareLLMTrader
+    config:
+      model: gpt-oss:120b-cloud
+      base_url: https://ollama.com/v1
+      api_key_env: OLLAMA_API_KEY
+      max_tokens: 2048
+      max_iterations: 4
+      max_confidence: 0.55
+      skills_dir: ".claude/skills"
+      always_check_skills: true
+      character: |
+        Regime-first systematic trader. Always check market-regimes
+        skill before anything else. If regime is bearish, only consider
+        shorts. If bullish, only longs. If unclear, HOLD. Use
+        entry-signals to validate setups and risk-management for sizing.
+        Never override a skill's caution signal. Document which skills
+        guided your decision. Max 2 trades per day. Discipline is edge.
+
+  # ------------------------------------------------------------------------
+  # TIER 3b: Forum-Aware Trader
+  #
+  # Skills + forum witness. Uses forum consensus as a contrarian
+  # indicator — high consensus = caution, not confirmation.
+  # ------------------------------------------------------------------------
+
+  - id: gptoss_forum_aware
+    name: "Forum-Aware GPT-OSS"
+    class: agent_arena.agents.forum_aware_llm.ForumAwareLLMTrader
+    config:
+      model: gpt-oss:120b-cloud
+      base_url: https://ollama.com/v1
+      api_key_env: OLLAMA_API_KEY
+      max_tokens: 2048
+      max_iterations: 3
+      max_confidence: 0.55
+      skills_dir: ".claude/skills"
+      always_check_skills: true
+      witness_lookback_hours: 6
+      min_witness_confidence: 0.6
+      post_to_forum: false         # Disabled: breaks echo chamber feedback loop
+      min_post_confidence: 0.7  # Only post rationale for high-conviction trades
+      character: |
+        You are powered by GPT-OSS-120B with access to Observer-generated
+        skills AND real-time forum witness summaries. Check skills first for
+        strategic context (market regime, risk rules), then use forum witness
+        for tactical timing. When witness and skills align, trade with higher
+        conviction. When they conflict, prefer skills (more data). Respect
+        position advisories strictly.
+        PROFIT-TAKING RULE (mandatory): before considering ANY new trade,
+        check existing positions. If any position exceeds +30% ROE, take
+        partial profits (close 50%). Unrealized PnL is not real — book it.
+        ECHO CHAMBER WARNING: forum discussions have been overwhelmingly
+        bullish with minimal contrarian input. Do NOT let forum consensus
+        increase your conviction. If forum witness agrees with your bias,
+        treat that as a CAUTION signal (echo chamber), not confirmation.
+        HOLD-FIRST RULE (mandatory): your default output every tick is HOLD.
+        To override you need a TRIPLE lock: skills confirm the regime,
+        entry-signals skill confirms the setup, AND forum witness independently
+        agrees on direction — all three, not two. Forum buzz alone or skills
+        alone are never sufficient. If the triple lock is not met, output HOLD.
+        Hard cap: ≤2 new positions per 5-hour window. Inaction is a position.
+
+  # ------------------------------------------------------------------------
+  # TIER 3c: Journal-Aware Trader
+  #
+  # Skills + forum witness + daily journal. A/B test vs Forum-Aware
+  # (does the Observer's daily report card improve decision-making?)
+  # ------------------------------------------------------------------------
+
+  - id: gptoss_journal_aware
+    name: "Journal-Aware GPT-OSS"
+    class: agent_arena.agents.journal_aware_llm.JournalAwareLLMTrader
+    config:
+      model: gpt-oss:120b-cloud
+      base_url: https://ollama.com/v1
+      api_key_env: OLLAMA_API_KEY
+      max_tokens: 2048
+      max_iterations: 3
+      max_confidence: 0.60
+      skills_dir: ".claude/skills"
+      always_check_skills: true
+      witness_lookback_hours: 6
+      min_witness_confidence: 0.6
+      post_to_forum: true
+      min_post_confidence: 0.7
+      journal_lookback_days: 1
+      character: |
+        You are powered by GPT-OSS-120B with the full Observer intelligence
+        stack: skills, forum witness, AND daily journal briefing. Start each
+        decision by reading your personal report card from the journal.
+        If the Observer flagged overtrading, reduce activity this session.
+        Use the journal for strategic adjustments, skills for pattern
+        matching, and forum witness for tactical timing. Respect position
+        advisories strictly.
+        PROFIT-TAKING RULE (mandatory): before considering ANY new trade,
+        check existing positions. If any position exceeds +30% ROE, take
+        partial profits (close 50%). Unrealized gains vanish on reversals.
+        ECHO CHAMBER WARNING: if forum and journal both agree on a direction,
+        consider that echo chamber risk is elevated — reduce size rather
+        than increase conviction.
+        HOLD-FIRST RULE (mandatory): your default output every tick is HOLD.
+        The journal is your primary override gate — if it flags overtrading,
+        that flag alone is sufficient reason to output HOLD unless journal +
+        skills + forum witness all independently agree on the same trade.
+        Three-way agreement required; anything less → HOLD. Hard cap: ≤2 new
+        positions per 5-hour window. Quality over quantity, always.
+
+  # ------------------------------------------------------------------------
+  # TIER 4: Free Benchmarks (no LLM, rule-based, $0 cost)
+  # ------------------------------------------------------------------------
+
+  - id: ta_bot
+    name: "TA Bot"
+    class: agent_arena.agents.ta_trader.TATrader
+    config:
+      rsi_period: 14
+      rsi_oversold: 25              # tightened from 30 — fewer oversold triggers
+      rsi_overbought: 75            # tightened from 70 — fewer overbought triggers
+      sma_short: 20
+      sma_long: 50
+      position_size_pct: 0.10       # reduced from 0.15 — smaller, less-frequent entries
+      leverage: 3
+
+  - id: index_fund
+    name: "Index Fund"
+    class: agent_arena.agents.index_fund.IndexFundAgent
+    config:
+      allocation_per_symbol: 2000  # $2,000 x 5 symbols = $10,000 total (20% each)
+      leverage: 1
+
+# ==========================================================================
+# OBSERVER AGENT (runs separately, 1x/day + forum analysis every 3h)
+#
+# Trigger via: POST /api/observer/analyze
+# Uses Claude Opus 4.6 for deep pattern analysis (~$1.50/day)
+# Skills auto-generated in .claude/skills/
+# ==========================================================================

@@ -258,28 +258,38 @@ export default function AgentDetail() {
   const [activeTab, setActiveTab] = useState<'overview' | 'decisions' | 'trades' | 'learning' | 'description'>('overview');
 
   useEffect(() => {
+    const controller = new AbortController();
+
     async function fetchAgent() {
       if (!agentId) return;
 
       try {
         setLoading(true);
-        const response = await fetch(`/api/agents/${agentId}/full`);
+        const response = await fetch(`/api/agents/${agentId}/full`, {
+          signal: controller.signal,
+        });
         if (!response.ok) {
           throw new Error('Agent not found');
         }
         const data = await response.json();
         setAgent(data);
       } catch (err) {
+        if (err instanceof DOMException && err.name === 'AbortError') return;
         setError(err instanceof Error ? err.message : 'Failed to load agent');
       } finally {
-        setLoading(false);
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
       }
     }
 
     fetchAgent();
     // Refresh every 30 seconds
     const interval = setInterval(fetchAgent, 30000);
-    return () => clearInterval(interval);
+    return () => {
+      controller.abort();
+      clearInterval(interval);
+    };
   }, [agentId]);
 
   const rank = leaderboard.findIndex((e) => e.agent_id === agentId) + 1;
@@ -348,7 +358,9 @@ export default function AgentDetail() {
                     <span
                       className={clsx(
                         'text-xs font-bold px-2 py-1 rounded uppercase tracking-wide',
-                        agent.agent_type === 'Agentic'
+                        agent.agent_type === 'Journal-Aware'
+                          ? 'bg-indigo-500/20 text-indigo-400'
+                          : agent.agent_type === 'Agentic'
                           ? 'bg-accent/20 text-accent'
                           : agent.agent_type === 'LLM'
                           ? 'bg-highlight/20 text-highlight'
@@ -984,14 +996,89 @@ export default function AgentDetail() {
   );
 }
 
-// Agent descriptions by type
-const AGENT_DESCRIPTIONS: Record<string, {
+// Model metadata for personalized descriptions
+const MODEL_INFO: Record<string, { displayName: string; description: string; pricing: string; provider: string }> = {
+  // Full paths (as resolved by model_registry.py)
+  'openai/gpt-oss-20b': {
+    displayName: 'GPT-OSS-20B',
+    description: 'OpenAI compact open-weight reasoning model (20B)',
+    pricing: '$0.05/$0.20 per M tokens',
+    provider: 'Together AI',
+  },
+  'openai/gpt-oss-120b': {
+    displayName: 'GPT-OSS-120B',
+    description: 'OpenAI open-weight reasoning model (120B)',
+    pricing: '$0.15/$0.60 per M tokens',
+    provider: 'Together AI',
+  },
+  // Shorthand aliases (in case config uses shorthand directly)
+  'gpt-oss-20b': {
+    displayName: 'GPT-OSS-20B',
+    description: 'OpenAI compact open-weight reasoning model (20B)',
+    pricing: '$0.05/$0.20 per M tokens',
+    provider: 'Together AI',
+  },
+  'gpt-oss-120b': {
+    displayName: 'GPT-OSS-120B',
+    description: 'OpenAI open-weight reasoning model (120B)',
+    pricing: '$0.15/$0.60 per M tokens',
+    provider: 'Together AI',
+  },
+  // GPT-OSS on Ollama Cloud (uses Ollama model naming: model:tag)
+  'gpt-oss:120b-cloud': {
+    displayName: 'GPT-OSS-120B',
+    description: 'OpenAI open-weight reasoning model (120B)',
+    pricing: '$20/mo subscription',
+    provider: 'Ollama Cloud',
+  },
+  // Qwen3.5 models — full paths (as resolved by model_registry.py)
+  'qwen3.5:397b-cloud': {
+    displayName: 'Qwen3.5-397B',
+    description: 'Alibaba flagship MoE model (397B total, 17B active)',
+    pricing: '$20/mo subscription',
+    provider: 'Ollama Cloud',
+  },
+  'qwen/qwen3.5-122b-a10b': {
+    displayName: 'Qwen3.5-122B',
+    description: 'Alibaba MoE reasoning model (122B total, 10B active)',
+    pricing: '$0.10/$0.40 per M tokens',
+    provider: 'OpenRouter',
+  },
+  // Qwen3.5 shorthand aliases
+  'qwen3.5-397b': {
+    displayName: 'Qwen3.5-397B',
+    description: 'Alibaba flagship MoE model (397B total, 17B active)',
+    pricing: '$20/mo subscription',
+    provider: 'Ollama Cloud',
+  },
+  'qwen3.5-122b': {
+    displayName: 'Qwen3.5-122B',
+    description: 'Alibaba MoE reasoning model (122B total, 10B active)',
+    pricing: '$0.10/$0.40 per M tokens',
+    provider: 'OpenRouter',
+  },
+};
+
+function getModelInfo(model: string) {
+  return MODEL_INFO[model] || {
+    displayName: model,
+    description: 'LLM model',
+    pricing: 'unknown',
+    provider: 'unknown',
+  };
+}
+
+// Agent descriptions by type - personalized with agent model
+function getAgentDescription(agent: AgentDetailData): {
   overview: string;
   mechanics: string[];
   strengths: string[];
   weaknesses: string[];
   config?: Record<string, string | number>;
-}> = {
+} {
+  const m = getModelInfo(agent.model);
+
+  const descriptions: Record<string, ReturnType<typeof getAgentDescription>> = {
   'Learning': {
     overview: 'Learning agents use a RAG (Retrieval-Augmented Generation) system to learn from past decisions and outcomes. They build a database of situations and can recall similar historical contexts to inform current decisions.',
     mechanics: [
@@ -1014,37 +1101,107 @@ const AGENT_DESCRIPTIONS: Record<string, {
       'Higher computational cost for embedding generation',
     ],
   },
-  'Skill-Aware': {
-    overview: 'Skill-Aware agents combine learned skills (from the Observer Agent) with tool-based analysis. They consult skills/ for trading wisdom before making decisions.',
+  'Journal-Aware': {
+    overview: `Journal-Aware agents represent the full Observer intelligence stack: skills, forum witness, AND daily journal briefing. Powered by ${m.displayName} via ${m.provider}. Before each decision, the agent reads a personalized report card from the Observer's daily journal — including performance critique, market recap, and specific recommendations. This is the A/B test variant against Forum-Aware (does the Observer's daily report card improve decision-making?).`,
     mechanics: [
-      'Loads trading skills from skills/ directory',
-      'Skills include: trading-wisdom, market-regimes, risk-management',
-      'Uses LangGraph ReAct loop with trading tools',
-      'Combines skill guidance with real-time technical analysis',
+      'Inherits full Forum-Aware capabilities (skills + forum witness + ReAct tool loop)',
+      'Loads latest Observer journal entry with personalized agent briefing',
+      'Journal sections: Market Overview, Personal Report Card, Forum Quality, Recommendations',
+      'Report card includes: trade count, win rate, PnL, overtrading score, specific critique',
+      'Priority order: position advisories > journal report card > skills > forum witness',
+      'If Observer flags overtrading, agent reduces activity; if missed opportunities flagged, widens criteria',
+      'Posts trade rationale back to the forum strategy channel',
     ],
     strengths: [
-      'Benefits from collective learning across all agents',
-      'Has access to proven patterns and strategies',
-      'Can use tools for detailed analysis',
+      'Receives personalized performance critique from the Observer',
+      'Can self-correct based on data-driven feedback (overtrading, missed opportunities)',
+      'Combines all intelligence layers: skills + forum + journal',
+      'Journal provides strategic adjustments, skills provide patterns, forum provides timing',
+    ],
+    weaknesses: [
+      'Depends on journal generation running (Observer + Anthropic API)',
+      'Journal may be stale if generation fails or is delayed',
+      'Largest context window of all agent types (skills + witness + journal)',
+      'Experimental — measuring whether self-awareness improves trading',
+    ],
+    config: {
+      'Model': `${m.displayName} (${m.provider})`,
+      'Journal Lookback': '1 day',
+      'Witness Lookback': '6h',
+      'Min Confidence': '60%',
+      'Post to Forum': 'Yes',
+      'Max Iterations': 2,
+    },
+  },
+  'Forum-Aware': {
+    overview: `Forum-Aware agents extend the Skill-Aware approach with access to forum witness summaries. Powered by ${m.displayName} via ${m.provider}. They combine learned skills, tool-based analysis, and Observer-analyzed insights from forum discussions between MarketAnalyst and Contrarian agents. This is the control variant in an A/B test against the Journal-Aware experimental.`,
+    mechanics: [
+      'Inherits full Skill-Aware capabilities (skills + ReAct tool loop)',
+      'Loads witness summaries from Observer forum analysis (6h lookback, 60% min confidence)',
+      'Witness types: exit_timing, entry_signal, risk_warning, regime_insight',
+      'Injects witness context alongside skills before each decision',
+      'Posts trade rationale back to the forum strategy channel',
+      'When witness conflicts with skills, prefers skills (more statistical data)',
+    ],
+    strengths: [
+      'Access to real-time discussion insights not available to other agents',
+      'Witness summaries are pre-analyzed by the Observer (high signal)',
+      'Can pick up on qualitative signals from AI-to-AI debate',
+      'Posts rationale to forum, closing the feedback loop',
+    ],
+    weaknesses: [
+      'Depends on discussion agents posting useful analysis',
+      'Witness summaries may be stale if Observer analysis is delayed',
+      'Extra context increases prompt size and inference time',
+      'No self-awareness — cannot adjust based on own performance review',
+    ],
+    config: {
+      'Model': `${m.displayName} (${m.provider})`,
+      'Witness Lookback': '6h',
+      'Min Confidence': '60%',
+      'Post to Forum': 'Yes',
+      'Max Iterations': 2,
+    },
+  },
+  'Skill-Aware': {
+    overview: `Skill-Aware agents combine learned skills from the Observer Agent with the full agentic ReAct tool loop. Powered by ${m.displayName} via ${m.provider}. They consult .claude/skills/ for trading wisdom, market regime patterns, and risk management rules before making decisions. This is the control variant in an A/B test against the Forum-Aware experimental.`,
+    mechanics: [
+      'Loads skills from .claude/skills/: trading-wisdom, market-regimes, risk-management, entry-signals',
+      'Uses LangGraph ReAct loop (Think → Act → Observe, max 2 iterations)',
+      'Tools: recommend_skill, trading_skills + all 8 agentic trading tools',
+      'Skills represent statistical evidence from past competition data, generated by the Observer Agent',
+      'Higher confidence skills carry more weight in decisions',
+    ],
+    strengths: [
+      'Benefits from collective learning across all agents via Observer',
+      'Access to proven patterns and risk rules',
+      'Can validate decisions with technical analysis tools',
       'Adapts as skills are updated by Observer Agent',
     ],
     weaknesses: [
-      'Depends on quality of generated skills',
-      'Skills may lag behind rapidly changing markets',
-      'May over-rely on historical patterns',
+      'Depends on quality and freshness of Observer-generated skills',
+      'More tools and context means longer inference time',
+      'Skills may lag behind rapidly changing market regimes',
+      'May over-rely on historical patterns that no longer hold',
     ],
+    config: {
+      'Model': `${m.displayName} (${m.provider})`,
+      'Skills Dir': '.claude/skills',
+      'Always Check': 'Yes',
+      'Max Iterations': 2,
+    },
   },
   'Skill-Only': {
     overview: 'Skill-Only agents make decisions purely based on learned skills without using additional tools. They are simpler and faster than Skill-Aware agents.',
     mechanics: [
-      'Loads trading skills from skills/ directory',
+      'Loads trading skills from .claude/skills/ directory',
       'Makes decisions based solely on skill guidance and market data',
       'No tool usage - single LLM call per decision',
       'Relies on Observer Agent to update skills periodically',
     ],
     strengths: [
       'Fast decision-making with single LLM call',
-      'Lower API costs than tool-using agents',
+      'Lower cost than tool-using agents',
       'Benefits from Observer Agent learning',
     ],
     weaknesses: [
@@ -1054,59 +1211,74 @@ const AGENT_DESCRIPTIONS: Record<string, {
     ],
   },
   'Agentic': {
-    overview: 'Agentic traders use a LangGraph ReAct (Reasoning + Acting) loop. They think, use tools, observe results, and iterate up to 3 times before making a final decision.',
+    overview: `Agentic traders use a LangGraph ReAct (Reasoning + Acting) loop. They think, use tools, observe results, and iterate before making a final decision. Powered by ${m.displayName} (${m.description}) via ${m.provider}.`,
     mechanics: [
-      'ReAct Loop: Think → Act → Observe → Repeat (max 3 iterations)',
-      'Must use at least 2 tools before deciding',
-      'Available tools: validate_trade, reflect_on_performance, technical_analysis, multi_timeframe_analysis, portfolio_risk_analysis, risk_calculator, trade_history, market_search',
-      'Can retrieve Fear & Greed Index, funding rates, and sentiment data',
+      'ReAct Loop: Think → Act → Observe → Repeat (max 2 iterations)',
+      'Must use at least 2 tools before deciding (enforced by graph)',
+      'Tools: validate_trade, reflect_on_performance, technical_analysis, multi_timeframe_analysis, portfolio_risk_analysis, risk_calculator, trade_history, market_search',
+      `${m.displayName} provides native tool calling via ${m.provider} — no custom parsers needed`,
+      'Decision node uses tool_choice=none to force JSON output',
     ],
     strengths: [
       'Thorough analysis before each decision',
       'Can validate trades before execution',
       'Uses multiple data sources for confirmation',
       'Self-reflective - learns from recent performance',
+      `${m.displayName} via ${m.provider} at ${m.pricing}`,
     ],
     weaknesses: [
-      'Slower due to multiple tool calls',
-      'Higher API costs (multiple LLM calls per decision)',
+      'Slower due to multiple LLM calls per tick (up to 120s timeout)',
+      'Higher cost than simple traders due to multi-step reasoning',
       'May over-analyze in fast-moving markets',
+      'Tool calling reliability varies by model',
     ],
+    config: {
+      'Max Iterations': 2,
+      'Timeout': '120s',
+      'Model': `${m.displayName} (${m.provider})`,
+    },
   },
   'LLM': {
-    overview: 'Simple LLM agents make single-call decisions using only the market data and portfolio context. They rely on the model\'s inherent reasoning capabilities without additional tools.',
+    overview: `Simple LLM agents make single-call decisions using only market data and portfolio context. They rely on the model's inherent reasoning capabilities without additional tools. Powered by ${m.displayName} (${m.description}) via ${m.provider}.`,
     mechanics: [
-      'Single LLM API call per tick',
-      'Receives: market prices, 24h changes, funding rates, candles, portfolio state',
-      'Returns: action, symbol, size, leverage, confidence, reasoning',
+      `Single LLM call per tick via ${m.provider} (${m.displayName})`,
+      'Receives: market prices, 24h changes, funding rates, portfolio state',
+      'Pre-computed technical analysis: RSI, SMA, MACD, Bollinger Bands from 1h candles',
+      'Includes recent decision history and trade performance summary',
+      'Returns: action, symbol, size, leverage, confidence, reasoning as JSON',
       'Character/persona defined in config shapes decision style',
     ],
     strengths: [
-      'Fast - single API call per decision',
-      'Low cost - no tool overhead',
-      'Character-driven strategies can be creative',
-      'Good baseline for comparison',
+      'Fast - single inference call per decision',
+      `Low cost via ${m.provider} (${m.pricing})`,
+      'Receives pre-computed TA indicators without needing tools',
+      'Character-driven strategies create diverse competition',
+      'Good baseline for measuring tool/skill value add',
     ],
     weaknesses: [
-      'No access to historical analysis',
-      'Cannot validate decisions',
-      'Limited to data in context window',
-      'May make inconsistent decisions',
+      'Cannot run custom tool queries or multi-step analysis',
+      'No access to Observer-generated skills or forum witness data',
+      'Limited to pre-computed indicators — cannot explore different timeframes on demand',
+      'No learning or adaptation between ticks',
     ],
+    config: {
+      'Model': `${m.displayName} (${m.provider})`,
+      'Pricing': m.pricing,
+    },
   },
   'TA': {
-    overview: 'Technical Analysis agents use rule-based trading strategies based on classic indicators. No LLM involved - purely algorithmic.',
+    overview: 'Technical Analysis agents use rule-based trading strategies based on classic indicators. No LLM involved - purely algorithmic. Serves as a zero-cost deterministic benchmark.',
     mechanics: [
       'RSI (Relative Strength Index): Period=14, Oversold=30, Overbought=70',
       'SMA Crossover: Short=20 periods, Long=50 periods',
-      'Entry signals: RSI oversold + price above SMA = long, RSI overbought + price below SMA = short',
-      'Fixed position sizing based on available margin',
+      'Entry: RSI oversold + price above SMA = long, RSI overbought + price below SMA = short',
+      'Fixed position sizing: 15% of equity, 3x leverage',
     ],
     strengths: [
-      'Deterministic - same inputs = same outputs',
-      'Zero API costs - no LLM calls',
+      'Deterministic - same inputs always produce same outputs',
+      'Zero cost - no LLM calls, pure computation',
       'Battle-tested indicator logic',
-      'Fast execution',
+      'Fast execution - instant decisions',
     ],
     weaknesses: [
       'Cannot adapt to unusual market conditions',
@@ -1120,43 +1292,48 @@ const AGENT_DESCRIPTIONS: Record<string, {
       'RSI Overbought': 70,
       'SMA Short': 20,
       'SMA Long': 50,
+      'Position Size': '15%',
+      'Leverage': '3x',
     },
   },
   'Passive': {
-    overview: 'Index Fund agents follow a passive buy-and-hold strategy, allocating capital equally across all available symbols. They serve as a benchmark for active strategies.',
+    overview: 'Index Fund agents follow a passive buy-and-hold strategy, allocating capital equally across available symbols. Serves as the ultimate benchmark - any active strategy that underperforms this is destroying value.',
     mechanics: [
-      'Equal-weight allocation: 20% per symbol (with 5 symbols)',
-      'Opens long positions in all symbols at competition start',
-      'Holds positions indefinitely - no active trading',
-      'Rebalances only if positions are closed (e.g., by liquidation)',
+      'Equal-weight allocation across symbols at competition start',
+      'Opens long positions and holds indefinitely',
+      'No active trading - only re-enters if liquidated',
+      'No stop-losses or take-profits',
     ],
     strengths: [
-      'Zero API costs after initial allocation',
-      'Provides benchmark for active strategies',
-      'No overtrading or emotional decisions',
+      'Zero cost - no LLM calls after initial allocation',
+      'The benchmark every active strategy must beat',
+      'No overtrading, no emotional decisions',
       'Benefits from overall market growth',
     ],
     weaknesses: [
       'Cannot profit in bear markets',
       'No risk management or stop-losses',
       'Fully exposed to market drawdowns',
-      'Cannot take advantage of opportunities',
+      'Cannot take advantage of short-term opportunities',
     ],
     config: {
-      'Allocation per Symbol': '20%',
+      'Allocation': '$2,000/symbol (20%)',
       'Leverage': '1x',
       'Strategy': 'Buy & Hold',
     },
   },
-};
+  };
 
-function AgentDescription({ agent }: { agent: AgentDetailData }) {
-  const description = AGENT_DESCRIPTIONS[agent.agent_type] || {
+  return descriptions[agent.agent_type] || {
     overview: `Custom agent implementation: ${agent.agent_type_description || 'No description available.'}`,
     mechanics: ['Custom trading logic defined by the agent implementation.'],
     strengths: ['Specialized for specific use case.'],
     weaknesses: ['May have undocumented behaviors.'],
   };
+}
+
+function AgentDescription({ agent }: { agent: AgentDetailData }) {
+  const description = getAgentDescription(agent);
 
   return (
     <div className="space-y-4">

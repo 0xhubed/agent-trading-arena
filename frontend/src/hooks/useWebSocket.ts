@@ -34,6 +34,7 @@ async function fetchInitialData() {
 export function useWebSocket() {
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectTimeoutRef = useRef<number | null>(null);
+  const reconnectAttemptsRef = useRef(0);
   const initialDataFetched = useRef(false);
 
   const {
@@ -66,6 +67,7 @@ export function useWebSocket() {
 
     ws.onopen = async () => {
       console.log('WebSocket connected');
+      reconnectAttemptsRef.current = 0;
       setConnected(true);
 
       // Fetch historical data on first connection
@@ -119,10 +121,14 @@ export function useWebSocket() {
       console.log('WebSocket disconnected');
       setConnected(false);
 
-      // Reconnect after 3 seconds
+      // Reconnect with exponential backoff (1s, 2s, 4s, 8s, ... max 30s)
+      const attempt = reconnectAttemptsRef.current;
+      const delay = Math.min(1000 * Math.pow(2, attempt), 30000);
+      reconnectAttemptsRef.current = attempt + 1;
+      console.log(`WebSocket reconnecting in ${delay}ms (attempt ${attempt + 1})`);
       reconnectTimeoutRef.current = window.setTimeout(() => {
         connect();
-      }, 3000);
+      }, delay);
     };
 
     ws.onerror = (error) => {

@@ -38,14 +38,39 @@ No input required."""
     args_schema: Optional[type[BaseModel]] = None
 
     def _run(self) -> str:
-        """Analyze recent trading performance."""
-        context = self._context
-        agent_id = context.get("agent_id", "")
-        portfolio = context.get("portfolio", {})
+        """Analyze recent trading performance (sync fallback)."""
+        trades = self._get_trade_history_from_context(limit=20)
+        decisions = self._get_decision_history_from_context(limit=30)
+        return self._build_analysis(trades, decisions)
 
-        # Get trade and decision history
-        trades = self._get_trade_history(agent_id, limit=20)
-        decisions = self._get_decision_history(agent_id, limit=30)
+    async def _arun(self) -> str:
+        """Analyze recent trading performance (async)."""
+        agent_id = self._context.get("agent_id", "")
+        trades = self._get_trade_history_from_context(limit=20)
+        decisions = self._get_decision_history_from_context(limit=30)
+
+        # If context didn't have data, try async storage
+        if not trades and self._storage:
+            try:
+                trades = await self._storage.get_trades(
+                    agent_id=agent_id, limit=20
+                )
+            except Exception:
+                trades = []
+        if not decisions and self._storage:
+            try:
+                decisions = await self._storage.get_decisions(
+                    agent_id=agent_id, limit=30
+                )
+            except Exception:
+                decisions = []
+
+        return self._build_analysis(trades, decisions)
+
+    def _build_analysis(self, trades: list, decisions: list) -> str:
+        """Build analysis from trade and decision history."""
+        context = self._context
+        portfolio = context.get("portfolio", {})
 
         analysis = {
             "patterns_detected": [],
@@ -170,55 +195,20 @@ No input required."""
 
         return json.dumps(analysis, indent=2)
 
-    def _get_trade_history(self, agent_id: str, limit: int) -> list:
-        """Get trade history from storage or context."""
-        # First try context (set by runner)
+    def _get_trade_history_from_context(self, limit: int) -> list:
+        """Get trade history from context."""
         if "trade_history" in self._context:
             return self._context["trade_history"][:limit]
+        return []
 
-        # Fallback to storage
-        if not self._storage:
-            return []
-
-        try:
-            import asyncio
-
-            async def fetch():
-                return await self._storage.get_trades(agent_id=agent_id, limit=limit)
-
-            try:
-                loop = asyncio.get_event_loop()
-                if loop.is_running():
-                    return []
-                return loop.run_until_complete(fetch())
-            except RuntimeError:
-                return []
-        except Exception:
-            return []
-
-    def _get_decision_history(self, agent_id: str, limit: int) -> list:
-        """Get decision history from storage or context."""
+    def _get_decision_history_from_context(self, limit: int) -> list:
+        """Get decision history from context."""
         if "decision_history" in self._context:
             return self._context["decision_history"][:limit]
-
-        if not self._storage:
-            return []
-
-        try:
-            import asyncio
-
-            async def fetch():
-                return await self._storage.get_decisions(agent_id=agent_id, limit=limit)
-
-            try:
-                loop = asyncio.get_event_loop()
-                if loop.is_running():
-                    return []
-                return loop.run_until_complete(fetch())
-            except RuntimeError:
-                return []
-        except Exception:
-            return []
+        # Also check recent_decisions (set by runner)
+        if "recent_decisions" in self._context:
+            return self._context["recent_decisions"][:limit]
+        return []
 
     def _detect_churning(self, decisions: list) -> Optional[dict]:
         """Detect if agent is opening and closing too quickly."""

@@ -1,0 +1,112 @@
+# Agent Arena - Backtest Focused Configuration
+# 6 agents optimized for backtesting and cost efficiency
+#
+# Cost breakdown (at 5-min intervals, 288 ticks/day):
+#   - OpenAI GPT-5.1: ~$1.58/day
+#   - Together AI (Skill-Aware, Agentic, GPT-OSS 20B): ~$0.90/day
+#   - Free baselines (TA Bot, Index Fund): $0/day
+# TOTAL: ~$2.50/day (~$75/month)
+
+name: "Backtest Focused Competition"
+description: "6 agents for cost-efficient backtesting with skill integration"
+
+# Trading configuration
+symbols: [PF_XBTUSD, PF_ETHUSD, PF_SOLUSD, PF_DOGEUSD, PF_XRPUSD]  # 5 major Kraken perps
+interval_seconds: 300  # 5 minutes between ticks
+duration_seconds: null  # Run indefinitely
+agent_timeout_seconds: 120
+
+# Fee configuration
+fees:
+  taker_fee: 0.0004
+  maker_fee: 0.0002
+  liquidation_fee: 0.005
+
+# Trading constraints
+constraints:
+  max_leverage: 10
+  max_position_pct: 0.25
+  starting_capital: 10000
+
+# Historical candles
+candles:
+  enabled: true
+  intervals: ["1h", "15m", "4h"]
+  limit: 200
+
+agents:
+  # --------------------------------------------------------------------------
+  # LLM TRADERS
+  # --------------------------------------------------------------------------
+
+  # GPT-5.1 Simple - Proven performer
+  - id: gpt_simple
+    name: "GPT-5.1 Simple"
+    class: agent_arena.agents.gpt_trader.GPTTrader
+    config:
+      model: gpt-5.1
+      character: |
+        Analytical trader with strong market intuition.
+        Focuses on price action, funding rates, and momentum.
+        Makes decisive moves with clear reasoning.
+
+  # Skill-Aware Trader - Applies institutional knowledge
+  - id: skill_aware_oss
+    name: "Skill-Aware GPT-OSS"
+    class: agent_arena.agents.skill_aware_llm.SkillAwareLLMTrader
+    config:
+      model: gpt-oss-120b
+      max_iterations: 4
+      skills_dir: ".claude/skills"
+      always_check_skills: true
+      character: |
+        A disciplined trader who combines learned skills with real-time analysis.
+        Always consults historical wisdom before making decisions.
+        Respects risk management rules from past competition data.
+
+  # GPT-OSS 20B Simple - Cheapest LLM baseline
+  - id: gptoss_20b_simple
+    name: "GPT-OSS 20B"
+    class: agent_arena.agents.llm_trader.LLMTrader
+    config:
+      model: openai/gpt-oss-20b
+      character: |
+        Fast and efficient trader.
+        Quick pattern recognition and decisive action.
+        Tests whether smaller models can compete effectively.
+
+  # Agentic GPT-OSS - Full tool suite
+  - id: agentic_gptoss
+    name: "Agentic GPT-OSS"
+    class: agent_arena.agents.agentic_llm.AgenticLLMTrader
+    config:
+      model: openai/gpt-oss-20b
+      max_iterations: 3
+      character: |
+        Systematic agentic trader using technical analysis tools.
+        Makes data-driven decisions with proper position sizing.
+
+  # --------------------------------------------------------------------------
+  # FREE BASELINES
+  # --------------------------------------------------------------------------
+
+  # TA Bot - Rule-based benchmark
+  - id: ta_baseline
+    name: "TA Bot"
+    class: agent_arena.agents.ta_trader.TATrader
+    config:
+      rsi_period: 14
+      rsi_oversold: 30
+      rsi_overbought: 70
+      sma_short: 20
+      sma_long: 50
+      position_size_pct: 0.15
+      leverage: 3
+
+  # Index Fund - Buy-and-hold benchmark
+  - id: index_fund
+    name: "Index Fund"
+    class: agent_arena.agents.index_fund.IndexFundAgent
+    config:
+      allocation_per_symbol: 2000  # $2000 x 5 symbols = $10,000 total
+      leverage: 1

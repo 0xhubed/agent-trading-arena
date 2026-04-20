@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 from decimal import Decimal
 from typing import Optional
 
@@ -55,7 +55,7 @@ class IndexFundAgent(BaseAgent):
                 action="hold",
                 confidence=1.0,
                 reasoning=f"Index fund fully allocated. Holding {len(self._positions_opened)} positions.",
-                timestamp=datetime.utcnow(),
+                timestamp=datetime.now(timezone.utc),
             )
 
         # Buy the next symbol we haven't bought yet
@@ -67,7 +67,7 @@ class IndexFundAgent(BaseAgent):
                 action="hold",
                 confidence=0.5,
                 reasoning=f"Waiting for valid price data for {symbol}",
-                timestamp=datetime.utcnow(),
+                timestamp=datetime.now(timezone.utc),
             )
 
         # Calculate position size
@@ -84,5 +84,5 @@ class IndexFundAgent(BaseAgent):
             leverage=self.leverage,
             confidence=1.0,
             reasoning=f"Index fund allocation: ${self.allocation_per_symbol} into {symbol} at ${float(price):,.2f}",
-            timestamp=datetime.utcnow(),
+            timestamp=datetime.now(timezone.utc),
         )

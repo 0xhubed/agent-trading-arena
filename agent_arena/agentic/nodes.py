@@ -9,6 +9,7 @@ from typing import Any, Optional
 from langchain_core.messages import HumanMessage
 
 from agent_arena.agentic.state import AgentState
+from agent_arena.llm_utils import strip_think_blocks
 
 
 class AgentNodes:
@@ -135,6 +136,39 @@ class AgentNodes:
 
         return sanitized, unique_calls
 
+    def _extract_tool_calls(self, response) -> list[dict]:
+        """Extract tool calls from LLM response using all fallback methods."""
+        tool_calls = []
+        if hasattr(response, "tool_calls") and response.tool_calls:
+            tool_calls = [
+                {"name": tc["name"], "args": tc.get("args", {})}
+                for tc in response.tool_calls
+            ]
+
+        # Try extracting from control tokens in content
+        raw_content = response.content or ""
+        raw_content = strip_think_blocks(raw_content)
+        _, extracted_calls = self._sanitize_response(raw_content)
+        if not tool_calls and extracted_calls:
+            tool_calls = extracted_calls
+
+        # Last resort: extract tool intent from think blocks
+        think_match = re.search(
+            r"<think>(.*?)</think>", response.content or "",
+            re.DOTALL,
+        )
+        if not tool_calls and think_match:
+            think_text = think_match.group(1)
+            for tool_name in self.tools:
+                if tool_name in think_text:
+                    tool_calls.append(
+                        {"name": tool_name, "args": {}}
+                    )
+                    if len(tool_calls) >= 2:
+                        break
+
+        return tool_calls
+
     async def think_node(self, state: AgentState) -> dict:
         """
         Analyze the situation and decide next action.
@@ -155,26 +189,12 @@ class AgentNodes:
 
         # Call LLM with tools bound
         response = await self.llm.ainvoke(messages)
-
-        # Check if LLM wants to use tools (proper tool call format)
-        tool_calls = []
-        if hasattr(response, "tool_calls") and response.tool_calls:
-            tool_calls = [
-                {"name": tc["name"], "args": tc.get("args", {})}
-                for tc in response.tool_calls
-            ]
-
-        # Sanitize response content and extract tool calls from control tokens
-        # This handles models that leak internal tokens instead of proper tool calls
-        raw_content = response.content or ""
-        sanitized_content, extracted_calls = self._sanitize_response(raw_content)
-
-        # If no proper tool calls but we extracted some from control tokens, use those
-        if not tool_calls and extracted_calls:
-            tool_calls = extracted_calls
+        tool_calls = self._extract_tool_calls(response)
 
         # Use sanitized content for thought (cleaner output)
-        thought_content = sanitized_content[:500] if sanitized_content else "No reasoning provided"
+        raw = strip_think_blocks(response.content or "")
+        sanitized, _ = self._sanitize_response(raw)
+        thought_content = sanitized[:500] if sanitized else "No reasoning provided"
         thought = f"Iteration {iteration + 1}: {thought_content}"
         thoughts = [thought]
 
@@ -199,10 +219,22 @@ class AgentNodes:
             tool_name = call.get("name")
             tool_args = call.get("args", {})
 
+            # Sanitize args: Ollama Cloud sometimes sends empty-string
+            # keys or None values that break **kwargs unpacking
+            tool_args = {
+                k: v for k, v in tool_args.items()
+                if k and isinstance(k, str)
+            }
+
             if tool_name in self.tools:
                 tool = self.tools[tool_name]
                 # Set context for tool
                 tool.set_context(context)
+
+                # If the tool defines no args_schema, don't pass any
+                # args — Ollama often hallucinates args for no-arg tools
+                if tool.args_schema is None:
+                    tool_args = {}
 
                 try:
                     # Try async first, fall back to sync
@@ -212,8 +244,21 @@ class AgentNodes:
                         result = tool._run(**tool_args)
 
                     results.append(f"[{tool_name}]\n{result}")
+                except TypeError:
+                    # Ollama may hallucinate args that don't match
+                    # the tool signature — retry with no args
+                    try:
+                        if hasattr(tool, "_arun"):
+                            result = await tool._arun()
+                        else:
+                            result = tool._run()
+                        results.append(f"[{tool_name}]\n{result}")
+                    except Exception as e2:
+                        results.append(
+                            f"[{tool_name}] Error: {e2}"
+                        )
                 except Exception as e:
-                    results.append(f"[{tool_name}] Error: {str(e)}")
+                    results.append(f"[{tool_name}] Error: {e}")
             else:
                 results.append(f"[{tool_name}] Tool not found")
 
@@ -231,7 +276,11 @@ class AgentNodes:
         # Build decision prompt
         prompt = self._build_decision_prompt(context, thoughts, tool_results)
 
-        response = await self.llm.ainvoke([HumanMessage(content=prompt)])
+        # Disable tool calling — we want JSON output, not more tool calls
+        response = await self.llm.ainvoke(
+            [HumanMessage(content=prompt)],
+            tool_choice="none",
+        )
 
         # Parse decision from response
         decision = self._parse_decision(response.content, context)
@@ -246,8 +295,6 @@ class AgentNodes:
         """
         Determine whether to continue the think-act loop or decide.
 
-        Enforces minimum tool usage to prevent agents from skipping analysis.
-
         Returns:
             "execute_tools" if there are tool calls to execute
             "decide" if ready to make final decision
@@ -255,24 +302,12 @@ class AgentNodes:
         iteration = state.get("iteration", 0)
         max_iterations = state.get("max_iterations", 3)
         tool_calls = state.get("tool_calls", [])
-        tool_results = state.get("tool_results", [])
 
-        # Minimum tool usage requirement
-        # Agents must use at least 2 tools before deciding
-        min_tool_calls = 2
-
-        # Continue if:
-        # 1. Haven't reached max iterations
-        # 2. There are tool calls to execute
+        # Continue only if there are actual tool calls to execute
+        # and we haven't exceeded max iterations.
+        # tool_choice="required" on iter 0 guarantees at least one tool call.
         if iteration < max_iterations and tool_calls:
             return "execute_tools"
-
-        # If agent hasn't used enough tools and hasn't maxed iterations,
-        # the think node will nudge them to use more tools
-        if len(tool_results) < min_tool_calls and iteration < max_iterations:
-            # Agent didn't request tools but hasn't met minimum
-            # Return to think to encourage tool usage
-            return "execute_tools"  # Will be empty but forces another think cycle
 
         return "decide"
 
@@ -397,7 +432,7 @@ What tools do you want to use? Call at least one tool now."""
         # Format tool results (last 5)
         results = "\n\n".join(tool_results[-5:]) if tool_results else "No tool results"
 
-        return f"""Based on your analysis, make a final trading decision.
+        return f"""Based on your analysis, make a FINAL trading decision NOW.
 
 YOUR ANALYSIS:
 {analysis}
@@ -407,10 +442,14 @@ TOOL RESULTS:
 
 AVAILABLE SYMBOLS: {', '.join(symbols)}
 
-RESPOND WITH ONLY A JSON OBJECT. NO OTHER TEXT BEFORE OR AFTER.
+CRITICAL INSTRUCTIONS:
+- Do NOT use <think> tags or chain-of-thought reasoning
+- Do NOT request more tools - you must decide NOW
+- Output ONLY a single JSON object, nothing else
 
-Example valid response:
-{{"action": "hold", "symbol": null, "size": null, "leverage": 1, "confidence": 0.5, "reasoning": "Market uncertain"}}
+Example:
+{{"action": "hold", "symbol": null, "size": null,
+"leverage": 1, "confidence": 0.5, "reasoning": "Uncertain"}}
 
 Required fields:
 - action: "hold" | "open_long" | "open_short" | "close"
@@ -420,7 +459,7 @@ Required fields:
 - confidence: 0.0-1.0
 - reasoning: brief explanation
 
-YOUR JSON RESPONSE:"""
+JSON:"""
 
     def _parse_decision(self, response: Any, context: dict) -> dict:
         """Parse decision from LLM response with robust error handling."""
@@ -454,6 +493,28 @@ YOUR JSON RESPONSE:"""
         if not isinstance(response, str):
             default["reasoning"] = f"Unexpected response type: {type(response)}"
             return default
+
+        # Strip <think>...</think> blocks (GLM/nemotron chain-of-thought)
+        think_match = re.search(
+            r"<think>(.*?)</think>", response, re.DOTALL
+        )
+        if not think_match and "</think>" in response:
+            think_match = re.search(
+                r"^(.*?)</think>", response, re.DOTALL
+            )
+        think_content = think_match.group(1).strip() if think_match else ""
+        cleaned = strip_think_blocks(response)
+
+        # If nothing remains after stripping think block, try to extract from think content
+        if not cleaned and think_content:
+            extracted = self._extract_decision_from_text(think_content, valid_symbols)
+            if extracted:
+                return extracted
+            default["reasoning"] = "Model produced only chain-of-thought, no JSON decision"
+            return default
+
+        # Use cleaned response (think blocks removed) for parsing
+        response = cleaned if cleaned else response
 
         # Try multiple parsing strategies
         json_str = self._extract_json_string(response)
@@ -555,13 +616,21 @@ YOUR JSON RESPONSE:"""
         """Extract decision from natural language when JSON parsing fails."""
         response_lower = response.lower()
 
-        # Try to determine action
+        # Try to extract action from JSON-like "action": "..." pattern first
+        # (handles cases where JSON parsing failed due to other malformed fields)
         action = "hold"
-        if any(word in response_lower for word in ["open long", "buy", "go long", "bullish"]):
+        action_match = re.search(
+            r'"action"\s*:\s*"(open_long|open_short|close|hold|'
+            r'limit_long|limit_short|set_stop_loss|set_take_profit)"',
+            response_lower,
+        )
+        if action_match:
+            action = action_match.group(1)
+        elif any(word in response_lower for word in ["open long", "buy", "go long"]):
             action = "open_long"
-        elif any(word in response_lower for word in ["open short", "sell", "go short", "bearish"]):
+        elif any(word in response_lower for word in ["open short", "sell", "go short"]):
             action = "open_short"
-        elif any(word in response_lower for word in ["close", "exit", "take profit", "stop loss"]):
+        elif any(word in response_lower for word in ["close", "exit", "take profit"]):
             action = "close"
 
         # Try to find symbol
@@ -586,13 +655,23 @@ YOUR JSON RESPONSE:"""
 
         # If we found an action other than hold, return the extracted decision
         if action != "hold" or "hold" in response_lower:
+            # Try to extract reasoning from JSON-like pattern
+            reasoning = None
+            reason_match = re.search(
+                r'"reasoning"\s*:\s*"((?:[^"\\]|\\.)*)"', response
+            )
+            if reason_match:
+                reasoning = reason_match.group(1)[:300]
+            if not reasoning:
+                reasoning = f"Extracted from text (JSON malformed): {response[:200]}"
+
             return {
                 "action": action,
                 "symbol": symbol,
                 "size": None,
                 "leverage": leverage,
                 "confidence": confidence,
-                "reasoning": f"Extracted from text: {response[:200]}...",
+                "reasoning": reasoning,
             }
 
         return None

@@ -8,7 +8,7 @@ import {
   useLearningStore,
   fetchAgentLearning,
 } from '../../stores/learning';
-import type { LearningStats, LearningDataPoint } from '../../types/learning';
+import type { LearningDataPoint } from '../../types/learning';
 
 interface LearningProgressProps {
   agentId: string;
@@ -236,7 +236,7 @@ export default function LearningProgress({ agentId, className }: LearningProgres
               color="#22C55E"
             />
             <div className="text-xs text-white font-mono-numbers mt-1">
-              Current: {((learningCurve[learningCurve.length - 1]?.win_rate || 0) * 100).toFixed(0)}%
+              Current: {((learningCurve[learningCurve.length - 1]?.win_rate ?? 0) * 100).toFixed(0)}%
             </div>
           </div>
           <div className="glass rounded-lg p-3">
@@ -249,7 +249,7 @@ export default function LearningProgress({ agentId, className }: LearningProgres
               color="#8B5CF6"
             />
             <div className="text-xs text-white font-mono-numbers mt-1">
-              Current: {(learningCurve[learningCurve.length - 1]?.sharpe_ratio || 0).toFixed(2)}
+              Current: {(learningCurve[learningCurve.length - 1]?.sharpe_ratio ?? 0).toFixed(2)}
             </div>
           </div>
         </div>

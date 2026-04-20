@@ -19,12 +19,12 @@ class ContextBuilder:
     3. Agent prompting with additional insights
     """
 
-    def __init__(self, primary_symbol: str = "BTCUSDT"):
+    def __init__(self, primary_symbol: str = "PF_XBTUSD"):
         """
         Initialize context builder.
 
         Args:
-            primary_symbol: Symbol to use for regime classification (default: BTCUSDT).
+            primary_symbol: Symbol to use for regime classification (default: PF_XBTUSD).
         """
         self.primary_symbol = primary_symbol
 
@@ -308,7 +308,7 @@ class ContextBuilder:
 _default_builder: Optional[ContextBuilder] = None
 
 
-def get_context_builder(primary_symbol: str = "BTCUSDT") -> ContextBuilder:
+def get_context_builder(primary_symbol: str = "PF_XBTUSD") -> ContextBuilder:
     """Get or create the default context builder instance."""
     global _default_builder
     if _default_builder is None or _default_builder.primary_symbol != primary_symbol:

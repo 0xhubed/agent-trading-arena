@@ -110,13 +110,16 @@ export default function Leaderboard() {
     return sparklines;
   }, [equityHistory]);
 
-  // Merge agent info with leaderboard
-  const entries = leaderboard.map((entry) => ({
-    ...entry,
-    agent: agents.find((a) => a.id === entry.agent_id),
-    sparklineData: agentSparklines[entry.agent_id] || [],
-    isThinking,
-  }));
+  // Merge agent info with leaderboard (memoized to avoid re-renders)
+  const entries = useMemo(() =>
+    leaderboard.map((entry) => ({
+      ...entry,
+      agent: agents.find((a) => a.id === entry.agent_id),
+      sparklineData: agentSparklines[entry.agent_id] || [],
+      isThinking,
+    })),
+    [leaderboard, agents, agentSparklines, isThinking]
+  );
 
   return (
     <div className="glass-strong rounded-xl p-4 sm:p-6">
@@ -194,7 +197,9 @@ export default function Leaderboard() {
                           <span
                             className={clsx(
                               'text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wide hidden sm:inline-block',
-                              entry.agent.agent_type === 'Agentic'
+                              entry.agent.agent_type === 'Journal-Aware'
+                                ? 'bg-indigo-500/20 text-indigo-400'
+                                : entry.agent.agent_type === 'Agentic'
                                 ? 'bg-accent/20 text-accent'
                                 : entry.agent.agent_type === 'LLM'
                                 ? 'bg-highlight/20 text-highlight'

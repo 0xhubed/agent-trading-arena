@@ -1,0 +1,205 @@
+# Agent Arena — Local Inference Competition
+#
+# All trading agents run on local HP ZGX Nano G1n (NVIDIA GB10 Grace Blackwell)
+# via LiteLLM proxy. Zero API cost for all trading decisions.
+#
+# Models:
+#   nemotron   — Nemotron-3-Nano-30B-A3B-FP8 (Mamba-Transformer hybrid)
+#   glm-4.7-flash — GLM-4.7-Flash-FP8 (strong reasoning/coding)
+#
+# Both are reasoning models with internal thinking tokens.
+# max_tokens must be >= 500 to allow room for thinking + response.
+#
+# Cost: $0/day for trading agents. ~$0.90/day for Observer (Opus 4.6).
+#
+# Agent roster (10 total):
+#   Tier 1: 2 simple traders (nemotron, glm)
+#   Tier 2: 2 agentic traders (nemotron, glm)
+#   Tier 3: 2 skill-aware traders (nemotron, glm)
+#   Tier 4: 2 free benchmarks (TA bot, index fund)
+#   Tier 5: Observer agent (Opus 4.6, runs separately)
+
+name: "Local Inference Competition"
+description: "Zero-cost local LLM competition on HP ZGX Nano with nemotron and glm-4.7-flash"
+
+# Trading configuration
+symbols: [PF_XBTUSD, PF_ETHUSD, PF_SOLUSD]
+interval_seconds: 120          # 2-min ticks (local inference is fast enough)
+duration_seconds: null         # Run indefinitely
+agent_timeout_seconds: 180     # Agentic/skill-aware agents need time for tool loops
+
+# Fee configuration
+fees:
+  taker_fee: 0.0004            # 0.04% for market orders
+  maker_fee: 0.0002            # 0.02% for limit orders
+  liquidation_fee: 0.005       # 0.5% liquidation penalty
+
+# Trading constraints
+constraints:
+  max_leverage: 10
+  max_position_pct: 0.25       # Max 25% of equity per position
+  starting_capital: 10000
+
+# Historical candles for technical analysis
+candles:
+  enabled: true
+  intervals: ["1h", "15m", "4h"]
+  limit: 200
+
+# Storage
+storage:
+  backend: postgres             # Required for observer memory
+
+# ==========================================================================
+# AGENTS
+# ==========================================================================
+
+agents:
+  # ------------------------------------------------------------------------
+  # TIER 1: Simple Traders (zero cost, single LLM call)
+  # Fast decisions, no tools, test raw model trading intuition.
+  # ------------------------------------------------------------------------
+
+  - id: nemotron_simple
+    name: "Nemotron Simple"
+    class: agent_arena.agents.llm_trader.LLMTrader
+    config:
+      model: nemotron
+      base_url: http://192.168.0.42:4000/v1
+      api_key_env: LOCAL_API_KEY
+      max_tokens: 1024
+      character: |
+        Aggressive momentum trader. You thrive in trending markets.
+        When you see strong directional moves with volume confirmation,
+        you act decisively with higher leverage. Quick to cut losses.
+        Prefer BTC and ETH for liquidity. Use funding rates as a
+        contrarian signal — high positive funding means longs are crowded.
+
+  - id: glm_simple
+    name: "GLM-4.7 Simple"
+    class: agent_arena.agents.llm_trader.LLMTrader
+    config:
+      model: glm-4.7-flash
+      base_url: http://192.168.0.42:4000/v1
+      api_key_env: LOCAL_API_KEY
+      max_tokens: 1024
+      character: |
+        Analytical contrarian trader. You look for overextended moves
+        and mean-reversion setups. Skeptical of consensus — when everyone
+        is bullish, you look for shorts. Conservative position sizing,
+        moderate leverage. Patient — you prefer to wait for high-conviction
+        setups rather than trade every tick. Diversify across symbols.
+
+  # ------------------------------------------------------------------------
+  # TIER 2: Agentic Traders (zero cost, ReAct loop with tools)
+  # Multi-step reasoning with RSI, SMA, MACD, Bollinger, risk calc.
+  # ------------------------------------------------------------------------
+
+  - id: nemotron_agentic
+    name: "Agentic Nemotron"
+    class: agent_arena.agents.agentic_llm.AgenticLLMTrader
+    config:
+      model: nemotron
+      base_url: http://192.168.0.42:4000/v1
+      api_key_env: LOCAL_API_KEY
+      max_tokens: 2000
+      max_iterations: 3
+      character: |
+        Systematic agentic trader. Always calculate RSI and check moving
+        averages before trading. Use the risk calculator to size positions
+        properly. Prefer trend-following with tight stop-losses. When
+        multiple indicators align, increase confidence and position size.
+
+  - id: glm_agentic
+    name: "Agentic GLM-4.7"
+    class: agent_arena.agents.agentic_llm.AgenticLLMTrader
+    config:
+      model: glm-4.7-flash
+      base_url: http://192.168.0.42:4000/v1
+      api_key_env: LOCAL_API_KEY
+      max_tokens: 2000
+      max_iterations: 3
+      character: |
+        Data-driven agentic trader who methodically analyses every signal.
+        Check Bollinger Bands for volatility squeeze, RSI for momentum,
+        and MACD for trend confirmation. Use the risk calculator for every
+        trade. Conservative — only trade when 2+ indicators agree. Always
+        set stop-loss and take-profit levels.
+
+  # ------------------------------------------------------------------------
+  # TIER 3: Skill-Enhanced (zero cost, agentic + Observer skills)
+  # Full agentic toolset plus institutional knowledge from Observer.
+  # These agents consult learned patterns before making decisions.
+  # ------------------------------------------------------------------------
+
+  - id: nemotron_skill_aware
+    name: "Skill-Aware Nemotron"
+    class: agent_arena.agents.skill_aware_llm.SkillAwareLLMTrader
+    config:
+      model: nemotron
+      base_url: http://192.168.0.42:4000/v1
+      api_key_env: LOCAL_API_KEY
+      max_tokens: 2000
+      max_iterations: 4
+      skills_dir: ".claude/skills"
+      always_check_skills: true
+      character: |
+        A disciplined trader who combines learned skills with real-time
+        analysis. Always consult trading-wisdom and risk-management skills
+        before acting. Respect historical patterns — they represent
+        statistical evidence from real competition data. When skill guidance
+        conflicts with your analysis, explain the conflict and lean towards
+        the higher-confidence skill.
+
+  - id: glm_skill_aware
+    name: "Skill-Aware GLM-4.7"
+    class: agent_arena.agents.skill_aware_llm.SkillAwareLLMTrader
+    config:
+      model: glm-4.7-flash
+      base_url: http://192.168.0.42:4000/v1
+      api_key_env: LOCAL_API_KEY
+      max_tokens: 2000
+      max_iterations: 4
+      skills_dir: ".claude/skills"
+      always_check_skills: true
+      character: |
+        A methodical trader who prioritizes institutional knowledge.
+        Check market-regimes skill to understand current conditions before
+        analyzing indicators. Use entry-signals skill to validate setups.
+        Conservative position sizing per risk-management skill. Document
+        which skills influenced each decision. When in doubt, hold.
+
+  # ------------------------------------------------------------------------
+  # TIER 4: Free Benchmarks (no LLM, rule-based)
+  # These provide performance baselines to beat.
+  # ------------------------------------------------------------------------
+
+  # TA Bot — RSI/SMA crossover strategy
+  - id: ta_bot
+    name: "TA Bot"
+    class: agent_arena.agents.ta_trader.TATrader
+    config:
+      rsi_period: 14
+      rsi_oversold: 30
+      rsi_overbought: 70
+      sma_short: 20
+      sma_long: 50
+      position_size_pct: 0.15
+      leverage: 3
+
+  # Index Fund — passive buy-and-hold across all symbols
+  - id: index_fund
+    name: "Index Fund"
+    class: agent_arena.agents.index_fund.IndexFundAgent
+    config:
+      allocation_per_symbol: 3333   # ~$3,333 x 3 symbols = ~$10,000 total
+      leverage: 1
+
+# ==========================================================================
+# OBSERVER AGENT (runs separately, 1x/day)
+#
+# Trigger via: POST /api/observer/analyze
+# Uses Opus 4.6 for deep pattern analysis (~$0.90/day)
+# Skills auto-generated in .claude/skills/
+# Observations stored in PostgreSQL (observer_memory, observer_runs tables)
+# ==========================================================================

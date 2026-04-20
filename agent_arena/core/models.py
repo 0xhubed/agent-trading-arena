@@ -5,7 +5,7 @@ from __future__ import annotations
 import math
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum
 from typing import ClassVar, Optional
@@ -63,7 +63,7 @@ class Decision:
 
     def __post_init__(self):
         if self.timestamp is None:
-            self.timestamp = datetime.utcnow()
+            self.timestamp = datetime.now(timezone.utc)
 
 
 @dataclass
@@ -77,7 +77,7 @@ class Position:
     entry_price: Decimal = Decimal("0")
     leverage: int = 1
     margin: Decimal = Decimal("0")
-    opened_at: datetime = field(default_factory=datetime.utcnow)
+    opened_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     mark_price: Decimal = Decimal("0")
 
     # Stop-loss/Take-profit triggers
@@ -127,7 +127,7 @@ class Trade:
     leverage: int = 1
     fee: Decimal = Decimal("0")
     realized_pnl: Optional[Decimal] = None
-    timestamp: datetime = field(default_factory=datetime.utcnow)
+    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     decision_id: Optional[str] = None
 
 
@@ -142,7 +142,7 @@ class PendingOrder:
     size: Decimal = Decimal("0")
     limit_price: Decimal = Decimal("0")
     leverage: int = 1
-    created_at: datetime = field(default_factory=datetime.utcnow)
+    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
     # Optional SL/TP to set when order fills
     stop_loss_price: Optional[Decimal] = None
@@ -213,29 +213,47 @@ class Portfolio:
 
     def to_context(self) -> dict:
         """Convert portfolio to context dict for agents."""
+        now = datetime.now(timezone.utc)
+
+        positions_ctx = []
+        for p in self.positions.values():
+            hold_seconds = (now - p.opened_at).total_seconds()
+            hold_hours = hold_seconds / 3600
+            roe = p.roe_percent
+            liq_distance = self._liquidation_distance(p)
+
+            # Position advisory signal
+            advisory = self._position_advisory(roe, hold_hours, liq_distance, p)
+
+            positions_ctx.append({
+                "symbol": p.symbol,
+                "side": p.side.value,
+                "size": float(p.size),
+                "entry_price": float(p.entry_price),
+                "mark_price": float(p.mark_price),
+                "liquidation_price": float(p.liquidation_price),
+                "margin": float(p.margin),
+                "unrealized_pnl": float(p.unrealized_pnl),
+                "roe_percent": roe,
+                "leverage": p.leverage,
+                "opened_at": p.opened_at.isoformat(),
+                "hold_hours": round(hold_hours, 1),
+                "liq_distance_pct": round(liq_distance, 2),
+                "stop_loss": float(p.stop_loss_price) if p.stop_loss_price else None,
+                "take_profit": float(p.take_profit_price) if p.take_profit_price else None,
+                "advisory": advisory,
+            })
+
+        # Recent trade performance (last 10 closed trades)
+        recent_closed = [t for t in self.trades if t.realized_pnl is not None][-10:]
+        trade_performance = self._trade_performance_summary(recent_closed)
+
         return {
             "equity": float(self.equity),
             "available_margin": float(self.available_margin),
             "used_margin": float(self.used_margin),
             "margin_utilization": self.margin_utilization,
-            "positions": [
-                {
-                    "symbol": p.symbol,
-                    "side": p.side.value,
-                    "size": float(p.size),
-                    "entry_price": float(p.entry_price),
-                    "mark_price": float(p.mark_price),
-                    "liquidation_price": float(p.liquidation_price),
-                    "margin": float(p.margin),
-                    "unrealized_pnl": float(p.unrealized_pnl),
-                    "roe_percent": p.roe_percent,
-                    "leverage": p.leverage,
-                    "opened_at": p.opened_at.isoformat() + "Z",
-                    "stop_loss": float(p.stop_loss_price) if p.stop_loss_price else None,
-                    "take_profit": float(p.take_profit_price) if p.take_profit_price else None,
-                }
-                for p in self.positions.values()
-            ],
+            "positions": positions_ctx,
             "pending_orders": [
                 {
                     "id": o.id,
@@ -250,6 +268,86 @@ class Portfolio:
             "realized_pnl": float(self.realized_pnl),
             "total_pnl": float(self.total_pnl),
             "pnl_percent": self.equity_percent,
+            "trade_performance": trade_performance,
+        }
+
+    @staticmethod
+    def _liquidation_distance(p: Position) -> float:
+        """Percentage distance from mark price to liquidation price."""
+        if p.mark_price == 0:
+            return 100.0
+        return float(abs(p.mark_price - p.liquidation_price) / p.mark_price * 100)
+
+    @staticmethod
+    def _position_advisory(
+        roe: float, hold_hours: float, liq_distance: float, p: Position
+    ) -> str:
+        """Generate a concise advisory signal for a position."""
+        signals = []
+
+        # Liquidation proximity (highest priority)
+        if liq_distance < 2.0:
+            signals.append("DANGER: near liquidation — reduce position or add margin")
+        elif liq_distance < 5.0:
+            signals.append("WARNING: liquidation within 5% — consider reducing size")
+
+        # Profit-taking signals
+        if roe > 50:
+            signals.append(f"Strong profit (+{roe:.0f}% ROE) — consider taking partial profits")
+        elif roe > 20:
+            signals.append(f"Good profit (+{roe:.0f}% ROE) — consider setting a take-profit")
+        elif roe > 10 and hold_hours > 12:
+            signals.append("Moderate profit, held >12h — consider locking in gains")
+
+        # Loss-cutting signals
+        if roe < -30:
+            signals.append(f"Deep loss ({roe:.0f}% ROE) — strongly consider cutting losses")
+        elif roe < -15:
+            signals.append(f"Significant loss ({roe:.0f}% ROE) — consider reducing position")
+        elif roe < -8 and hold_hours > 6:
+            signals.append("Loss growing over time — reassess thesis or cut partial")
+
+        # Stale position (held too long with small movement)
+        if hold_hours > 24 and abs(roe) < 3:
+            signals.append("Held >24h with <3% move — capital may be better deployed elsewhere")
+
+        # No stop-loss warning
+        if not p.stop_loss_price and abs(roe) < 5:
+            signals.append("No stop-loss set — consider adding one for risk management")
+
+        return "; ".join(signals) if signals else "Position healthy"
+
+    @staticmethod
+    def _trade_performance_summary(recent_trades: list[Trade]) -> dict:
+        """Summarize recent closed trade performance."""
+        if not recent_trades:
+            return {"total": 0, "summary": "No closed trades yet"}
+
+        wins = [t for t in recent_trades if t.realized_pnl and t.realized_pnl > 0]
+        losses = [t for t in recent_trades if t.realized_pnl and t.realized_pnl < 0]
+        total_pnl = sum(float(t.realized_pnl) for t in recent_trades if t.realized_pnl)
+
+        avg_win = (
+            sum(float(t.realized_pnl) for t in wins) / len(wins) if wins else 0
+        )
+        avg_loss = (
+            sum(float(t.realized_pnl) for t in losses) / len(losses) if losses else 0
+        )
+
+        return {
+            "total": len(recent_trades),
+            "wins": len(wins),
+            "losses": len(losses),
+            "win_rate": len(wins) / len(recent_trades) if recent_trades else 0,
+            "total_pnl": round(total_pnl, 2),
+            "avg_win": round(avg_win, 2),
+            "avg_loss": round(avg_loss, 2),
+            "summary": (
+                f"Last {len(recent_trades)} trades: "
+                f"{len(wins)}W/{len(losses)}L, "
+                f"avg win ${avg_win:+.2f}, avg loss ${avg_loss:+.2f}, "
+                f"net ${total_pnl:+.2f}"
+            ),
         }
 
 
@@ -264,7 +362,7 @@ class EquitySnapshot:
     def to_dict(self) -> dict:
         return {
             "tick": self.tick,
-            "timestamp": self.timestamp.isoformat() + "Z",
+            "timestamp": self.timestamp.isoformat(),
             "equity": float(self.equity),
         }
 
